@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/descriptor/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_BxaXACerEeWxCPrV0pAZQQ">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_EI7oACerEeWxCPrV0pAZQQ" featurename="descriptors" parentElementId="xpath:/">
+    <elements xsi:type="basic:PartDescriptor" xmi:id="_KMklcCerEeWxCPrV0pAZQQ" elementId="test.partDescFragment.ASampleE4View" label="TGG Benchmark" iconURI="platform:/plugin/TGGBenchmark/icons/Sample.png" tooltip="" category="eMoflon" contributionURI="bundleclass://TGGBenchmark/tggbenchmark.parts.TGGBenchmarkView">
+      <tags>View</tags>
+      <tags>categoryTag:eMoflon</tags>
+      <toolbar xmi:id="_h2ePIIEYEemnqe-BVXh1Rg" elementId="xyz.toolbar.0">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_0ozJEIFBEemjp7lyg5_GJQ" elementId="xyz.directtoolitem.addBenchmarkCase" label="" iconURI="platform:/plugin/TGGBenchmark/icons/Sample.png" tooltip="Add benchmak case" contributionURI="bundleclass://TGGBenchmark/tggbenchmark.handlers.AddBenchmarkCaseHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_gX_IAIFREem6bdwOJ1Qz8g" elementId="xyz.directtoolitem.DeleteBenchmakCase" iconURI="platform:/plugin/TGGBenchmark/icons/Sample.png" tooltip="Delete benchmak case"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_fiRLgIFSEem6bdwOJ1Qz8g" elementId="xyz.directtoolitem.configureRunBenchmark" label="" iconURI="platform:/plugin/TGGBenchmark/icons/Sample.png" tooltip="Configure and run benchmark"/>
+      </toolbar>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>
