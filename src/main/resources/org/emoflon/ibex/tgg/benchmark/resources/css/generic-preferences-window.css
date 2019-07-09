@@ -1,0 +1,36 @@
+.preference-container {
+	-fx-padding: 0 30 40 0;
+	-fx-max-width: 300;
+	-fx-pref-width: 300;
+}
+
+.preference-content-wrapper {
+	-fx-padding: 40 20 30 30;
+	-fx-spacing: 40;
+}
+
+#buttonPane {
+	-fx-padding: 8;
+	-fx-spacing: 10;
+}
+
+#categories {
+	-fx-border-style: none;
+	
+}
+
+#categories .list-cell {
+	-fx-background-color: transparent;
+}
+
+#categories .list-cell:empty {
+	visibility: hidden;
+}
+
+#categories .list-cell:hover{
+    -fx-background-color: lightgrey ;
+}
+
+#categories .list-cell:selected{
+    -fx-background-color: grey;
+}

@@ -1,0 +1,14 @@
+Label.h1 {
+	-fx-font-size: 16;
+	-fx-font-weight: bold;
+}
+
+Label.h2 {
+	-fx-font-size: 12;
+	-fx-font-weight: bold;
+	-fx-padding: 0 0 8 0;
+}
+
+Separator.header-underline {
+	-fx-padding: 12 0 12 0;
+}
