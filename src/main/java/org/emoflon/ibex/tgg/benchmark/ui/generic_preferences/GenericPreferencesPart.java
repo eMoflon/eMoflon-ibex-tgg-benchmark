@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
+import org.emoflon.ibex.tgg.benchmark.ui.Part;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -43,7 +44,7 @@ public class GenericPreferencesPart<T> extends Part<T> {
 	 * @throws IOException if the FXML resource couldn't be found
 	 */
 	public GenericPreferencesPart() throws IOException {
-		super("../../resources/fxml/GenericPreferencesWindow.fxml");
+		super("../../resources/fxml/GenericPreferences.fxml");
 	}
 
 	/**

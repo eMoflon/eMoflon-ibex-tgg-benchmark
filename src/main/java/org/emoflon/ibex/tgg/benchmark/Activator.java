@@ -1,8 +1,5 @@
 package org.emoflon.ibex.tgg.benchmark;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

@@ -18,6 +18,10 @@ import javafx.scene.control.TextField;
 
 public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCasePreferences> {
 
+	private ObservableList<Integer> modelSizes;
+	private ObservableList<String> maxModelSizeChoiceList;
+
+	// elements from the FXML resource
 	@FXML
 	private CheckBox modelgenCreateReport;
 	@FXML
@@ -70,9 +74,6 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
 	private TextField coTimeout;
 	@FXML
 	private ChoiceBox<String> coMaxModelSize;
-
-	private ObservableList<Integer> modelSizes;
-	private ObservableList<String> maxModelSizeChoiceList;
 
 	public CategoryOperationalizationsPart() throws IOException {
 		super("../../resources/fxml/benchmark_case_preferences/CategoryOperationalizations.fxml");

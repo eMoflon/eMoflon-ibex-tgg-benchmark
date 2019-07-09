@@ -1,58 +1,59 @@
 package org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
-import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
-import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesLayoutController;
+import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.control.Button;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 
-public class MainPart extends {
+/**
+ * MainPart is the main GUI part of the {@link BenchmarkCasePreferencesWindow}.
+ *
+ * @author Andre Lehmann
+ * @version 1.0
+ * @since 2019-07-09
+ */
+public class MainPart extends GenericPreferencesPart<BenchmarkCasePreferences> {
 
-	private Stage stage;
-	private BorderPane layout;
-	private GenericPreferencesLayoutController<BenchmarkCasePreferences> controller;
-	private ObservableList<CategoryDataModel> categoriesViewData = FXCollections.observableArrayList();
-	
+	private ObservableList<CategoryDataModel> categoriesViewData;
 	private Button cancelButton;
 	private Button runButton;
 	private Button saveAndCloseButton;
-	
-	private BenchmarkCasePreferences preferencesData;
 
-	public MainPart(BenchmarkCasePreferences bcp) throws IOException {
-		// prepare stage
-		stage = new Stage();
-		stage.titleProperty().bind(Bindings.concat("Benchmark Case Preferences: ", bcp.benchmarkCaseNameProperty()));
-		stage.initModality(Modality.APPLICATION_MODAL);
+	private CategoryGeneralPart categoryGeneralController;
+	private CategoryInputPart categoryInputController;
+	private CategoryOutputPart categoryOutputController;
+	private CategoryOperationalizationsPart categoryOperationalizationsController;
+
+	/**
+	 * Constructor for {@link MainPart}.
+	 * 
+	 * @throws IOException if the FXML resources could not be found
+	 */
+	public MainPart() throws IOException {
+		super();
+
+		// get sub parts
+		categoryGeneralController = new CategoryGeneralPart();
+		categoryInputController = new CategoryInputPart();
+		categoryOutputController = new CategoryOutputPart();
+		categoryOperationalizationsController = new CategoryOperationalizationsPart();
 
 		// init categories
-		categoriesViewData.add(initCategory("General", Glyph.CUBES, "../../resources/fxml/benchmark_case_preferences/CategoryGeneral.fxml"));
-		categoriesViewData.add(initCategory("Input", Glyph.SIGN_IN, "../../resources/fxml/benchmark_case_preferences/CategoryInput.fxml"));
-		categoriesViewData.add(initCategory("Output", Glyph.SIGN_OUT, "../../resources/fxml/benchmark_case_preferences/CategoryOutput.fxml"));
-		categoriesViewData.add(initCategory("Operationalizations", Glyph.GEARS, "../../resources/fxml/benchmark_case_preferences/CategoryOperationalizations.fxml"));
-		
-		// get layout and controller
-		controller = new GenericPreferencesLayoutController<BenchmarkCasePreferences>();
-		controller.initData(preferencesData, categoriesViewData);
+		categoriesViewData = FXCollections.observableArrayList();
+		categoriesViewData.add(new CategoryDataModel("General", Glyph.CUBES, categoryGeneralController.getContent()));
+		categoriesViewData.add(new CategoryDataModel("Input", Glyph.SIGN_IN, categoryInputController.getContent()));
+		categoriesViewData.add(new CategoryDataModel("Output", Glyph.SIGN_OUT, categoryOutputController.getContent()));
+		categoriesViewData.add(new CategoryDataModel("Operationalizations", Glyph.GEARS,
+				categoryOperationalizationsController.getContent()));
 
 		// init and add buttons
 		runButton = new Button("Run");
@@ -60,46 +61,48 @@ public class MainPart extends {
 			savePreferences();
 			runBenchmarkCase();
 		});
-		
+
 		saveAndCloseButton = new Button("Save & Close");
 		saveAndCloseButton.setOnAction((event) -> {
 			savePreferences();
 			closeWindow();
 		});
-		
+
 		cancelButton = new Button("Cancel");
 		cancelButton.setOnAction((event) -> {
 			closeWindow();
 		});
-		
-		controller.populateButtonPane(Arrays.asList(cancelButton), Arrays.asList(saveAndCloseButton, runButton));
 
-		stage.setScene(new Scene(controller.getLayout()));
-	}
-	
-	private CategoryDataModel initCategory(String displayName, Glyph displayIcon, String fxmlResourcePath) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlResourcePath));
-		CategoryPart<BenchmarkCasePreferences> controller = loader.<CategoryPart<BenchmarkCasePreferences>>getController();
-		return new CategoryDataModel(displayName, displayIcon, loader.load());
+		populateButtonPane(Arrays.asList(cancelButton), Arrays.asList(saveAndCloseButton, runButton));
 	}
 
-	public void show() {
-		stage.setMinWidth(600.0);
-		stage.setMinHeight(200.0);
-		stage.show();
+	/**
+	 * Initializes the parts elements by binding them to a data model.
+	 * 
+	 * @param preferencesData The data model
+	 */
+	public void initData(BenchmarkCasePreferences preferencesData) {
+		super.initData(preferencesData, categoriesViewData);
+
+		categoryGeneralController.initData(preferencesData);
+		categoryInputController.initData(preferencesData);
+		categoryOutputController.initData(preferencesData);
+		categoryOperationalizationsController.initData(preferencesData);
 	}
-	
+
 	private void runBenchmarkCase() {
-		
+
 	}
 
 	private void savePreferences() {
-		
+
 	}
-	
+
+	/**
+	 * Close the window containing this part.
+	 */
 	private void closeWindow() {
-		stage.fireEvent(new WindowEvent(stage, WindowEvent.WINDOW_CLOSE_REQUEST));
-//		Window window = root.getScene().getWindow();
-//		window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
+		Window window = content.getScene().getWindow();
+		window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
 	}
 }

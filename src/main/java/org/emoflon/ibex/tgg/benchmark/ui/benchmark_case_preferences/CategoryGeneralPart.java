@@ -13,6 +13,7 @@ import javafx.util.converter.NumberStringConverter;
 
 public class CategoryGeneralPart extends CategoryPart<BenchmarkCasePreferences> {
 
+	// elements from the FXML resource
 	@FXML
 	private TextField benchmarkCaseName;
 	@FXML
@@ -35,9 +36,5 @@ public class CategoryGeneralPart extends CategoryPart<BenchmarkCasePreferences> 
 		numberOfRuns.textProperty().bindBidirectional(preferencesData.defaultTimeoutProperty(),
 				new NumberStringConverter());
 		numberOfRuns.setTextFormatter(new TextFormatter<>(new IntegerStringConverter()));
-
-		preferencesData.benchmarkCaseNameProperty().addListener(e -> {
-			System.out.println(preferencesData.getBenchmarkCaseName());
-		});
 	}
 }

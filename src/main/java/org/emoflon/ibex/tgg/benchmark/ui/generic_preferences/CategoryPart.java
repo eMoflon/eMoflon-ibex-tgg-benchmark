@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.ui.generic_preferences;
 import java.io.IOException;
 
 import org.controlsfx.validation.ValidationSupport;
+import org.emoflon.ibex.tgg.benchmark.ui.Part;
 
 /**
  * CategoryPart is the abstract base class for categories GUI parts used in

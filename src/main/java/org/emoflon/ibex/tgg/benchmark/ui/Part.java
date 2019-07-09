@@ -1,4 +1,4 @@
-package org.emoflon.ibex.tgg.benchmark.ui.generic_preferences;
+package org.emoflon.ibex.tgg.benchmark.ui;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +28,7 @@ public abstract class Part<T> {
 	public Part(String resourcePath) throws IOException {
 		// resolve the resource path
 		this.resourcePath = getClass().getResource(resourcePath);
-		if (resourcePath == null)
+		if (this.resourcePath == null)
 			throw new IOException(String.format("Resource not found: '%s'", resourcePath));
 
 		// load the FXML resource
