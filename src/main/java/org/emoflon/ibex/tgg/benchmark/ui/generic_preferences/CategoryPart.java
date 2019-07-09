@@ -6,7 +6,8 @@ import org.controlsfx.validation.ValidationSupport;
 
 /**
  * CategoryPart is the abstract base class for categories GUI parts used in
- * GenericPreferencesPart. It loads a FXML resource and acts as its controller.
+ * {@link GenericPreferencesPart}. It loads a FXML resource and acts as its
+ * controller.
  *
  * @author Andre Lehmann
  * @version 1.0
@@ -18,7 +19,7 @@ public abstract class CategoryPart<T> extends Part {
 	protected T preferencesData;
 
 	/**
-	 * Constructor for CategoryPart
+	 * Constructor for {@link CategoryPart}.
 	 * 
 	 * @param resourcePath
 	 * @throws IOException

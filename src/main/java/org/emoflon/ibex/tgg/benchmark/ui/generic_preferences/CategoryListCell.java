@@ -9,7 +9,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 
 /**
- * CategoryListCell represents a custom ListCell for the category ListView.
+ * CategoryListCell represents a custom {@link ListCell} for the category
+ * ListView.
  *
  * @author Andre Lehmann
  * @version 1.0
@@ -23,7 +24,7 @@ public class CategoryListCell extends ListCell<CategoryDataModel> {
 	private GlyphFont fontAwesome;
 
 	/**
-	 * Constructor for CategoryListCell
+	 * Constructor for {@link CategoryListCell}.
 	 */
 	public CategoryListCell() {
 		nameLabel = new Label();

@@ -38,7 +38,7 @@ public class GenericPreferencesPart<T> extends Part<T> {
 	private ListView<CategoryDataModel> categories;
 
 	/**
-	 * Constructor for GenericPreferencesPart
+	 * Constructor for {@link GenericPreferencesPart}.
 	 * 
 	 * @throws IOException if the FXML resource couldn't be found
 	 */

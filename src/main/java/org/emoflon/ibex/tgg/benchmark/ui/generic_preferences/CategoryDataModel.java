@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 
 /**
  * CategoryDataModel represents the data model for categories used in the
- * GenericPreferencesPart.
+ * {@link GenericPreferencesPart}.
  *
  * @author Andre Lehmann
  * @version 1.0
@@ -19,7 +19,7 @@ public class CategoryDataModel {
 	private Parent content;
 
 	/**
-	 * Constructor for CategoryDataModel
+	 * Constructor for {@link CategoryDataModel}.
 	 * 
 	 * @param displayName The display name for the category
 	 * @param displayIcon The fontawesome icon for the category

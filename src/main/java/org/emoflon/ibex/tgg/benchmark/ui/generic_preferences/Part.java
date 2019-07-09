@@ -10,9 +10,9 @@ import javafx.scene.Parent;
  * Part is the abstract base class for GUI FXML parts. It loads a FXML resource
  * and acts as its controller.
  *
- * @author  Andre Lehmann
+ * @author Andre Lehmann
  * @version 1.0
- * @since   2019-07-09
+ * @since 2019-07-09
  */
 public abstract class Part<T> {
 
@@ -20,7 +20,7 @@ public abstract class Part<T> {
 	protected URL resourcePath;
 
 	/**
-	 * Constructor for Part
+	 * Constructor for {@link Part}.
 	 * 
 	 * @param resourcePath The path of the FXML resource
 	 * @throws IOException if the FXML resource couldn't be found
