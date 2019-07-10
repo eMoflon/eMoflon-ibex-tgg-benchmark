@@ -1,8 +1,14 @@
 package org.emoflon.ibex.tgg.benchmark.tests.gui;
 
+import java.util.Random;
+
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts.TGGBenchmarkView;
+import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts.TGGBenchmarkViewPart;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -32,8 +38,9 @@ public class BenchmarkCasesTableView extends Application {
 			mainLayout.setTop(buttonPane);
 			
 			// initialize table view
-			TGGBenchmarkView tggBenchmarkView = new TGGBenchmarkView();
-			Parent tableView = (Parent) tggBenchmarkView.getPanel();
+			TGGBenchmarkViewPart tggBenchmarkViewPart = new TGGBenchmarkViewPart();
+			tggBenchmarkViewPart.initData(generateData(10));
+			Parent tableView = tggBenchmarkViewPart.getContent();
 			mainLayout.setCenter(tableView);
 			
 			// display the scene
@@ -50,5 +57,24 @@ public class BenchmarkCasesTableView extends Application {
 	
 	public static void main(String[] args) {
 		launch(args);
+	}
+	
+	/**
+	 * TODO: remove function
+	 * 
+	 * @param count
+	 * @return
+	 */
+	private ObservableList<BenchmarkCasePreferences> generateData(int count) {
+		ObservableList<BenchmarkCasePreferences> data = FXCollections.observableArrayList();
+
+		for (int i = 0; i < count; i++) {
+			BenchmarkCasePreferences bcp = new BenchmarkCasePreferences();
+			bcp.setBenchmarkCaseName("Benchmark Case " + i);
+			bcp.setMarkedForExecution(new Random().nextBoolean());
+			data.add(bcp);
+		}
+
+		return data;
 	}
 }

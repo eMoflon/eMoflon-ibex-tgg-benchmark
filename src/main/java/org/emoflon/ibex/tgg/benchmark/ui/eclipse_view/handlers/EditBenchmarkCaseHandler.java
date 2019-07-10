@@ -7,13 +7,13 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
-import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts.TGGBenchmarkView.BenchmarkCaseTableView;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 
 public class EditBenchmarkCaseHandler {
 
 	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell s, BenchmarkCaseTableView table) {
-		System.out.println(table);
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell s, BenchmarkCasePreferences bcp) {
+		System.out.println(bcp);
 		
 		System.out.println("Nothings here yet");
 	}
