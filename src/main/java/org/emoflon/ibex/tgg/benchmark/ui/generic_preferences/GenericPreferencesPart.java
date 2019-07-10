@@ -23,7 +23,7 @@ import javafx.scene.layout.VBox;
  * @version 1.0
  * @since 2019-07-09
  */
-public class GenericPreferencesPart<T> extends Part<T> {
+public class GenericPreferencesPart<T> extends Part {
 
 	private ObservableList<CategoryDataModel> categoriesViewData;
 	protected T preferencesData;

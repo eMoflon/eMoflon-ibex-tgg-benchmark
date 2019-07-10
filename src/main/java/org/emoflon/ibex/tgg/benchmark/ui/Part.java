@@ -14,10 +14,15 @@ import javafx.scene.Parent;
  * @version 1.0
  * @since 2019-07-09
  */
-public abstract class Part<T> {
+public abstract class Part {
 
 	protected Parent content;
 	protected URL resourcePath;
+
+	/**
+	 * Constructor for {@link Part}.
+	 */
+	public Part() {	}
 
 	/**
 	 * Constructor for {@link Part}.
