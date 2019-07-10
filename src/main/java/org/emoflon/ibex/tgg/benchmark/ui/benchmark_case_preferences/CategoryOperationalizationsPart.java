@@ -105,7 +105,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
 			}
 			private void changeSelection(ChoiceBox<String> cbx) {
 				int selectionIndex = cbx.getSelectionModel().getSelectedIndex();
-				System.out.println(cbx.getChildrenUnmodifiable().indexOf(selectionIndex));
+				System.out.println(cbx.getChildrenUnmodifiable().get(selectionIndex));
 			}
 		});
 

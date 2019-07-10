@@ -5,12 +5,6 @@ import java.io.IOException;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.util.converter.IntegerStringConverter;
-import javafx.util.converter.NumberStringConverter;
-
 public class CategoryOutputPart extends CategoryPart<BenchmarkCasePreferences> {
 
 	// elements from the FXML resource

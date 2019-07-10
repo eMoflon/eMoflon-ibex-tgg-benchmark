@@ -7,22 +7,18 @@ import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.util.converter.IntegerStringConverter;
-import javafx.util.converter.NumberStringConverter;
 
 public class CategoryInputPart extends CategoryPart<BenchmarkCasePreferences> {
 
 	// elements from the FXML resource
 	@FXML
-	private ChoiceBox inputSourceMetaModel;
+	private ChoiceBox<String> inputSourceMetaModel;
 	@FXML
-	private ChoiceBox inputTargetMetaModel;
+	private ChoiceBox<String> inputTargetMetaModel;
 	@FXML
-	private ChoiceBox inputSourcePackage;
+	private ChoiceBox<String> inputSourcePackage;
 	@FXML
-	private ChoiceBox inputTargetPackage;
+	private ChoiceBox<String> inputTargetPackage;
 
 	public CategoryInputPart() throws IOException {
 		super("../../resources/fxml/benchmark_case_preferences/CategoryInput.fxml");
