@@ -11,18 +11,18 @@ import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 
 public class EditBenchmarkCaseHandler {
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell s, BenchmarkCasePreferences bcp) {
-		System.out.println(bcp);
-		
-		System.out.println("Nothings here yet");
-	}
-	
-	@CanExecute
-	public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection) {
-		if (selection != null) {
-			System.out.println("Slected: " + selection.getClass().getName());
-		}
-		return true;
-	}
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell s, BenchmarkCasePreferences bcp) {
+        System.out.println(bcp);
+        
+        System.out.println("Nothings here yet");
+    }
+    
+    @CanExecute
+    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection) {
+        if (selection != null) {
+            System.out.println("Slected: " + selection.getClass().getName());
+        }
+        return true;
+    }
 }

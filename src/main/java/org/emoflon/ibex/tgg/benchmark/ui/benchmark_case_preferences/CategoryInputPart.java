@@ -10,22 +10,22 @@ import javafx.scene.control.ChoiceBox;
 
 public class CategoryInputPart extends CategoryPart<BenchmarkCasePreferences> {
 
-	// elements from the FXML resource
-	@FXML
-	private ChoiceBox<String> inputSourceMetaModel;
-	@FXML
-	private ChoiceBox<String> inputTargetMetaModel;
-	@FXML
-	private ChoiceBox<String> inputSourcePackage;
-	@FXML
-	private ChoiceBox<String> inputTargetPackage;
+    // elements from the FXML resource
+    @FXML
+    private ChoiceBox<String> inputSourceMetaModel;
+    @FXML
+    private ChoiceBox<String> inputTargetMetaModel;
+    @FXML
+    private ChoiceBox<String> inputSourcePackage;
+    @FXML
+    private ChoiceBox<String> inputTargetPackage;
 
-	public CategoryInputPart() throws IOException {
-		super("../../resources/fxml/benchmark_case_preferences/CategoryInput.fxml");
-	}
+    public CategoryInputPart() throws IOException {
+        super("../../resources/fxml/benchmark_case_preferences/CategoryInput.fxml");
+    }
 
-	@Override
-	public void initData(BenchmarkCasePreferences prefsData) {
-		super.initData(prefsData);
-	}
+    @Override
+    public void initData(BenchmarkCasePreferences prefsData) {
+        super.initData(prefsData);
+    }
 }

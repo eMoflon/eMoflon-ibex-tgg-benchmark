@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Shell;
 
 public class AddBenchmarkCaseHandler {
 
-	@Execute
-	public void execute(IWorkbench workbench, @Named(IServiceConstants.ACTIVE_SHELL) Shell s) {
-//		workbench.close();
-		
-	}
+    @Execute
+    public void execute(IWorkbench workbench, @Named(IServiceConstants.ACTIVE_SHELL) Shell s) {
+//        workbench.close();
+        
+    }
 }

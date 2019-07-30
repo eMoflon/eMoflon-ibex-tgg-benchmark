@@ -8,6 +8,8 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import org.emoflon.ibex.tgg.benchmark.ui.components.IntegerTextField?>
+<?import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField?>
 
 <VBox fx:id="categoryGeneral" stylesheets="@../../css/preference-category.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -22,9 +24,9 @@
                         <Label text="Benchmark Case Name" wrapText="true" />
                         <TextField fx:id="benchmarkCaseName" GridPane.columnIndex="1" />
                         <Label text="Default Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TextField fx:id="defaultTimeout" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TimeTextField fx:id="defaultTimeout" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Number Of Runs" GridPane.rowIndex="2" wrapText="true" />
-                        <TextField fx:id="numberOfRuns" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <IntegerTextField fx:id="numberOfRuns" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                      </children>
                      <columnConstraints>
                         <ColumnConstraints minWidth="130.0" />

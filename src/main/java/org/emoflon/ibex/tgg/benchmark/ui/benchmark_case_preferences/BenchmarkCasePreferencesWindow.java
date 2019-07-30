@@ -11,24 +11,26 @@ import javafx.stage.Stage;
 
 public class BenchmarkCasePreferencesWindow {
 
-	private Stage stage;
-	private MainPart mainPart;
+    private final Stage stage;
+    private final MainPart mainPart;
 
-	public BenchmarkCasePreferencesWindow(BenchmarkCasePreferences bcp) throws IOException {
-		// prepare stage
-		stage = new Stage();
-		stage.titleProperty().bind(Bindings.concat("Benchmark Case Preferences: ", bcp.benchmarkCaseNameProperty()));
-		stage.initModality(Modality.APPLICATION_MODAL);
+    public BenchmarkCasePreferencesWindow(BenchmarkCasePreferences bcp) throws IOException {
+        // prepare stage
+        stage = new Stage();
+        stage.titleProperty().bind(Bindings.concat("Benchmark Case Preferences: ", bcp.benchmarkCaseNameProperty()));
+        stage.initModality(Modality.APPLICATION_MODAL);
 
-		// load main part
-		mainPart = new MainPart();
-		mainPart.initData(bcp);
-		stage.setScene(new Scene(mainPart.getContent()));
-	}
+        // load main part
+        mainPart = new MainPart();
+        mainPart.initData(bcp);
+        stage.setScene(new Scene(mainPart.getContent()));
+    }
 
-	public void show() {
-		stage.setMinWidth(600.0);
-		stage.setMinHeight(200.0);
-		stage.show();
-	}
+    public void show() {
+        stage.setMinWidth(600.0);
+        stage.setMinHeight(300.0);
+        stage.setWidth(870.0);
+        stage.setHeight(600.0);
+        stage.show();
+    }
 }

@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.ui.generic_preferences;
 import java.io.IOException;
 
 import org.controlsfx.validation.ValidationSupport;
-import org.emoflon.ibex.tgg.benchmark.ui.Part;
+import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
 
 /**
  * CategoryPart is the abstract base class for categories GUI parts used in
@@ -16,28 +16,28 @@ import org.emoflon.ibex.tgg.benchmark.ui.Part;
  */
 public abstract class CategoryPart<T> extends Part {
 
-	protected ValidationSupport validationSupport;
-	protected T preferencesData;
+    protected ValidationSupport validationSupport;
+    protected T preferencesData;
 
-	/**
-	 * Constructor for {@link CategoryPart}.
-	 * 
-	 * @param resourcePath
-	 * @throws IOException
-	 */
-	public CategoryPart(String resourcePath) throws IOException {
-		super(resourcePath);
+    /**
+     * Constructor for {@link CategoryPart}.
+     * 
+     * @param resourcePath
+     * @throws IOException
+     */
+    public CategoryPart(String resourcePath) throws IOException {
+        super(resourcePath);
 
-		// enable validation support
-		this.validationSupport = new ValidationSupport();
-	}
+        // enable validation support
+        this.validationSupport = new ValidationSupport();
+    }
 
-	/**
-	 * Initializes the parts elements by binding them to a data model.
-	 * 
-	 * @param preferencesData The data model
-	 */
-	public void initData(T preferencesData) {
-		this.preferencesData = preferencesData;
-	}
+    /**
+     * Initializes the parts elements by binding them to a data model.
+     * 
+     * @param preferencesData The data model
+     */
+    public void initData(T preferencesData) {
+        this.preferencesData = preferencesData;
+    }
 }

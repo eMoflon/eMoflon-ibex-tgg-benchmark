@@ -14,41 +14,41 @@ import javafx.scene.Parent;
  */
 public class CategoryDataModel {
 
-	private String displayName;
-	private Glyph displayIcon;
-	private Parent content;
+    private String displayName;
+    private Glyph displayIcon;
+    private Parent content;
 
-	/**
-	 * Constructor for {@link CategoryDataModel}.
-	 * 
-	 * @param displayName The display name for the category
-	 * @param displayIcon The fontawesome icon for the category
-	 * @param content     The GUI content of the category
-	 */
-	public CategoryDataModel(String displayName, Glyph displayIcon, Parent content) {
-		this.displayName = displayName;
-		this.displayIcon = displayIcon;
-		this.content = content;
-	}
+    /**
+     * Constructor for {@link CategoryDataModel}.
+     * 
+     * @param displayName The display name for the category
+     * @param displayIcon The fontawesome icon for the category
+     * @param content     The GUI content of the category
+     */
+    public CategoryDataModel(String displayName, Glyph displayIcon, Parent content) {
+        this.displayName = displayName;
+        this.displayIcon = displayIcon;
+        this.content = content;
+    }
 
-	/**
-	 * @return the displayName
-	 */
-	public String getDisplayName() {
-		return displayName;
-	}
+    /**
+     * @return the displayName
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
 
-	/**
-	 * @return the displayIcon
-	 */
-	public Glyph getDisplayIcon() {
-		return displayIcon;
-	}
+    /**
+     * @return the displayIcon
+     */
+    public Glyph getDisplayIcon() {
+        return displayIcon;
+    }
 
-	/**
-	 * @return the content
-	 */
-	public Parent getContent() {
-		return content;
-	}
+    /**
+     * @return the content
+     */
+    public Parent getContent() {
+        return content;
+    }
 }

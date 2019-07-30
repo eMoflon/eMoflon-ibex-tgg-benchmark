@@ -8,8 +8,8 @@ import org.eclipse.swt.widgets.Shell;
 
 public class DeleteBenchmarkCaseHandler {
 
-	@Execute
-	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell s) {
-		System.out.println("Nothings here yet");
-	}
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell s) {
+        System.out.println("Nothings here yet");
+    }
 }

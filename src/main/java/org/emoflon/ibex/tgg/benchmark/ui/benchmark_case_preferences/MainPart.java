@@ -2,8 +2,10 @@ package org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
+import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
@@ -23,86 +25,109 @@ import javafx.stage.WindowEvent;
  */
 public class MainPart extends GenericPreferencesPart<BenchmarkCasePreferences> {
 
-	private ObservableList<CategoryDataModel> categoriesViewData;
-	private Button cancelButton;
-	private Button runButton;
-	private Button saveAndCloseButton;
+    private final Button cancelButton;
+    private final Button runButton;
+    private final Button saveAndCloseButton;
 
-	private CategoryGeneralPart categoryGeneralController;
-	private CategoryInputPart categoryInputController;
-	private CategoryOutputPart categoryOutputController;
-	private CategoryOperationalizationsPart categoryOperationalizationsController;
+    private final CategoryGeneralPart categoryGeneralController;
+    private final CategoryInputPart categoryInputController;
+    private final CategoryOutputPart categoryOutputController;
+    private final CategoryOperationalizationsPart categoryOperationalizationsController;
 
-	/**
-	 * Constructor for {@link MainPart}.
-	 * 
-	 * @throws IOException if the FXML resources could not be found
-	 */
-	public MainPart() throws IOException {
-		super();
+    private final Core pluginCore;
+    
+    private ObservableList<CategoryDataModel> categoriesViewData;
 
-		// get sub parts
-		categoryGeneralController = new CategoryGeneralPart();
-		categoryInputController = new CategoryInputPart();
-		categoryOutputController = new CategoryOutputPart();
-		categoryOperationalizationsController = new CategoryOperationalizationsPart();
+    private BenchmarkCasePreferences preferencesData;
+    private BenchmarkCasePreferences preferencesDataWorkingCopy;
 
-		// init categories
-		categoriesViewData = FXCollections.observableArrayList();
-		categoriesViewData.add(new CategoryDataModel("General", Glyph.CUBES, categoryGeneralController.getContent()));
-		categoriesViewData.add(new CategoryDataModel("Input", Glyph.SIGN_IN, categoryInputController.getContent()));
-		categoriesViewData.add(new CategoryDataModel("Output", Glyph.SIGN_OUT, categoryOutputController.getContent()));
-		categoriesViewData.add(new CategoryDataModel("Operationalizations", Glyph.GEARS,
-				categoryOperationalizationsController.getContent()));
+    /**
+     * Constructor for {@link MainPart}.
+     * 
+     * @throws IOException if the FXML resources could not be found
+     */
+    public MainPart() throws IOException {
+        super();
 
-		// init and add buttons
-		runButton = new Button("Run");
-		runButton.setOnAction((event) -> {
-			savePreferences();
-			runBenchmarkCase();
-		});
+        // get plugin core object
+        pluginCore = Core.getInstance();
 
-		saveAndCloseButton = new Button("Save & Close");
-		saveAndCloseButton.setOnAction((event) -> {
-			savePreferences();
-			closeWindow();
-		});
+        // get sub parts
+        categoryGeneralController = new CategoryGeneralPart();
+        categoryInputController = new CategoryInputPart();
+        categoryOutputController = new CategoryOutputPart();
+        categoryOperationalizationsController = new CategoryOperationalizationsPart();
 
-		cancelButton = new Button("Cancel");
-		cancelButton.setOnAction((event) -> {
-			closeWindow();
-		});
+        // init categories
+        categoriesViewData = FXCollections.observableArrayList();
+        categoriesViewData.add(new CategoryDataModel("General", Glyph.CUBES, categoryGeneralController.getContent()));
+        categoriesViewData.add(new CategoryDataModel("Input", Glyph.SIGN_IN, categoryInputController.getContent()));
+        categoriesViewData.add(new CategoryDataModel("Output", Glyph.SIGN_OUT, categoryOutputController.getContent()));
+        categoriesViewData.add(new CategoryDataModel("Operationalizations", Glyph.GEARS,
+                categoryOperationalizationsController.getContent()));
 
-		populateButtonPane(Arrays.asList(cancelButton), Arrays.asList(saveAndCloseButton, runButton));
-	}
+        // init and add buttons
+        runButton = new Button("Run");
+        runButton.setOnAction((event) -> {
+            if (savePreferences()) {
+                runBenchmarkCase();
+                closeWindow();
+            }
+        });
 
-	/**
-	 * Initializes the parts elements by binding them to a data model.
-	 * 
-	 * @param preferencesData The data model
-	 */
-	public void initData(BenchmarkCasePreferences preferencesData) {
-		super.initData(preferencesData, categoriesViewData);
+        saveAndCloseButton = new Button("Save & Close");
+        saveAndCloseButton.setOnAction((event) -> {
+            if (savePreferences()) {
+                closeWindow();
+            }
+        });
 
-		categoryGeneralController.initData(preferencesData);
-		categoryInputController.initData(preferencesData);
-		categoryOutputController.initData(preferencesData);
-		categoryOperationalizationsController.initData(preferencesData);
-	}
+        cancelButton = new Button("Cancel");
+        cancelButton.setOnAction((event) -> {
+            closeWindow();
+        });
 
-	private void runBenchmarkCase() {
+        populateButtonPane(Arrays.asList(cancelButton), Arrays.asList(saveAndCloseButton, runButton));
+    }
 
-	}
+    /**
+     * Initializes the parts elements by binding them to a data model. This
+     * needs to be done after an instance of this class has been created,
+     * because only then will the @FXML elements be populated from the FXML
+     * resource.
+     * 
+     * @param preferencesData The data model
+     */
+    public void initData(BenchmarkCasePreferences preferencesData) {
+        this.preferencesData = preferencesData; 
+        preferencesDataWorkingCopy = new BenchmarkCasePreferences(preferencesData);
+        super.initData(preferencesDataWorkingCopy, categoriesViewData);
 
-	private void savePreferences() {
+        categoryGeneralController.initData(preferencesDataWorkingCopy);
+        categoryInputController.initData(preferencesDataWorkingCopy);
+        categoryOutputController.initData(preferencesDataWorkingCopy);
+        categoryOperationalizationsController.initData(preferencesDataWorkingCopy);
+    }
 
-	}
+    private void runBenchmarkCase() {
+        pluginCore.scheduleJobs(Arrays.asList(preferencesData));
+    }
 
-	/**
-	 * Close the window containing this part.
-	 */
-	private void closeWindow() {
-		Window window = content.getScene().getWindow();
-		window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
-	}
+    private boolean savePreferences() {
+        if (preferencesDataWorkingCopy != null) {
+            // write the changes back
+            preferencesData.setChanges(preferencesDataWorkingCopy);
+            
+            return pluginCore.savePreferences();
+        }
+        return false;
+    }
+
+    /**
+     * Close the window containing this part.
+     */
+    private void closeWindow() {
+        Window window = content.getScene().getWindow();
+        window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
+    }
 }

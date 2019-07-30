@@ -18,38 +18,38 @@ import javafx.scene.layout.HBox;
  */
 public class CategoryListCell extends ListCell<CategoryDataModel> {
 
-	private HBox layout;
-	private Label nameLabel;
-	private Label icon;
-	private GlyphFont fontAwesome;
+    private HBox layout;
+    private Label nameLabel;
+    private Label icon;
+    private GlyphFont fontAwesome;
 
-	/**
-	 * Constructor for {@link CategoryListCell}.
-	 */
-	public CategoryListCell() {
-		nameLabel = new Label();
-		icon = new Label();
+    /**
+     * Constructor for {@link CategoryListCell}.
+     */
+    public CategoryListCell() {
+        nameLabel = new Label();
+        icon = new Label();
 
-		layout = new HBox();
-		layout.setPadding(new Insets(8.0));
-		layout.setSpacing(14.0);
-		layout.getChildren().addAll(icon, nameLabel);
+        layout = new HBox();
+        layout.setPadding(new Insets(8.0));
+        layout.setSpacing(14.0);
+        layout.getChildren().addAll(icon, nameLabel);
 
-		fontAwesome = GlyphFontRegistry.font("FontAwesome");
-	}
+        fontAwesome = GlyphFontRegistry.font("FontAwesome");
+    }
 
-	@Override
-	protected void updateItem(CategoryDataModel prefCat, boolean empty) {
-		super.updateItem(prefCat, empty);
-		setText(null);
+    @Override
+    protected void updateItem(CategoryDataModel prefCat, boolean empty) {
+        super.updateItem(prefCat, empty);
+        setText(null);
 
-		if (empty || prefCat == null) {
-			setGraphic(null);
-		} else {
-			nameLabel.setText(prefCat.getDisplayName());
-			icon.setGraphic(fontAwesome.create(prefCat.getDisplayIcon()));
-			setGraphic(layout);
-		}
-	}
+        if (empty || prefCat == null) {
+            setGraphic(null);
+        } else {
+            nameLabel.setText(prefCat.getDisplayName());
+            icon.setGraphic(fontAwesome.create(prefCat.getDisplayIcon()));
+            setGraphic(layout);
+        }
+    }
 
 }

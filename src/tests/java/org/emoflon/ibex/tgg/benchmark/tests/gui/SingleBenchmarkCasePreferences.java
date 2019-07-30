@@ -9,17 +9,17 @@ import javafx.stage.Stage;
 
 
 public class SingleBenchmarkCasePreferences extends Application {
-	
-	@Override
-	public void start(Stage primaryStage) throws IOException {
-		primaryStage.setTitle("Benchmark Cases Table View");
-		
-		BenchmarkCasePreferences bcp = new BenchmarkCasePreferences();
-		BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(bcp);
-		bcpw.show();
-	}
-	
-	public static void main(String[] args) {
-		launch(args);
-	}
+    
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        primaryStage.setTitle("Benchmark Cases Table View");
+        
+        BenchmarkCasePreferences bcp = new BenchmarkCasePreferences();
+        BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(bcp);
+        bcpw.show();
+    }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
