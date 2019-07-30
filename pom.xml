@@ -7,6 +7,11 @@
 
   <properties>
     <tycho-version>1.4.0</tycho-version>
+    <controlsfx-version>11.0.0</controlsfx-version>
+    <json-version>1.1.4</json-version>
+    <reflections-version>0.9.11</reflections-version>
+    <slf4j-api-version>1.7.26</slf4j-api-version>
+    <logback-version>1.2.3</logback-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -66,7 +71,7 @@
     <dependency>
       <groupId>org.controlsfx</groupId>
       <artifactId>controlsfx</artifactId>
-      <version>11.0.0</version>
+      <version>${controlsfx-version}</version>
       <!-- <executions>
           <execution>
             <id>copy-dependencies</id>
@@ -87,7 +92,7 @@
     <dependency>
       <groupId>javax.json</groupId>
       <artifactId>javax.json-api</artifactId>
-      <version>1.1</version>
+      <version>${json-version}</version>
       <!-- <executions>
           <execution>
             <id>copy-dependencies</id>
@@ -103,27 +108,36 @@
             </configuration>
           </execution>
         </executions> -->
-  </dependency>
-  
-  <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>javax.json</artifactId>
-      <version>1.1</version>
-      <!-- <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions> -->
-  </dependency>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>javax.json</artifactId>
+	    <version>${json-version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.glassfish</groupId>
+	    <artifactId>javax.json</artifactId>
+	    <version>${json-version}</version>
+	</dependency>
+	
+	<dependency>
+	   <groupId>org.reflections</groupId>
+	   <artifactId>reflections</artifactId>
+	   <version>${reflections-version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-api</artifactId>
+	    <version>${slf4j-api-version}</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-classic</artifactId>
+	    <version>${logback-version}</version>
+	</dependency>
   </dependencies>
 </project>
