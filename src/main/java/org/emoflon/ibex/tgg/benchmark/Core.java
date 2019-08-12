@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -26,8 +25,25 @@ import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.ui.internal.workbench.E4Workbench;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.osgi.service.datalocation.Location;
+import org.emoflon.ibex.tgg.Utils;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
+import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
+import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
+import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
+import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,208 +51,150 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Core
+ * Core class for TGG Benchmark plugin.
  */
 public class Core {
 
-    private final String version = "0.1.0";
-    
+    public static final String VERSION = "0.1.0";
+    public static final String PLUGIN_NAME = "TGG-Benchmark";
+
+    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+
     private static Core instance;
-    private final ObservableList<BenchmarkCasePreferences> benchmarkCasePreferencesList;
-    private Path preferencesFilePath = Paths.get("preferences.json").toAbsolutePath();
+    private final ObservableList<EclipseProject> tggProjects;
 
-    private Core() {
+    private PluginPreferences pluginPreferences;
+
+    private final Path pluginPreferencesFilePath;
+
+    private final IEclipseWorkspace workspace;
+
+    private Core(IEclipseWorkspace workspace) {
         super();
-        
-        System.out.println("Core constructor");
-        
-        benchmarkCasePreferencesList = FXCollections.observableArrayList();
 
-        loadPreferences();
-//        benchmarkCasePreferencesList = generateData(10);
-
-        savePreferences();
+        this.workspace = workspace;
+        this.tggProjects = FXCollections.observableArrayList();
+        this.pluginPreferencesFilePath = workspace.getPluginStateLocation().resolve("tgg-benchmark-plugin.json");
     }
 
-    public void loadPreferences() {
-        if (Files.exists(preferencesFilePath)) {
-            JsonObject prefsJsonObject;
-            try (InputStream in = Files.newInputStream(preferencesFilePath)) {
-                //prefFileContent = new String(Files.readAllBytes(preferencesFilePath));
-                try (JsonReader reader = Json.createReader(in)) {
-                    prefsJsonObject = reader.readObject();
-                } catch (JsonException e) {
-                    // TODO: handle exception
-                    System.err.println(e);
-                    return;
-                } catch (Exception e) {
-                    // TODO: handle exception
-                    System.err.println(e);
-                    return;
-                }
-            } catch (IOException e) {
-                // TODO: handle exception
-                System.err.println(e);
-                return;
-            }
-            
-            String fileVersion = prefsJsonObject.getString("version", version);
-            JsonObject input = prefsJsonObject.getJsonObject("input");
-            JsonObject output = prefsJsonObject.getJsonObject("output");
+    public void loadPluginPreferences() throws JsonException, IOException {
+        if (Files.exists(pluginPreferencesFilePath)) {
+            LOG.debug("Load plugin preferences from file '{}'", pluginPreferencesFilePath);
 
-            JsonArray benchmarkCases = prefsJsonObject.getJsonArray("benchmarkCases");
-            if (benchmarkCases != null) {
-                for (JsonValue benchmarkCase : benchmarkCases) {
-                    if (benchmarkCase instanceof JsonObject) {
-                        BenchmarkCasePreferences bcp = new BenchmarkCasePreferences();
-                        bcp.loadFromJSON((JsonObject)benchmarkCase);
-                        benchmarkCasePreferencesList.add(bcp);
-                    } else {
-                        System.err.println("Invalid benchmark case configuration");
-                    }
-                }
+            JsonObject prefsJsonObject = null;
+            try {
+                prefsJsonObject = JsonUtils.loadJsonFile(pluginPreferencesFilePath);
+            } catch (JsonException | IOException e) {
+                LOG.error("Failed to load plugin preferences from file '{}'", pluginPreferencesFilePath);
+                throw e;
             }
-            
+
+            // used in case of different versions of the file format
+            String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
+
+            pluginPreferences = new PluginPreferences(prefsJsonObject);
+
         } else {
-            // save newly created config file
-            savePreferences();
+            LOG.info("Create default preferences for plugin");
+            pluginPreferences = new PluginPreferences();
+            savePluginPreferences();
         }
-        
+
+        tggProjects.addAll(workspace.getTGGProjects());
     }
-    
-    public boolean savePreferences() {
-        JsonArrayBuilder benchmarkCasesArrayBuilder = Json.createArrayBuilder();
-        for (BenchmarkCasePreferences benchmarkCase : benchmarkCasePreferencesList) {
-            benchmarkCasesArrayBuilder.add(benchmarkCase.getAsJSON());
-        }
-        
-        JsonObject prefsJsonObject = Json.createObjectBuilder()
-            .add("version", version)
-            .add("benchmarkCases", benchmarkCasesArrayBuilder.build()).build();
-                
-        try {
-            Files.createDirectories(preferencesFilePath.getParent());
-        } catch (FileAlreadyExistsException e) {
-            // ignore
-        } catch (Exception e) {
-            showSaveErrorDialog(String.format("The directory '%s' could not be created: %s", preferencesFilePath.getParent(), e.getMessage()));
-            System.err.println(e);
-            return false;
-        }
-        
-        Map<String, Object> properties = new HashMap<>(1);
-        properties.put(JsonGenerator.PRETTY_PRINTING, true);
-        Path tmpFile = Paths.get(preferencesFilePath + ".tmp");
-        try (OutputStream out = Files.newOutputStream(tmpFile, StandardOpenOption.CREATE_NEW)) {
-            // write tmp file
-            JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
-            JsonWriter jsonWriter = writerFactory.createWriter(out);
-            jsonWriter.writeObject(prefsJsonObject);
-            jsonWriter.close();
-            
-            // replace old preferences file
-            Files.move(tmpFile, preferencesFilePath, StandardCopyOption.REPLACE_EXISTING);
-            
-        } catch (IOException e) {
-            showSaveErrorDialog(e.getMessage());
-            System.err.println(e);
-        }
-        
-        // save successful
-        return true;
+
+    public void savePluginPreferences() {
+        if (pluginPreferences == null)
+            return;
+
+        Runnable saveAction = () -> {
+            LOG.debug("Save plugin preferences to file '{}'", pluginPreferencesFilePath);
+
+            JsonObject prefsJsonObject = pluginPreferences.toJson();
+            JsonUtils.addKey(prefsJsonObject, "version", Json.createValue(Core.VERSION));
+
+            try {
+                JsonUtils.saveJsonToFile(prefsJsonObject, pluginPreferencesFilePath);
+            } catch (IOException e) {
+                LOG.error("Couldn't save plugin preferences to file '{}'. Reason: {}", pluginPreferencesFilePath, e.getMessage());
+            }
+        };
+
+        AsyncActions.runUniqueAction(saveAction, 30000, pluginPreferencesFilePath.toString());
     }
-    
+
     public void addBenchmarkCase() {
         // try {
-        //     BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(bcp);
-        //     bcpw.show();
+        // BenchmarkCasePreferencesWindow bcpw = new
+        // BenchmarkCasePreferencesWindow(bcp);
+        // bcpw.show();
         // } catch (IOException e) {
-        //     System.err.println("Error creating window: " + e.getMessage());
+        // System.err.println("Error creating window: " + e.getMessage());
         // }
     }
 
-    public void editBenchmarkCase(BenchmarkCasePreferences bcp) {
+    public void editBenchmarkCase(EclipseProject project) {
         try {
-            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(bcp);
+            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(project);
             bcpw.show();
         } catch (IOException e) {
-            System.err.println("Error creating window: " + e.getMessage());
+            LOG.error("Error creating window: " + e.getMessage());
         }
     }
 
-    public void deleteBenchmarkCase(BenchmarkCasePreferences bcp) {
-        Alert confirmation = new Alert(AlertType.CONFIRMATION);
-        confirmation.setTitle("Delete Benchmark Case");
-        confirmation.setHeaderText("Do you really want to delete this Benchmark Case?");
-        confirmation.setContentText(bcp.getBenchmarkCaseName());
+    // public void deleteBenchmarkCase(BenchmarkCasePreferences bcp) {
+    //     Alert confirmation = new Alert(AlertType.CONFIRMATION);
+    //     confirmation.setTitle("Delete Benchmark Case");
+    //     confirmation.setHeaderText("Do you really want to delete this Benchmark Case?");
+    //     confirmation.setContentText(bcp.getBenchmarkCaseName());
 
-        Optional<ButtonType> option = confirmation.showAndWait();
-        if (option.get() == ButtonType.OK) {
-            benchmarkCasePreferencesList.remove(bcp);
-            savePreferences();
-            System.out.println("Deleting Benchmark Case: " + bcp.getBenchmarkCaseName());
+    //     Optional<ButtonType> option = confirmation.showAndWait();
+    //     if (option.get() == ButtonType.OK) {
+    //         benchmarkCasePreferencesList.remove(bcp);
+    //         savePluginPreferences();
+    //         System.out.println("Deleting Benchmark Case: " + bcp.getBenchmarkCaseName());
+    //     }
+    // }
+
+    public static Core createInstance(IEclipseWorkspace workspace) throws JsonException, IOException {
+        if (Core.instance == null) {
+            Core.instance = new Core(workspace);
         }
-    }
-    
-    private void showSaveErrorDialog(String text) {
-        showErrorDialog("Error saving preferences of TGG Benchmark module",
-                "Could not save preferences of TGG Benchmark", 
-                text);
-    }
-    
-    private void showErrorDialog(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.ERROR);
-
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-
-        alert.showAndWait();
+        return Core.instance;
     }
     
     /**
-     * TODO: remove function
-     * 
-     * @param count
-     * @return
+     * @return the tggProjects
      */
-    private ObservableList<BenchmarkCasePreferences> generateData(int count) {
-        ObservableList<BenchmarkCasePreferences> data = FXCollections.observableArrayList();
-
-        for (int i = 0; i < count; i++) {
-            BenchmarkCasePreferences bcp = new BenchmarkCasePreferences();
-            bcp.setBenchmarkCaseName("Benchmark Case " + i);
-            bcp.setMarkedForExecution(new Random().nextBoolean());
-            data.add(bcp);
-        }
-
-        return data;
-    }
-    
-    /**
-     * @return the benchmarkCasePreferencesList
-     */
-    public ObservableList<BenchmarkCasePreferences> getBenchmarkCasePreferencesList() {
-        return benchmarkCasePreferencesList;
+    public ObservableList<EclipseProject> getTggProjects() {
+        return tggProjects;
     }
 
     /**
      * @return the instance
      */
     public static Core getInstance() {
-        if (Core.instance == null) {
-            Core.instance = new Core ();
-        }
         return Core.instance;
+    }
+    
+    public IEclipseWorkspace getWorkspace() {
+        return workspace;
     }
 
     /**
      * Schedules benchmark jobs to be exucuted.
      * 
-     * @param bcpl the benchmark cases that shall be executed
+     * @param projects the benchmark cases that shall be executed
      */
-    public void scheduleJobs(List<BenchmarkCasePreferences> bcpl) {
+    public void scheduleJobs(List<EclipseProject> projects) {
 
+    }
+
+    public PluginPreferences getPluginPreferences() {
+        return pluginPreferences;
     }
 }

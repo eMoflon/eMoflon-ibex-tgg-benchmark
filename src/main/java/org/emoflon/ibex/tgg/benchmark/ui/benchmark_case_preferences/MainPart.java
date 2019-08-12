@@ -2,16 +2,18 @@ package org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -20,10 +22,8 @@ import javafx.stage.WindowEvent;
  * MainPart is the main GUI part of the {@link BenchmarkCasePreferencesWindow}.
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-09
  */
-public class MainPart extends GenericPreferencesPart<BenchmarkCasePreferences> {
+public class MainPart extends GenericPreferencesPart {
 
     private final Button cancelButton;
     private final Button runButton;
@@ -35,10 +35,10 @@ public class MainPart extends GenericPreferencesPart<BenchmarkCasePreferences> {
     private final CategoryOperationalizationsPart categoryOperationalizationsController;
 
     private final Core pluginCore;
-    
+
     private ObservableList<CategoryDataModel> categoriesViewData;
 
-    private BenchmarkCasePreferences preferencesData;
+    private EclipseProject eclipseProject;
     private BenchmarkCasePreferences preferencesDataWorkingCopy;
 
     /**
@@ -91,36 +91,63 @@ public class MainPart extends GenericPreferencesPart<BenchmarkCasePreferences> {
     }
 
     /**
-     * Initializes the parts elements by binding them to a data model. This
-     * needs to be done after an instance of this class has been created,
-     * because only then will the @FXML elements be populated from the FXML
-     * resource.
+     * Initializes the parts elements by binding them to a data model. This needs to
+     * be done after an instance of this class has been created, because only then
+     * will the @FXML elements be populated from the FXML resource.
      * 
      * @param preferencesData The data model
      */
-    public void initData(BenchmarkCasePreferences preferencesData) {
-        this.preferencesData = preferencesData; 
-        preferencesDataWorkingCopy = new BenchmarkCasePreferences(preferencesData);
-        super.initData(preferencesDataWorkingCopy, categoriesViewData);
+    public void initData(EclipseProject eclipseProject) {
+        this.eclipseProject = eclipseProject;
+        if (eclipseProject != null) {
+            this.preferencesDataWorkingCopy = new BenchmarkCasePreferences(
+                    eclipseProject.getBenchmarkCasePreferences());
+        } else {
+            this.preferencesDataWorkingCopy = new BenchmarkCasePreferences();
+        }
 
-        categoryGeneralController.initData(preferencesDataWorkingCopy);
-        categoryInputController.initData(preferencesDataWorkingCopy);
-        categoryOutputController.initData(preferencesDataWorkingCopy);
-        categoryOperationalizationsController.initData(preferencesDataWorkingCopy);
+        initCategoriesView(categoriesViewData);
+
+        categoryGeneralController.initData(this.preferencesDataWorkingCopy);
+        categoryInputController.initData(this.preferencesDataWorkingCopy);
+        categoryOutputController.initData(this.preferencesDataWorkingCopy);
+        categoryOperationalizationsController.initData(this.preferencesDataWorkingCopy);
     }
 
+    /**
+     * Run the current open benchmark case(s).
+     */
     private void runBenchmarkCase() {
-        pluginCore.scheduleJobs(Arrays.asList(preferencesData));
+        pluginCore.scheduleJobs(Arrays.asList(eclipseProject));
     }
 
+    /**
+     * Save the preferences.
+     *
+     * @return true if saving was successfull
+     */
     private boolean savePreferences() {
         if (preferencesDataWorkingCopy != null) {
             // write the changes back
-            preferencesData.setChanges(preferencesDataWorkingCopy);
-            
-            return pluginCore.savePreferences();
+            eclipseProject.setBenchmarkCasePreferences(preferencesDataWorkingCopy);
+
+            eclipseProject.savePreferences();
+
+            // TODO: remove
+//            try {
+//                eclipseProject.savePreferences();
+//            } catch (IOException e) {
+//                Alert alert = new Alert(AlertType.ERROR);
+//                alert.setTitle("Error saving benchmark case preferences");
+//                alert.setHeaderText("Could not save benchmark case preferences");
+//                alert.setContentText(e.getMessage());
+//                alert.showAndWait();
+//
+//                return false;
+//            }
         }
-        return false;
+
+        return true;
     }
 
     /**

@@ -15,14 +15,12 @@ public class CategoryGeneralPart extends CategoryPart<BenchmarkCasePreferences> 
 
     // elements from the FXML resource
     @FXML
-    private TextField benchmarkCaseName;
-    @FXML
     private TimeTextField defaultTimeout;
     @FXML
-    private IntegerTextField numberOfRuns;
+    private IntegerTextField repetitions;
 
     private Tooltip timeoutTooltip;
-    private Tooltip numberOfRunsTooltip;
+    private Tooltip repetitionsTooltip;
 
     public CategoryGeneralPart() throws IOException {
         super("../../resources/fxml/benchmark_case_preferences/CategoryGeneral.fxml");
@@ -34,14 +32,12 @@ public class CategoryGeneralPart extends CategoryPart<BenchmarkCasePreferences> 
 
         // tooltips
         timeoutTooltip = new Tooltip("Default timeout for the operationalizations.\nThe following formats are allowed: 30, 30s, 5m, 1h");
-        numberOfRunsTooltip = new Tooltip("Number of runs the benchmark will execute to measure the performance");
+        repetitionsTooltip = new Tooltip("Number of runs the benchmark will execute to measure the performance");
 
-        benchmarkCaseName.textProperty().bindBidirectional(preferencesData.benchmarkCaseNameProperty());
-        
         defaultTimeout.bindIntegerProperty(preferencesData.defaultTimeoutProperty());
         defaultTimeout.setTooltip(timeoutTooltip);
         
-        numberOfRuns.bindIntegerProperty(preferencesData.defaultTimeoutProperty());
-        numberOfRuns.setTooltip(numberOfRunsTooltip);
+        repetitions.bindIntegerProperty(preferencesData.defaultTimeoutProperty());
+        repetitions.setTooltip(repetitionsTooltip);
     }
 }

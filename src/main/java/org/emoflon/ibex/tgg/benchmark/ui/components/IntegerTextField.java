@@ -13,8 +13,6 @@ import javafx.util.converter.IntegerStringConverter;
  * Text input component that allows a user to enter an integer value
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-17
  */
 public class IntegerTextField extends TextField {
 
@@ -54,7 +52,8 @@ public class IntegerTextField extends TextField {
     }
 
     public int getIntValue() {
-        return formatter.getValue().intValue();        
+    Integer integerValue = formatter.getValue();
+        return integerValue == null ? 0 : integerValue.intValue();        
     }
 
     /**
@@ -70,17 +69,9 @@ public class IntegerTextField extends TextField {
         /** {@inheritDoc} */
         @Override
         public Integer fromString(String value) {
-            System.out.println("from string " + value);
-            if (value == null) {
+            if (value == null || value.isEmpty()) {
                 return null;
             }
-
-            if (value.isEmpty()) {
-                return null;
-            }
-
-            // if (value.isEmpty())
-            //     return 0;
 
             if (value.matches("\\d+")) {
                 // prevent integer overflow

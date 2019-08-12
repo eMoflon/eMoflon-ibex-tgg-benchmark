@@ -11,8 +11,6 @@ import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
  * controller.
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-09
  */
 public abstract class CategoryPart<T> extends Part {
 

@@ -1,10 +1,10 @@
 package org.emoflon.ibex.tgg.benchmark.ui.components;
 
-import javafx.event.Event;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
 
 public class IntegerTextFieldListCell extends ListCell<Integer> {
@@ -28,31 +28,40 @@ public class IntegerTextFieldListCell extends ListCell<Integer> {
         this.getStyleClass().add("text-field-list-cell");
         this.setPrefWidth(0);
     }
-        
+    
     /** {@inheritDoc} */
     @Override public void startEdit() {
         if (! isEditable() || ! getListView().isEditable()) {
             return;
         }
         super.startEdit();
-        System.out.println("start edit");
 
         if (isEditing()) {
             if (textField == null) {
                 textField = new IntegerTextField();
-                textField.setOnKeyReleased(event -> {
+                textField.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
                     if (event.getCode() == KeyCode.ENTER) {
-                        commitEdit(textField.getIntValue());
-                    } else if (event.getCode() == KeyCode.ESCAPE) {
+                    commitEdit(textField.getValue());
+                    event.consume();
+                    } if (event.getCode() == KeyCode.ESCAPE) {
                         cancelEdit();
-                    } else if (event.getCode() == KeyCode.UP || event.getCode() == KeyCode.DOWN) {
-                        textField.fireEvent(event);
-                        Event.fireEvent(textField, null);
+                        event.consume();
+                    } else if (event.getCode() == KeyCode.UP) {
+                    getListView().getSelectionModel().selectPrevious();
+                        event.consume();
+                    } else if (event.getCode() == KeyCode.DOWN) {
+                    getListView().getSelectionModel().selectNext();
+                        event.consume();
+                    }
+                });
+                textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+                    if (! isNowFocused) {
+                    commitEdit(textField.getValue());
                     }
                 });
             }
-
-            textField.setText(getItem().toString());
+            
+            textField.setText(getItem() == null ? null : getItem().toString());
             setText(null);
             setGraphic(textField);
             textField.selectAll();
@@ -63,28 +72,26 @@ public class IntegerTextFieldListCell extends ListCell<Integer> {
     /** {@inheritDoc} */
     @Override public void cancelEdit() {
         super.cancelEdit();
-        System.out.println("cancel edit" + getItem());
-        setText(getItem().toString());
+        setText(getItem() == null ? null : getItem().toString());
         setGraphic(null);
     }
     
     /** {@inheritDoc} */
     @Override public void updateItem(Integer item, boolean empty) {
         super.updateItem(item, empty);
-        System.out.println("update item" + item + " " + getText() + " " + empty);
         if (isEmpty()) {
             setText(null);
             setGraphic(null);
         } else {
-            Integer
+            Integer fieldItem = getItem();
             if (isEditing()) {
                 if (textField != null) {
-                    textField.setText(getItem().toString());
+                    textField.setText(fieldItem == null ? null : fieldItem.toString());
                 }
                 setText(null);
                 setGraphic(textField);
             } else {
-                setText(getItem().toString());
+            setText(fieldItem == null ? null : fieldItem.toString());
                 setGraphic(null);
             }
         }

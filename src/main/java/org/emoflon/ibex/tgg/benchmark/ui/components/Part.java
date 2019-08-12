@@ -11,8 +11,6 @@ import javafx.scene.Parent;
  * and acts as its controller.
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-09
  */
 public abstract class Part {
 

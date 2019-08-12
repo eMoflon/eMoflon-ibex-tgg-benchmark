@@ -13,8 +13,6 @@ import javafx.scene.layout.HBox;
  * ListView.
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-09
  */
 public class CategoryListCell extends ListCell<CategoryDataModel> {
 

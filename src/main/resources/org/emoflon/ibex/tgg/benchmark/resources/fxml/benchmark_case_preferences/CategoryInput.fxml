@@ -30,11 +30,6 @@
                         <ColumnConstraints minWidth="130.0" />
                         <ColumnConstraints hgrow="ALWAYS" />
                      </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
                   </GridPane>
                </children>
             </VBox>

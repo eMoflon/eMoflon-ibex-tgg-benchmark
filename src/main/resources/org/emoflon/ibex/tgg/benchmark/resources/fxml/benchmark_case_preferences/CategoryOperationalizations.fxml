@@ -28,18 +28,15 @@
                         <CheckBox fx:id="modelgenCreateReport" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
                         <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
                         <TimeTextField fx:id="modelgenTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ListView fx:id="modelgenModelSizes" maxHeight="90.0" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="TGG Rule" GridPane.rowIndex="2" wrapText="true" />
+                        <TextField fx:id="modelgenTggRule" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Max Model Size" GridPane.rowIndex="3" wrapText="true" />
+                        <ListView fx:id="modelgenModelSizes" maxHeight="140.0" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                      </children>
                      <columnConstraints>
                         <ColumnConstraints minWidth="130.0" />
                         <ColumnConstraints hgrow="ALWAYS" />
                      </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
                   </GridPane>
                </children>
             </VBox>

@@ -20,13 +20,10 @@ import javafx.scene.layout.VBox;
  * GenericPreferencesPart represents a GUI FXML part for a preferences window.
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-09
  */
-public class GenericPreferencesPart<T> extends Part {
+public class GenericPreferencesPart extends Part {
 
     private ObservableList<CategoryDataModel> categoriesViewData;
-    protected T preferencesData;
 
     // elements from the FXML resource
     @FXML
@@ -75,11 +72,9 @@ public class GenericPreferencesPart<T> extends Part {
      * because only then will the @FXML elements be populated from the FXML
      * resource.
      *
-     * @param preferencesData    The data model
      * @param categoriesViewData The data that represents the categories
      */
-    public void initData(T preferencesData, ObservableList<CategoryDataModel> categoriesViewData) {
-        this.preferencesData = preferencesData;
+    protected void initCategoriesView(ObservableList<CategoryDataModel> categoriesViewData) {
         this.categoriesViewData = categoriesViewData;
 
         categoriesViewData.add(0, new CategoryDataModel("List All", Glyph.BARS, null));

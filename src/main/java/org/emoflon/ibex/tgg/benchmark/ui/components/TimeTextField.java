@@ -24,8 +24,6 @@ import javafx.util.StringConverter;
  * </ul>
  *
  * @author Andre Lehmann
- * @version 1.0
- * @since 2019-07-17
  */
 public class TimeTextField extends TextField {
 

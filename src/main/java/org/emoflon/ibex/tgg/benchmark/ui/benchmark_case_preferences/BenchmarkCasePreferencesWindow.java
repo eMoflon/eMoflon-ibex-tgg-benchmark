@@ -1,8 +1,9 @@
 package org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
@@ -14,16 +15,24 @@ public class BenchmarkCasePreferencesWindow {
     private final Stage stage;
     private final MainPart mainPart;
 
-    public BenchmarkCasePreferencesWindow(BenchmarkCasePreferences bcp) throws IOException {
+    public BenchmarkCasePreferencesWindow(EclipseProject project) throws IOException {
         // prepare stage
         stage = new Stage();
-        stage.titleProperty().bind(Bindings.concat("Benchmark Case Preferences: ", bcp.benchmarkCaseNameProperty()));
+        stage.setTitle(project.getName());
         stage.initModality(Modality.APPLICATION_MODAL);
 
         // load main part
         mainPart = new MainPart();
-        mainPart.initData(bcp);
+        mainPart.initData(project);
         stage.setScene(new Scene(mainPart.getContent()));
+    }
+    
+    public BenchmarkCasePreferencesWindow(List<EclipseProject> projects) throws IOException {
+        // TODO: Implement it
+     
+        stage = new Stage();
+        stage.setTitle("Benchmark Case Preferences");
+        mainPart = new MainPart();
     }
 
     public void show() {
