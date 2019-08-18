@@ -24,9 +24,6 @@ public class MODELGEN_App extends MODELGEN {
 
         this.runParameters = runParameters;
         this.classLoader = new URLClassLoader(runParameters.getClassPaths());
-
-        setStopCriterion(createStopCriterion(runParameters.getTggRule(), runParameters.getModelSize()));
-        setUpdatePolicy(new TimedUpdatePolicy(new RandomMatchUpdatePolicy(10), runParameters.getTimeout(), TimeUnit.SECONDS));
     }
 
     public MODELGENStopCriterion createStopCriterion(String tggName, int size) {
@@ -38,22 +35,9 @@ public class MODELGEN_App extends MODELGEN {
 
     @Override
     protected void registerUserMetamodels() throws IOException {
-        try {
-            OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
-                    runParameters.getMetamodelsRegistrationClassName(),
-                    runParameters.getMetamodelsRegistrationMethodName());
-        } catch (ClassNotFoundException e) {
-            throw new IOException(String.format(
-                    "Class '{}' containing the helper for registering the meta models not found. Check your benchmark preferences.",
-                    runParameters.getMetamodelsRegistrationClassName()));
-        } catch (NoSuchMethodException e) {
-            throw new IOException(String.format(
-                    "Helper class '{}' doesn't contain a method '{}' or its signature is wrong. Check your benchmark preferences.",
-                    runParameters.getMetamodelsRegistrationClassName(),
-                    runParameters.getMetamodelsRegistrationMethodName()));
-        } catch (Exception e) {
-            throw new IOException(String.format("Failed to register meta models: {}", e.getMessage()));
-        }
+        OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
+                runParameters.getMetamodelsRegistrationClassName(),
+                runParameters.getMetamodelsRegistrationMethodName());
 
         loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectPath() + ".ecore");
     }
@@ -61,12 +45,17 @@ public class MODELGEN_App extends MODELGEN {
     @Override
     public void loadModels() throws IOException {
         Path instPath = runParameters.getModelInstancesPath();
+        System.out.println(instPath.resolve("src.xmi").toString());
         s = createResource(instPath.resolve("src.xmi").toString());
         t = createResource(instPath.resolve("trg.xmi").toString());
         c = createResource(instPath.resolve("corr.xmi").toString());
         p = createResource(instPath.resolve("protocol.xmi").toString());
 
         EcoreUtil.resolveAll(rs);
+        
+        setStopCriterion(createStopCriterion(runParameters.getTggRule(), runParameters.getModelSize()));
+        setUpdatePolicy(
+                new TimedUpdatePolicy(new RandomMatchUpdatePolicy(10), runParameters.getTimeout(), TimeUnit.SECONDS));
     }
 
     @Override

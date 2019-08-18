@@ -1,50 +1,57 @@
 package org.emoflon.ibex.tgg.benchmark.runner.operationalizations;
 
 import java.io.IOException;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.benchmark.runner.util.PerformanceTestUtil;
+import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
 
 public class CO_App extends CO {
 
-	private String modelPath;
+	private final BenchmarkRunParameters runParameters;
+	private final URLClassLoader classLoader;
 
-	public CO_App(String projectName, String workspacePath, boolean debug, String modelPath) throws IOException {
-		super(createIbexOptions()
-				.projectName(projectName)
-				.projectPath(projectName)
-				.workspacePath(workspacePath)
-				.debug(debug));
-		this.modelPath = modelPath;
+	public CO_App(BenchmarkRunParameters runParameters) throws IOException {
+		super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
+				.workspacePath(runParameters.getWorkspacePath().toString()));
+
+		this.runParameters = runParameters;
+		this.classLoader = new URLClassLoader(runParameters.getClassPaths());
 	}
 
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		new PerformanceTestUtil().registerUserMetamodels(options.projectPath(), rs, this);
-		
-		// Register correspondence metamodel last
-		loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");
+		OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
+				runParameters.getMetamodelsRegistrationClassName(),
+				runParameters.getMetamodelsRegistrationMethodName());
+
+		loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectPath() + ".ecore");
 	}
-	
+
 	@Override
 	public void loadModels() throws IOException {
-		s = loadResource(options.projectPath() + "/instances/"+modelPath+"/src.xmi");
-		t = loadResource(options.projectPath() + "/instances/"+modelPath+"/trg.xmi");
-		c = loadResource(options.projectPath() + "/instances/"+modelPath+"/corr.xmi");
-		p = createResource(options.projectPath() + "/instances/"+modelPath+"/protocol.xmi");
-	
+		Path instPath = runParameters.getModelInstancesPath();
+		s = loadResource(instPath.resolve("src.xmi").toString());
+		t = loadResource(instPath.resolve("trg.xmi").toString());
+		c = loadResource(instPath.resolve("corr.xmi").toString());
+		p = createResource(instPath.resolve("protocol.xmi").toString());
+
 		EcoreUtil.resolveAll(rs);
 	}
-	
+
 	@Override
 	public void saveModels() {
-		// Models needn't be saved for all Operationalizations except MODELGEN
+		// only models created with MODELGEN need to be saved
 	}
-	
-	protected static IbexOptions createIbexOptions() {
-		IbexOptions options = new IbexOptions();
-		return options;
+
+	@Override
+	public void terminate() throws IOException {
+		super.terminate();
+		if (classLoader != null) {
+			classLoader.close();
+		}
 	}
 }

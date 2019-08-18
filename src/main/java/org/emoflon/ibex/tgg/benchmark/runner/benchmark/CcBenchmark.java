@@ -1,43 +1,27 @@
 package org.emoflon.ibex.tgg.benchmark.runner.benchmark;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
-import org.emoflon.ibex.tgg.benchmark.runner.util.OperationalizationTypes;
-import org.emoflon.ibex.tgg.benchmark.runner.util.TestDataPoint;
+import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
+import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.CC_App;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 
-import gurobi.GRBException;
+public class CcBenchmark extends Benchmark<CC> {
 
-public class CcBenchmark extends Benchmark<CC>{
-	
-	public TestDataPoint repeatedTimedExecutionAndInit(Supplier<CC> checker, int size, int repetitions) throws IOException, GRBException {
-		if (repetitions < 1)
-			throw new IllegalArgumentException("Number of repetitions must be positive.");
-		
-		List<TestDataPoint> data = new ArrayList<>();
-		long[] initTimes = new long[repetitions];
-		long[] executionTimes = new long[repetitions];
-		
-		for (int i = 0; i < repetitions; i++) {
-			System.out.println("CC: size="+size+": "+(i+1)+"-th execution started.");
-			
-			data.add(timedExecutionAndInit(checker, size));
-			initTimes[i] = data.get(i).initTimes[0];
-			executionTimes[i] = data.get(i).executionTimes[0];
-			
-			System.out.println((i+1)+"-th execution finished. ");
-		}
+    public CcBenchmark(BenchmarkRunParameters runParameters) {
+        super(runParameters);
+    }
 
-		TestDataPoint result = new TestDataPoint(initTimes, executionTimes);
-		result.testCase = data.get(0).testCase;
-		return result;
-	}
-
-	@Override
-	protected OperationalizationType getOpType() {
-		return OperationalizationType.CC;
-	}
+    @Override
+    protected void createOperationalizationInstance() throws BenchmarkFaildException {
+        try {
+            op = new CC_App(runParameters);
+        } catch (IOException e) {
+            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition(), e.getMessage());
+            runResult.setError(e.getMessage());
+            throw new BenchmarkFaildException();
+        }
+    }
 }

@@ -1,82 +1,95 @@
 package org.emoflon.ibex.tgg.benchmark.runner.operationalizations;
 
-
 import java.io.IOException;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
-import org.emoflon.ibex.tgg.benchmark.runner.util.PerformanceTestUtil;
+import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.strategies.sync.BWD_Strategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
+import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 public class SYNC_App extends SYNC {
 
-	private final BenchmarkRunParameters runParameters;
-	private final URLClassLoader classLoader;
-	
-	protected String instancePath;
-	protected boolean isFwd;
-	protected boolean isIncr;
+	protected final BenchmarkRunParameters runParameters;
+	protected final URLClassLoader classLoader;
+	protected final boolean isForward;
+	protected final boolean isIncremental;
 
-	public SYNC_App(String projectName, String workspacePath, boolean debug, String instancePath, boolean isFwd, boolean isIncr) throws IOException {
+	public SYNC_App(BenchmarkRunParameters runParameters) throws IOException {
 		super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
-                .workspacePath(runParameters.getWorkspacePath().toString()));
+				.workspacePath(runParameters.getWorkspacePath().toString()));
 
-        this.runParameters = runParameters;
-        this.classLoader = new URLClassLoader(runParameters.getClassPaths());
+		this.runParameters = runParameters;
+		this.classLoader = new URLClassLoader(runParameters.getClassPaths());
+		this.isForward = runParameters.getOperationalization() == OperationalizationType.FWD
+				|| runParameters.getOperationalization() == OperationalizationType.INITIAL_FWD
+				|| runParameters.getOperationalization() == OperationalizationType.INCREMENTAL_FWD;
+		this.isIncremental = runParameters.getOperationalization() == OperationalizationType.INCREMENTAL_FWD
+				|| runParameters.getOperationalization() == OperationalizationType.INCREMENTAL_BWD;
 
-		this.instancePath = instancePath;
-		this.isFwd = isFwd;
-		this.isIncr = isIncr;
+		strategy = isForward ? new FWD_Strategy() : new BWD_Strategy();
 	}
 
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		new PerformanceTestUtil().registerUserMetamodels(options.projectPath(), rs, this);
-		
-		// Register correspondence metamodel last
-		loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectName() + ".ecore");
+		OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
+				runParameters.getMetamodelsRegistrationClassName(),
+				runParameters.getMetamodelsRegistrationMethodName());
+
+		loadAndRegisterCorrMetamodel(options.projectPath() + "/model/" + options.projectPath() + ".ecore");
 	}
-	
-	/** 
-	 * Load the models for the operationalization. For incremental synchronization,
-	 * all models must be loaded. For batch translation, the protocol, corr
-	 * and either src or trg model have to be created, depending on the direction.
-	 *  */
+
 	@Override
 	public void loadModels() throws IOException {
 		Path instPath = runParameters.getModelInstancesPath();
-        // s = createResource(instPath.resolve("src.xmi").toString());
-        // t = createResource(instPath.resolve("trg.xmi").toString());
-        // c = createResource(instPath.resolve("corr.xmi").toString());
-        // p = createResource(instPath.resolve("protocol.xmi").toString());
 
-		if (isIncr) {
-			s = loadResource(instancePath + "/src.xmi");
-			t = loadResource(instancePath + "/trg.xmi");
-			c = loadResource(instancePath + "/corr.xmi");
-			p = loadResource(instancePath + "/protocol.xmi");
+		if (isIncremental) {
+			s = loadResource(instPath.resolve("/src.xmi").toString());
+			t = loadResource(instPath.resolve("/trg.xmi").toString());
+			c = loadResource(instPath.resolve("/corr.xmi").toString());
+			p = loadResource(instPath.resolve("/protocol.xmi").toString());
 		} else {
-			if (isFwd) {
-				s = loadResource(instancePath + "/src.xmi");
-				t = createResource(instancePath + "/trg.xmi");
+			if (isForward) {
+				s = loadResource(instPath.resolve("/src.xmi").toString());
+				t = createResource(instPath.resolve("/trg.xmi").toString());
 			} else {
-				s = createResource(instancePath + "/src.xmi");
-				t = loadResource(instancePath + "/trg.xmi");
+				s = createResource(instPath.resolve("/src.xmi").toString());
+				t = loadResource(instPath.resolve("/trg.xmi").toString());
 			}
-			c = createResource(instancePath + "/corr.xmi");
-			p = createResource(instancePath + "/protocol.xmi");
+			c = createResource(instPath.resolve("/corr.xmi").toString());
+			p = createResource(instPath.resolve("/protocol.xmi").toString());
 		}
-		
+
 		EcoreUtil.resolveAll(rs);
 	}
-	
+
 	@Override
 	public void saveModels() {
-		// Models needn't be saved for all Operationalizations except MODELGEN
+		// only models created with MODELGEN need to be saved
 	}
-	
-	protected static IbexOptions createIbexOptions() {
-		IbexOptions options = new IbexOptions();
-		return options;
+
+	@Override
+	public void terminate() throws IOException {
+		super.terminate();
+		if (classLoader != null) {
+			classLoader.close();
+		}
+	}
+
+	/**
+	 * @return the isForward
+	 */
+	public boolean isForward() {
+		return isForward;
+	}
+
+	/**
+	 * @return the isIncremental
+	 */
+	public boolean isIncremental() {
+		return isIncremental;
 	}
 }
