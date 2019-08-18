@@ -32,14 +32,14 @@ public class RefelctionUtils {
     /**
      * Splits a method identifier 'CLASS#METHOD' into a class and method name.
      * 
-     * @param methodIdentifier the method identifiert
+     * @param methodIdentifier the method identifier
      * @return class and method name as String array
      * @throws IllegalArgumentException if format is wrong
      */    
     public static String[] splitClassAndMethodName(String methodIdentifier) throws IllegalArgumentException {
         String[] names = methodIdentifier.split("#");
         if (names.length != 2) {
-            throw new IllegalArgumentException(String.format("Wrong format for method identifiert. Expected 'CLASS#METHOD' but got '{}'", methodIdentifier));
+            throw new IllegalArgumentException(String.format("Wrong format for method identifier. Expected 'CLASS#METHOD' but got '%s'", methodIdentifier));
         }
 
         names[0] = names[0].trim();
