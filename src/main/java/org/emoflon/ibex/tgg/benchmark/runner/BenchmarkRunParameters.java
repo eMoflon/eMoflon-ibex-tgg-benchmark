@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.runner;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -11,13 +12,14 @@ import org.emoflon.ibex.tgg.benchmark.utils.RefelctionUtils;
  * 
  * @see org.emoflon.ibex.tgg.benchmark.runner.benchmark.Benchmark
  */
-public class BenchmarkRunParameters {
+public class BenchmarkRunParameters implements Serializable {
 
+    private static final long serialVersionUID = 8107641259806223277L;
+    
     // general
     private String projectName;
     private OperationalizationType operationalization;
     private PatternMatchingEngine patternMatchingEngine;
-    private Boolean includeInReport = true;
 
     private Path modelInstancesPath;
     private Path workspacePath;

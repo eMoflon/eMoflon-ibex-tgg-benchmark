@@ -1,12 +1,16 @@
 package org.emoflon.ibex.tgg.benchmark.runner;
 
+import java.io.Serializable;
+
 /**
  * SingleRunResult represents a result for a single benchmark run and consists
  * of the measured data.
  *
  * @author Andre Lehmann
  */
-public class SingleRunResult {
+public class SingleRunResult implements Serializable {
+
+    private static final long serialVersionUID = -344586299291242439L;
 
     private int repetition;
 
