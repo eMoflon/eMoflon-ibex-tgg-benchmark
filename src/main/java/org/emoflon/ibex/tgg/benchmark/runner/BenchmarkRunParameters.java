@@ -81,24 +81,10 @@ public class BenchmarkRunParameters implements Serializable {
     }
 
     /**
-     * @return the includeInReport
-     */
-    public Boolean isIncludeInReport() {
-        return includeInReport;
-    }
-
-    /**
-     * @param includeInReport the includeInReport to set
-     */
-    public void setIncludeInReport(Boolean includeInReport) {
-        this.includeInReport = includeInReport;
-    }
-
-    /**
-     * @return the modelInstancesPath
+     * @return the modelInstancesPath which needs to be workspace relative
      */
     public Path getModelInstancesPath() {
-        return modelInstancesPath.toAbsolutePath().normalize().resolve(String.valueOf(modelSize))
+        return modelInstancesPath.normalize().resolve(String.valueOf(modelSize))
                 .resolve(String.valueOf(repetition));
     }
 
