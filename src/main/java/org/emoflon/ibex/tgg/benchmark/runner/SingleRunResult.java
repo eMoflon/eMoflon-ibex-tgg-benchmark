@@ -14,8 +14,8 @@ public class SingleRunResult {
     private long initializationTime;
     private long executionTime;
 
-    private int createdElements;
-    private int deletedElements;
+    private long createdElements;
+    private long deletedElements;
 
     private String error;
 
@@ -48,28 +48,28 @@ public class SingleRunResult {
     /**
      * @return the createdElements
      */
-    public int getCreatedElements() {
+    public long getCreatedElements() {
         return createdElements;
     }
 
     /**
      * @param createdElements the createdElements to set
      */
-    public void setCreatedElements(int createdElements) {
+    public void setCreatedElements(long createdElements) {
         this.createdElements = createdElements;
     }
 
     /**
      * @return the deletedElements
      */
-    public int getDeletedElements() {
+    public long getDeletedElements() {
         return deletedElements;
     }
 
     /**
      * @param deletedElements the deletedElements to set
      */
-    public void setDeletedElements(int deletedElements) {
+    public void setDeletedElements(long deletedElements) {
         this.deletedElements = deletedElements;
     }
 
