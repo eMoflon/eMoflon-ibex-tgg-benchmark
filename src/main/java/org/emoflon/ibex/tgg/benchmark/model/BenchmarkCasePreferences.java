@@ -183,7 +183,7 @@ public class BenchmarkCasePreferences implements IPreferences {
                     }
                     setModelgenModelSizes(modelSizes);
                 }
-                setModelgenTggRule(modelgen.getString("modelgenTggRule", getModelgenTggRule()));
+                setModelgenTggRule(modelgen.getString("tggRule", getModelgenTggRule()));
             }
 
             JsonObject initialFwd = operationalizations.getJsonObject("initialFwd");
