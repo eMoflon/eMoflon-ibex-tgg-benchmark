@@ -286,6 +286,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         for (int i = 0; i < resultsSheetDefinition.size(); i++) {
             Map<String, Object> m = resultsSheetDefinition.get(i);
             Cell cell = row.createCell(i, (CellType) m.get("valueType"));
+            cell.setCellStyle(cellStyle);
             if ((CellType) m.get("valueType") == CellType.STRING) {
                 @SuppressWarnings("unchecked")
                 Function<BenchmarkResult, String> valueSelector = (Function<BenchmarkResult, String>) m
@@ -306,6 +307,7 @@ public class ExcelReportBuilder extends ReportBuilder {
             for (int i = 0; i < rawResultsSheetDefinition.size(); i++) {
                 Map<String, Object> m = rawResultsSheetDefinition.get(i);
                 Cell cell = row.createCell(i, (CellType) m.get("valueType"));
+                cell.setCellStyle(cellStyle);
                 Class<?> valueSelectorClass = (Class<?>) m.get("valueSelectorClass");
                 if (valueSelectorClass.equals(BenchmarkResult.class)) {
                     if ((CellType) m.get("valueType") == CellType.STRING) {
