@@ -24,6 +24,9 @@ public class SyncBenchmark extends Benchmark<SYNC> {
 
 	@Override
 	protected void createOperationalizationInstance() throws BenchmarkFaildException {
+	    LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Create an instance of SYNC_App", runParameters.getProjectName(),
+                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getRepetition());
 		try {
 			SYNC_App sync = null;
 			if (runParameters.getOperationalization() == OperationalizationType.INITIAL_FWD

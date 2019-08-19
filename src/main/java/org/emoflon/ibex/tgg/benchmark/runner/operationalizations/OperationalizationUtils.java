@@ -28,6 +28,5 @@ public abstract class OperationalizationUtils {
         } catch (Exception e) {
             throw new IOException(String.format("Failed to register meta models: %s", e.getMessage()));
         }
-        System.out.println("here");
     }
 }

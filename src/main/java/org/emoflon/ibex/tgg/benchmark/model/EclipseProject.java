@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
-import org.emoflon.ibex.tgg.Utils;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
@@ -99,7 +98,7 @@ public class EclipseProject {
 
             JsonObject benchmarkCase = prefsJsonObject.getJsonObject("benchmarkCase");
             if (benchmarkCase != null && benchmarkCase instanceof JsonObject) {
-                setBenchmarkCasePreferences(new BenchmarkCasePreferences((JsonObject) benchmarkCase));
+                setBenchmarkCasePreferences(new BenchmarkCasePreferences(benchmarkCase));
             } else {
                 LOG.info("Project '{}' has an empty configuration, use default parameters", getName());
                 setBenchmarkCasePreferences(new BenchmarkCasePreferences());

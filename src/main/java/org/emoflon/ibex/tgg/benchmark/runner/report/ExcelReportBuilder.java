@@ -2,7 +2,6 @@ package org.emoflon.ibex.tgg.benchmark.runner.report;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.TypeVariable;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +35,8 @@ public class ExcelReportBuilder extends ReportBuilder {
     private XSSFSheet rawResultsSheet;
     private LinkedList<Map<String, Object>> resultsSheetDefinition;
     private LinkedList<Map<String, Object>> rawResultsSheetDefinition;
+    private CellStyle headerStyle;
+    private CellStyle cellStyle;
 
     /**
      * Constructor for {@link ExcelReportBuilder}.
@@ -51,12 +52,12 @@ public class ExcelReportBuilder extends ReportBuilder {
     protected void createReportFile() throws IOException {
         LOG.debug("Creating report file '{}'", reportFilePath);
         try {
-            Files.createDirectories(reportFilePath.getParent());
+            Files.createDirectories(reportFilePath.toAbsolutePath().getParent());
         } catch (FileAlreadyExistsException e) {
             // ignore
         }
 
-        reportOutputStream = Files.newOutputStream(reportFilePath, StandardOpenOption.CREATE_NEW);
+        reportOutputStream = Files.newOutputStream(reportFilePath, StandardOpenOption.CREATE);
         initializeSheetDefinitions();
         initalizeWorkbook();
     }
@@ -67,11 +68,17 @@ public class ExcelReportBuilder extends ReportBuilder {
     private void initalizeWorkbook() {
         reportWorkbook = new XSSFWorkbook();
 
-        CellStyle headerStyle = reportWorkbook.createCellStyle();
+        // styles
+        headerStyle = reportWorkbook.createCellStyle();
         XSSFFont headerFont = reportWorkbook.createFont();
-        headerFont.setFontHeightInPoints((short) 16);
+        headerFont.setFontHeightInPoints((short) 10);
         headerFont.setBold(true);
         headerStyle.setFont(headerFont);
+
+        cellStyle = reportWorkbook.createCellStyle();
+        XSSFFont cellFont = reportWorkbook.createFont();
+        cellFont.setFontHeightInPoints((short) 10);
+        cellStyle.setFont(cellFont);
 
         resultsSheet = reportWorkbook.createSheet("Benchmark Results");
         Row header = resultsSheet.createRow(0);
@@ -90,7 +97,7 @@ public class ExcelReportBuilder extends ReportBuilder {
             Cell headerCell = header.createCell(i);
             headerCell.setCellValue((String) m.get("name"));
             headerCell.setCellStyle(headerStyle);
-            resultsSheet.setColumnWidth(i, (int) m.get("columnWidth"));
+            rawResultsSheet.setColumnWidth(i, (int) m.get("columnWidth"));
         }
     }
 
@@ -100,23 +107,26 @@ public class ExcelReportBuilder extends ReportBuilder {
      */
     private void initializeSheetDefinitions() {
         this.resultsSheetDefinition = new LinkedList<>();
+        this.rawResultsSheetDefinition = new LinkedList<>();
 
         Map<String, Object> projectName = new HashMap<>();
         projectName.put("name", "Project Name");
-        projectName.put("columnWidth", 8000);
+        projectName.put("columnWidth", 6000);
         projectName.put("valueType", CellType.STRING);
         projectName.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getProjectName);
+        projectName.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(projectName);
         rawResultsSheetDefinition.add(projectName);
 
-        Map<String, Object> patternMatchingEngin = new HashMap<>();
-        patternMatchingEngin.put("name", "Pattern Matching Engine");
-        patternMatchingEngin.put("columnWidth", 4000);
-        patternMatchingEngin.put("valueType", CellType.STRING);
-        patternMatchingEngin.put("valueSelector",
+        Map<String, Object> patternMatchingEngine = new HashMap<>();
+        patternMatchingEngine.put("name", "Pattern Matching Engine");
+        patternMatchingEngine.put("columnWidth", 6000);
+        patternMatchingEngine.put("valueType", CellType.STRING);
+        patternMatchingEngine.put("valueSelector",
                 (Function<BenchmarkResult, String>) br -> br.getPatternMatchingEngine().toString());
-        resultsSheetDefinition.add(patternMatchingEngin);
-        rawResultsSheetDefinition.add(patternMatchingEngin);
+        patternMatchingEngine.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(patternMatchingEngine);
+        rawResultsSheetDefinition.add(patternMatchingEngine);
 
         Map<String, Object> operationalization = new HashMap<>();
         operationalization.put("name", "Operationalization");
@@ -124,6 +134,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         operationalization.put("valueType", CellType.STRING);
         operationalization.put("valueSelector",
                 (Function<BenchmarkResult, String>) br -> br.getOperationalization().toString());
+        operationalization.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(operationalization);
         rawResultsSheetDefinition.add(operationalization);
 
@@ -132,6 +143,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         modelSize.put("columnWidth", 4000);
         modelSize.put("valueType", CellType.NUMERIC);
         modelSize.put("valueSelector", (Function<BenchmarkResult, Double>) br -> (double) br.getModelSize());
+        modelSize.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(modelSize);
         rawResultsSheetDefinition.add(modelSize);
 
@@ -140,6 +152,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         run.put("columnWidth", 4000);
         run.put("valueType", CellType.NUMERIC);
         run.put("valueSelector", (Function<SingleRunResult, Double>) sr -> (double) sr.getRepetition());
+        run.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(run);
 
         Map<String, Object> initalizationTime = new HashMap<>();
@@ -147,46 +160,52 @@ public class ExcelReportBuilder extends ReportBuilder {
         initalizationTime.put("columnWidth", 4000);
         initalizationTime.put("valueType", CellType.NUMERIC);
         initalizationTime.put("valueSelector",
-                (Function<SingleRunResult, Double>) sr -> (double) sr.getInitializationTime());
+                (Function<SingleRunResult, Double>) sr -> toSeconds(sr.getInitializationTime()));
+        initalizationTime.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(initalizationTime);
 
         Map<String, Object> executionTime = new HashMap<>();
         executionTime.put("name", "Execution Time");
         executionTime.put("columnWidth", 4000);
         executionTime.put("valueType", CellType.NUMERIC);
-        executionTime.put("valueSelector", (Function<SingleRunResult, Double>) sr -> (double) sr.getExecutionTime());
+        executionTime.put("valueSelector", (Function<SingleRunResult, Double>) sr -> toSeconds(sr.getExecutionTime()));
+        executionTime.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(executionTime);
 
         Map<String, Object> averageInitalizationTime = new HashMap<>();
         averageInitalizationTime.put("name", "Average Initalization Time");
         averageInitalizationTime.put("columnWidth", 4000);
-        averageInitalizationTime.put("valueType", CellType.STRING);
+        averageInitalizationTime.put("valueType", CellType.NUMERIC);
         averageInitalizationTime.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getAverageInitalizationTime);
+                (Function<BenchmarkResult, Double>) br -> toSeconds(br.getAverageInitalizationTime()));
+        averageInitalizationTime.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(averageInitalizationTime);
 
         Map<String, Object> medianInitalizationTime = new HashMap<>();
         medianInitalizationTime.put("name", "Median Initalization Time");
         medianInitalizationTime.put("columnWidth", 4000);
-        medianInitalizationTime.put("valueType", CellType.STRING);
+        medianInitalizationTime.put("valueType", CellType.NUMERIC);
         medianInitalizationTime.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getMedianInitializationTime);
+                (Function<BenchmarkResult, Double>) br -> toSeconds(br.getMedianInitializationTime()));
+        medianInitalizationTime.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(medianInitalizationTime);
 
         Map<String, Object> averageExecutionTime = new HashMap<>();
         averageExecutionTime.put("name", "Average Execution Time");
         averageExecutionTime.put("columnWidth", 4000);
-        averageExecutionTime.put("valueType", CellType.STRING);
+        averageExecutionTime.put("valueType", CellType.NUMERIC);
         averageExecutionTime.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getAverageExecutionTime);
+                (Function<BenchmarkResult, Double>) br -> toSeconds(br.getAverageExecutionTime()));
+        averageExecutionTime.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(averageExecutionTime);
 
         Map<String, Object> medianExecutionTime = new HashMap<>();
         medianExecutionTime.put("name", "Median Execution Time");
         medianExecutionTime.put("columnWidth", 4000);
-        medianExecutionTime.put("valueType", CellType.STRING);
+        medianExecutionTime.put("valueType", CellType.NUMERIC);
         medianExecutionTime.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getMedianExecutionTime);
+                (Function<BenchmarkResult, Double>) br -> toSeconds(br.getMedianExecutionTime()));
+        medianExecutionTime.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(medianExecutionTime);
 
         Map<String, Object> createdElements = new HashMap<>();
@@ -195,6 +214,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         createdElements.put("valueType", CellType.NUMERIC);
         createdElements.put("valueSelector",
                 (Function<SingleRunResult, Double>) sr -> (double) sr.getCreatedElements());
+        createdElements.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(createdElements);
 
         Map<String, Object> deletedElements = new HashMap<>();
@@ -203,38 +223,43 @@ public class ExcelReportBuilder extends ReportBuilder {
         deletedElements.put("valueType", CellType.NUMERIC);
         deletedElements.put("valueSelector",
                 (Function<SingleRunResult, Double>) sr -> (double) sr.getDeletedElements());
+        deletedElements.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(deletedElements);
 
         Map<String, Object> averageCreatedElements = new HashMap<>();
         averageCreatedElements.put("name", "Average Created Elements");
         averageCreatedElements.put("columnWidth", 4000);
-        averageCreatedElements.put("valueType", CellType.STRING);
+        averageCreatedElements.put("valueType", CellType.NUMERIC);
         averageCreatedElements.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getAverageCreatedElements);
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getAverageCreatedElements()));
+        averageCreatedElements.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(averageCreatedElements);
 
         Map<String, Object> medianCreatedElements = new HashMap<>();
         medianCreatedElements.put("name", "Median Created Elements");
         medianCreatedElements.put("columnWidth", 4000);
-        medianCreatedElements.put("valueType", CellType.STRING);
+        medianCreatedElements.put("valueType", CellType.NUMERIC);
         medianCreatedElements.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getMedianCreatedElements);
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianCreatedElements()));
+        medianCreatedElements.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(medianCreatedElements);
 
         Map<String, Object> averageDeletedElements = new HashMap<>();
         averageDeletedElements.put("name", "Average Deleted Elements");
         averageDeletedElements.put("columnWidth", 4000);
-        averageDeletedElements.put("valueType", CellType.STRING);
+        averageDeletedElements.put("valueType", CellType.NUMERIC);
         averageDeletedElements.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getAverageDeletedElements);
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getAverageDeletedElements()));
+        averageDeletedElements.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(averageDeletedElements);
 
         Map<String, Object> medianDeletedElements = new HashMap<>();
         medianDeletedElements.put("name", "Median Deleted Elements");
         medianDeletedElements.put("columnWidth", 4000);
-        medianDeletedElements.put("valueType", CellType.STRING);
+        medianDeletedElements.put("valueType", CellType.NUMERIC);
         medianDeletedElements.put("valueSelector",
-                (Function<BenchmarkResult, Double>) BenchmarkResult::getMedianDeletedElements);
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianDeletedElements()));
+        medianDeletedElements.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(medianDeletedElements);
 
         Map<String, Object> error = new HashMap<>();
@@ -242,6 +267,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         error.put("columnWidth", 20000);
         error.put("valueType", CellType.STRING);
         error.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getError);
+        error.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(error);
         rawResultsSheetDefinition.add(error);
     }
@@ -261,10 +287,12 @@ public class ExcelReportBuilder extends ReportBuilder {
             Map<String, Object> m = resultsSheetDefinition.get(i);
             Cell cell = row.createCell(i, (CellType) m.get("valueType"));
             if ((CellType) m.get("valueType") == CellType.STRING) {
+                @SuppressWarnings("unchecked")
                 Function<BenchmarkResult, String> valueSelector = (Function<BenchmarkResult, String>) m
                         .get("valueSelector");
                 cell.setCellValue(valueSelector.apply(benchmarkResult));
             } else if ((CellType) m.get("valueType") == CellType.NUMERIC) {
+                @SuppressWarnings("unchecked")
                 Function<BenchmarkResult, Double> valueSelector = (Function<BenchmarkResult, Double>) m
                         .get("valueSelector");
                 cell.setCellValue(valueSelector.apply(benchmarkResult));
@@ -278,25 +306,27 @@ public class ExcelReportBuilder extends ReportBuilder {
             for (int i = 0; i < rawResultsSheetDefinition.size(); i++) {
                 Map<String, Object> m = rawResultsSheetDefinition.get(i);
                 Cell cell = row.createCell(i, (CellType) m.get("valueType"));
-                Function<?, ?> tmpValueSelector = (Function<?, ?>) m.get("valueSelector");
-                // I know this is kind of ugly, but how else get the correct type?
-                TypeVariable<?>[] valueSelectorTypes = tmpValueSelector.getClass().getTypeParameters();
-                if (valueSelectorTypes[0].equals(BenchmarkResult.class)) {
+                Class<?> valueSelectorClass = (Class<?>) m.get("valueSelectorClass");
+                if (valueSelectorClass.equals(BenchmarkResult.class)) {
                     if ((CellType) m.get("valueType") == CellType.STRING) {
+                        @SuppressWarnings("unchecked")
                         Function<BenchmarkResult, String> valueSelector = (Function<BenchmarkResult, String>) m
                                 .get("valueSelector");
                         cell.setCellValue(valueSelector.apply(benchmarkResult));
                     } else if ((CellType) m.get("valueType") == CellType.NUMERIC) {
+                        @SuppressWarnings("unchecked")
                         Function<BenchmarkResult, Double> valueSelector = (Function<BenchmarkResult, Double>) m
                                 .get("valueSelector");
                         cell.setCellValue(valueSelector.apply(benchmarkResult));
                     }
-                } else if (valueSelectorTypes[0].equals(SingleRunResult.class)) {
+                } else if (valueSelectorClass.equals(SingleRunResult.class)) {
                     if ((CellType) m.get("valueType") == CellType.STRING) {
+                        @SuppressWarnings("unchecked")
                         Function<SingleRunResult, String> valueSelector = (Function<SingleRunResult, String>) m
                                 .get("valueSelector");
                         cell.setCellValue(valueSelector.apply(singleRunResult));
                     } else if ((CellType) m.get("valueType") == CellType.NUMERIC) {
+                        @SuppressWarnings("unchecked")
                         Function<SingleRunResult, Double> valueSelector = (Function<SingleRunResult, Double>) m
                                 .get("valueSelector");
                         cell.setCellValue(valueSelector.apply(singleRunResult));
@@ -307,11 +337,17 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         // save report so the results doesn't get lost if the benchmark is
         // stopped before completion
-        reportWorkbook.write(reportOutputStream);
+        save();
     }
 
+    @Override
     public void close() throws IOException {
         reportWorkbook.close();
         reportOutputStream.close();
+    }
+
+    @Override
+    public void save() throws IOException {
+        reportWorkbook.write(reportOutputStream);
     }
 }

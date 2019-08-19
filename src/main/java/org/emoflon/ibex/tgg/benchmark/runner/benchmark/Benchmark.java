@@ -75,16 +75,22 @@ public abstract class Benchmark<O extends OperationalStrategy> {
 					op.registerBlackInterpreter(new DemoclesTGGEngine());
 				}
 				long toc = System.nanoTime();
-				return (toc - tic)/1000L;
+				return (toc - tic)/1000000L;
 			});
+			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure initialization time", runParameters.getProjectName(),
+	                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+	                runParameters.getRepetition());
 			runResult.setInitializationTime(initializationResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
 
 			Future<Long> executionResult = es.submit(() -> {
 				long tic = System.nanoTime();
 				op.run();
 				long toc = System.nanoTime();
-				return (toc - tic)/1000L;
+				return (toc - tic)/1000000L;
 			});
+			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure execution time", runParameters.getProjectName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition());
 			runResult.setExecutionTime(executionResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
 
 		} catch (TimeoutException e) {
@@ -105,6 +111,9 @@ public abstract class Benchmark<O extends OperationalStrategy> {
 	}
 
 	protected void terminateOperationalization() {
+	    LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Terminate operationalization", runParameters.getProjectName(),
+                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getRepetition());
 		if (op != null) {
 			try {
 				op.terminate();

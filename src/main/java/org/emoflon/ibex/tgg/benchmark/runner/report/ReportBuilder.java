@@ -1,20 +1,9 @@
 package org.emoflon.ibex.tgg.benchmark.runner.report;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.LinkedList;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkResult;
 import org.slf4j.Logger;
@@ -45,6 +34,7 @@ public abstract class ReportBuilder {
         this.benchmarkResults = new LinkedList<>();
 
         createReportFile();
+        save();
     }
 
     public void addEntry(BenchmarkResult benchmarkResult) throws IOException {
@@ -55,5 +45,19 @@ public abstract class ReportBuilder {
 
     protected abstract void createReportFile() throws IOException;
 
+    public abstract void save() throws IOException;
+    
     public abstract void close() throws IOException;
+
+    protected Double toSeconds(long milliseconds) {
+        return roundDouble(milliseconds/1000.0);
+    }
+
+    protected Double toSeconds(double milliseconds) {
+        return roundDouble(milliseconds/1000.0);
+    }
+
+    protected Double roundDouble(Double d) {
+        return Math.round(d.doubleValue()*1000.0)/1000.0;
+    }
 }

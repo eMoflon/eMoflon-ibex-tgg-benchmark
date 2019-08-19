@@ -14,7 +14,7 @@ public class SingleRunResult implements Serializable {
 
     private int repetition;
 
-    // time in micro seconds
+    // time in mili seconds
     private long initializationTime;
     private long executionTime;
 

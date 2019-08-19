@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.runner;
 import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
 import org.emoflon.ibex.tgg.benchmark.utils.RefelctionUtils;
@@ -21,8 +22,9 @@ public class BenchmarkRunParameters implements Serializable {
     private OperationalizationType operationalization;
     private PatternMatchingEngine patternMatchingEngine;
 
-    private Path modelInstancesPath;
-    private Path workspacePath;
+    // in order to be serializable the paths must be of type String
+    private String modelInstancesPath;
+    private String workspacePath;
     private URL[] classPaths;
 
     private long timeout;
@@ -84,14 +86,14 @@ public class BenchmarkRunParameters implements Serializable {
      * @return the modelInstancesPath which needs to be workspace relative
      */
     public Path getModelInstancesPath() {
-        return modelInstancesPath.normalize().resolve(String.valueOf(modelSize))
+        return Paths.get(modelInstancesPath).normalize().resolve(String.valueOf(modelSize))
                 .resolve(String.valueOf(repetition));
     }
 
     /**
      * @param modelInstancesPath the modelInstancesPath to set
      */
-    public void setModelInstancesPath(Path modelInstancesPath) {
+    public void setModelInstancesPath(String modelInstancesPath) {
         this.modelInstancesPath = modelInstancesPath;
     }
 
@@ -99,13 +101,13 @@ public class BenchmarkRunParameters implements Serializable {
      * @return the workspacePath
      */
     public Path getWorkspacePath() {
-        return workspacePath.toAbsolutePath().normalize();
+        return Paths.get(workspacePath).toAbsolutePath().normalize();
     }
 
     /**
      * @param workspacePath the workspacePath to set
      */
-    public void setWorkspacePath(Path workspacePath) {
+    public void setWorkspacePath(String workspacePath) {
         this.workspacePath = workspacePath;
     }
 

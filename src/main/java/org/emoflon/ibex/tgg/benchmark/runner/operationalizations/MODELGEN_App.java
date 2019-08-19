@@ -45,7 +45,6 @@ public class MODELGEN_App extends MODELGEN {
     @Override
     public void loadModels() throws IOException {
         Path instPath = runParameters.getModelInstancesPath();
-        System.out.println(instPath.resolve("src.xmi").toString());
         s = createResource(instPath.resolve("src.xmi").toString());
         t = createResource(instPath.resolve("trg.xmi").toString());
         c = createResource(instPath.resolve("corr.xmi").toString());

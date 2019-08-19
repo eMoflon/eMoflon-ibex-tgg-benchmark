@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * 
  * @author Andre Lehmann
  */
-public class RefelctionUtils {
+public abstract class RefelctionUtils {
 
     /**
      * Gets a method from a class with matching name and signature.

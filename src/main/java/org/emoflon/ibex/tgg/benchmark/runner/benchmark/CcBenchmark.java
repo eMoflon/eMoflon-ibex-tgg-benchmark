@@ -14,6 +14,9 @@ public class CcBenchmark extends Benchmark<CC> {
 
     @Override
     protected void createOperationalizationInstance() throws BenchmarkFaildException {
+        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Create an instance of CC_App", runParameters.getProjectName(),
+                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getRepetition());
         try {
             op = new CC_App(runParameters);
         } catch (IOException e) {
