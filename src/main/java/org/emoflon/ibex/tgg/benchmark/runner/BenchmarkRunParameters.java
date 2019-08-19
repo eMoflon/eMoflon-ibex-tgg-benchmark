@@ -23,7 +23,7 @@ public class BenchmarkRunParameters implements Serializable {
     private PatternMatchingEngine patternMatchingEngine;
 
     // in order to be serializable the paths must be of type String
-    private String modelInstancesPath;
+    private String modelInstancesBasePath;
     private String workspacePath;
     private URL[] classPaths;
 
@@ -86,15 +86,22 @@ public class BenchmarkRunParameters implements Serializable {
      * @return the modelInstancesPath which needs to be workspace relative
      */
     public Path getModelInstancesPath() {
-        return Paths.get(modelInstancesPath).normalize().resolve(String.valueOf(modelSize))
+        return Paths.get(modelInstancesBasePath).normalize().resolve(String.valueOf(modelSize))
                 .resolve(String.valueOf(repetition));
     }
 
     /**
-     * @param modelInstancesPath the modelInstancesPath to set
+     * @return the modelInstancesBasePath which needs to be workspace relative
      */
-    public void setModelInstancesPath(String modelInstancesPath) {
-        this.modelInstancesPath = modelInstancesPath;
+    public String getModelInstancesBasePath() {
+        return modelInstancesBasePath;
+    }
+
+    /**
+     * @param modelInstancesBasePath the modelInstancesBasePath to set
+     */
+    public void setModelInstancesbasePath(String modelInstancesBasePath) {
+        this.modelInstancesBasePath = modelInstancesBasePath;
     }
 
     /**

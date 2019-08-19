@@ -3,7 +3,6 @@ package org.emoflon.ibex.tgg.benchmark.model;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.json.Json;
@@ -31,7 +30,6 @@ public class BenchmarkCasePreferences implements IPreferences {
     private BooleanProperty markedForExecution;
     private StringProperty patternMatchingEngine;
     private IntegerProperty defaultTimeout;
-    private IntegerProperty repetitions;
 
     
 
@@ -85,7 +83,6 @@ public class BenchmarkCasePreferences implements IPreferences {
         markedForExecution = new SimpleBooleanProperty(true);
         patternMatchingEngine = new SimpleStringProperty(PatternMatchingEngine.Democles.toString());
         defaultTimeout = new SimpleIntegerProperty(600);
-        repetitions = new SimpleIntegerProperty(3);
 
         // input
         metamodelsRegistrationMethod = new SimpleStringProperty("");
@@ -150,7 +147,6 @@ public class BenchmarkCasePreferences implements IPreferences {
         if (general != null) {
             setMarkedForExecution(general.getBoolean("markedForExecution", isMarkedForExecution()));
             setDefaultTimeout(general.getInt("defaultTimeout", getDefaultTimeout()));
-            setRepetitions(general.getInt("repetitions", getRepetitions()));
         }
 
         JsonObject input = data.getJsonObject("input");
@@ -246,6 +242,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         }
     }
 
+    @Override
     public JsonObject toJson() {
 
         JsonArrayBuilder modelSizesBuilder = Json.createArrayBuilder();
@@ -255,7 +252,7 @@ public class BenchmarkCasePreferences implements IPreferences {
 
         JsonObject preferences = Json.createObjectBuilder()
                 .add("general", Json.createObjectBuilder().add("markedForExecution", isMarkedForExecution())
-                        .add("defaultTimeout", getDefaultTimeout()).add("repetitions", getRepetitions()).build())
+                        .add("defaultTimeout", getDefaultTimeout()).build())
                 .add("input",
                         Json.createObjectBuilder()
                                 .add("metamodelsRegistrationMethod", getMetamodelsRegistrationMethod()).build())
@@ -310,11 +307,11 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final List<Observable> getAllProperties() {
-        return new LinkedList<Observable>(Arrays.asList(markedForExecution, defaultTimeout, repetitions,
+        // TODO: Liste aktualisieren
+        return new LinkedList<Observable>(Arrays.asList(markedForExecution, defaultTimeout, 
                 modelgenCreateReport, modelgenTimeout, modelgenModelSizes, initialFwdActive, initialFwdTimeout,
                 initialFwdMaxModelSize, initialBwdActive, initialBwdTimeout, initialBwdMaxModelSize, fwdOptActive,
-                fwdOptTimeout, fwdOptMaxModelSize, bwdOptActive, bwdOptTimeout, bwdOptMaxModelSize, syncActive,
-                syncTimeout, syncMaxModelSize, syncDirection, incrementalEditMethod, ccActive, ccTimeout,
+                fwdOptTimeout, fwdOptMaxModelSize, bwdOptActive, bwdOptTimeout, bwdOptMaxModelSize, ccActive, ccTimeout,
                 ccMaxModelSize, coActive, coTimeout, coMaxModelSize));
     }
 
@@ -370,18 +367,6 @@ public class BenchmarkCasePreferences implements IPreferences {
         this.defaultTimeoutProperty().set(defaultTimeout);
     }
 
-    public final IntegerProperty repetitionsProperty() {
-        return this.repetitions;
-    }
-
-    public final int getRepetitions() {
-        return this.repetitionsProperty().get();
-    }
-
-    public final void setRepetitions(final int repetitions) {
-        this.repetitionsProperty().set(repetitions);
-    }
-
     public final BooleanProperty modelgenCreateReportProperty() {
         return this.modelgenCreateReport;
     }
@@ -430,7 +415,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.initialFwdTimeoutProperty().get();
     }
 
-    public final int getFinalInitialFwdTimeout() {
+    public final int getEffectiveInitialFwdTimeout() {
         return getFinalValue(getInitialFwdTimeout(), 0, getDefaultTimeout());
     }
 
@@ -446,7 +431,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.initialFwdMaxModelSizeProperty().get();
     }
 
-    public final int getFinalInitialFwdMaxModelSize() {
+    public final int getEffectiveInitialFwdMaxModelSize() {
         return getFinalValue(getInitialFwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -474,7 +459,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.initialBwdTimeoutProperty().get();
     }
 
-    public final int getFinalInitialBwdTimeout() {
+    public final int getEffectiveInitialBwdTimeout() {
         return getFinalValue(getInitialBwdTimeout(), 0, getDefaultTimeout());
     }
 
@@ -490,7 +475,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.initialBwdMaxModelSizeProperty().get();
     }
 
-    public final int getFinalInitialBwdMaxModelSize() {
+    public final int getEffectiveInitialBwdMaxModelSize() {
         return getFinalValue(getInitialBwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -518,7 +503,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.fwdOptTimeoutProperty().get();
     }
 
-    public final int getFinalFwdOptTimeout() {
+    public final int getEffectiveFwdOptTimeout() {
         return getFinalValue(getFwdOptTimeout(), 0, getDefaultTimeout());
     }
 
@@ -534,7 +519,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.fwdOptMaxModelSizeProperty().get();
     }
 
-    public final int getFinalFwdOptMaxModelSize() {
+    public final int getEffectiveFwdOptMaxModelSize() {
         return getFinalValue(getFwdOptMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -562,7 +547,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.bwdOptTimeoutProperty().get();
     }
 
-    public final int getFinalBwdOptTimeout() {
+    public final int getEffectiveBwdOptTimeout() {
         return getFinalValue(getBwdOptTimeout(), 0, getDefaultTimeout());
     }
 
@@ -578,7 +563,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.bwdOptMaxModelSizeProperty().get();
     }
 
-    public final int getFinalBwdOptMaxModelSize() {
+    public final int getEffectiveBwdOptMaxModelSize() {
         return getFinalValue(getBwdOptMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -606,7 +591,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.ccTimeoutProperty().get();
     }
 
-    public final int getFinalCcTimeout() {
+    public final int getEffectiveCcTimeout() {
         return getFinalValue(getCcTimeout(), 0, getDefaultTimeout());
     }
 
@@ -622,7 +607,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.ccMaxModelSizeProperty().get();
     }
 
-    public final int getFinalCcMaxModelSize() {
+    public final int getEffectiveCcMaxModelSize() {
         return getFinalValue(getCcMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -650,7 +635,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.coTimeoutProperty().get();
     }
 
-    public final int getFinalCoTimeout() {
+    public final int getEffectiveCoTimeout() {
         return getFinalValue(getCoTimeout(), 0, getDefaultTimeout());
     }
 
@@ -666,7 +651,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.coMaxModelSizeProperty().get();
     }
 
-    public final int getFinalCoMaxModelSize() {
+    public final int getEffectiveCoMaxModelSize() {
         return getFinalValue(getCoMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -742,7 +727,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.fwdTimeoutProperty().get();
     }
 
-    public final int getFinalFwdTimeout() {
+    public final int getEffectiveFwdTimeout() {
         return getFinalValue(getFwdTimeout(), 0, getDefaultTimeout());
     }
 
@@ -758,7 +743,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.fwdMaxModelSizeProperty().get();
     }
 
-    public final int getFinalFwdMaxModelSize() {
+    public final int getEffectiveFwdMaxModelSize() {
         return getFinalValue(getFwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 
@@ -798,7 +783,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.bwdTimeoutProperty().get();
     }
 
-    public final int getFinalBwdTimeout() {
+    public final int getEffectiveBwdTimeout() {
         return getFinalValue(getFwdTimeout(), 0, getDefaultTimeout());
     }
 
@@ -814,7 +799,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.bwdMaxModelSizeProperty().get();
     }
 
-    public final int getFinalBwdMaxModelSize() {
+    public final int getEffectiveBwdMaxModelSize() {
         return getFinalValue(getBwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
     }
 

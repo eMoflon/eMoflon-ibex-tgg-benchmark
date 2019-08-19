@@ -100,7 +100,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
 					runParameters.getRepetition());
 			throw new BenchmarkFaildException();
 		} catch (Exception e) {
-			runResult.setError("Execution of failed. Reason: " + e.getMessage());
+			runResult.setError("Execution failed. Reason: " + e.getMessage());
 			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}", runParameters.getProjectName(),
 					runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
 					runParameters.getRepetition(), e.getMessage());

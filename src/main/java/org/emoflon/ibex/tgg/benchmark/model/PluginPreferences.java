@@ -16,27 +16,29 @@ public class PluginPreferences implements IPreferences {
 
     // general
     private final StringProperty benchmarkPreferencesFileName;
-    private final StringProperty modelInstancesPath;
+
+    // benchmark
+    private final IntegerProperty maxMemorySize;
+    private IntegerProperty repetitions;
+
+    // report
     private final StringProperty reportFilePath;
     private final StringProperty reportFileType;
-
-    private final IntegerProperty maxMemorySize;
-
     private final BooleanProperty includeErrors;
 
-    // input
-
-    // output
+    // default values
 
     public PluginPreferences() {
-        benchmarkPreferencesFileName = new SimpleStringProperty(".tgg-benchmark.json");
-        modelInstancesPath = new SimpleStringProperty("instances/tgg-benchmark/");
-        reportFilePath = new SimpleStringProperty("{workspace_path}/{Y}-{M}-{D}--{h}-{m}_TGGBenchmarkReport");
+        // general
+        benchmarkPreferencesFileName = new SimpleStringProperty(".tgg-benchmark.json"); // relative to project
 
-        reportFileType = new SimpleStringProperty(ReportFileType.CSV.toString());
-
+        // benchmark
+        repetitions = new SimpleIntegerProperty(3);
         maxMemorySize = new SimpleIntegerProperty(4096);
 
+        // report
+        reportFilePath = new SimpleStringProperty("{workspace_path}/{Y}-{M}-{D} {h}-{m} TGGBenchmarkReport");
+        reportFileType = new SimpleStringProperty(ReportFileType.EXCEL.toString());
         includeErrors = new SimpleBooleanProperty(true);
     }
 
@@ -47,16 +49,21 @@ public class PluginPreferences implements IPreferences {
         if (general != null) {
             setBenchmarkPreferencesFileName(
                     data.getString("benchmarkPreferencesFileName", getBenchmarkPreferencesFileName()));
-            setModelInstancesPath(data.getString("modelInstancesPath", getModelInstancesPath()));
+            setRepetitions(general.getInt("repetitions", getRepetitions()));
         }
 
-        JsonObject input = data.getJsonObject("input");
-        if (input != null) {
+        JsonObject benchmark = data.getJsonObject("benchmark");
+        if (benchmark != null) {
 
         }
 
-        JsonObject output = data.getJsonObject("output");
-        if (output != null) {
+        JsonObject report = data.getJsonObject("report");
+        if (report != null) {
+
+        }
+
+        JsonObject defaults = data.getJsonObject("defaults");
+        if (defaults != null) {
 
         }
     }
@@ -66,7 +73,8 @@ public class PluginPreferences implements IPreferences {
         JsonObject preferences = Json.createObjectBuilder().add("general",
                 Json.createObjectBuilder().add("benchmarkPreferencesFileName", getBenchmarkPreferencesFileName())
                         .add("input", Json.createObjectBuilder().build())
-                        .add("output", Json.createObjectBuilder().build())
+                        .add("report", Json.createObjectBuilder().build())
+                        .add("repetitions", getRepetitions())
                         .add("operationalizations", Json.createObjectBuilder()).build())
                 .build();
 
@@ -83,18 +91,6 @@ public class PluginPreferences implements IPreferences {
 
     public final void setBenchmarkPreferencesFileName(final String benchmarkPreferencesFileName) {
         this.benchmarkPreferencesFileNameProperty().set(benchmarkPreferencesFileName);
-    }
-
-    public final StringProperty modelInstancesPathProperty() {
-        return this.modelInstancesPath;
-    }
-
-    public final String getModelInstancesPath() {
-        return this.modelInstancesPathProperty().get();
-    }
-
-    public final void setModelInstancesPath(final String modelInstancesPath) {
-        this.modelInstancesPathProperty().set(modelInstancesPath);
     }
 
     public final StringProperty reportFilePathProperty() {
@@ -143,6 +139,18 @@ public class PluginPreferences implements IPreferences {
 
     public final void setReportFileType(final String reportFileType) {
         this.reportFileTypeProperty().set(reportFileType);
+    }
+
+    public final IntegerProperty repetitionsProperty() {
+        return this.repetitions;
+    }
+
+    public final int getRepetitions() {
+        return this.repetitionsProperty().get();
+    }
+
+    public final void setRepetitions(final int repetitions) {
+        this.repetitionsProperty().set(repetitions);
     }
 
 }
