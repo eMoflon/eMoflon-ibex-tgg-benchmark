@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
@@ -9,9 +8,9 @@ import java.util.List;
 
 import javax.json.JsonException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -21,8 +20,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.emoflon.ibex.tgg.benchmark.Activator;
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * EclipseWorkspace represents an Eclipse workspace. It allows easy access to
@@ -32,13 +29,12 @@ import org.slf4j.LoggerFactory;
  */
 public class EclipseWorkspace implements IEclipseWorkspace {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     private final Path location;
     private final IWorkspaceRoot workspaceRoot;
 
     /**
      * Constructor for {@link EclipseWorkspace}.
-     * 
      */
     public EclipseWorkspace() {
         this.workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
@@ -60,6 +56,7 @@ public class EclipseWorkspace implements IEclipseWorkspace {
         for (IProject project : projects) {
             
             try {
+                // TODO: get the correct project natures
                 for (IProject referencedProjects : project.getReferencedProjects()) {
                     System.out.println(referencedProjects.getName());
                     for (String nature : referencedProjects.getDescription().getNatureIds()) {

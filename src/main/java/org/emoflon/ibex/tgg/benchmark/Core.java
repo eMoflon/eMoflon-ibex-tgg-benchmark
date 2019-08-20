@@ -15,8 +15,13 @@ import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
 import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.spi.StandardLevel;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,7 +34,7 @@ public class Core {
     public static final String VERSION = "0.1.0";
     public static final String PLUGIN_NAME = "TGG-Benchmark";
 
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
     private static Core instance;
     private final ObservableList<EclipseProject> tggProjects;

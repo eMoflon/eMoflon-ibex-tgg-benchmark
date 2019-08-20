@@ -16,17 +16,18 @@ import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.spi.StandardLevel;
 
 
 
 public class Activator implements BundleActivator {
     
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    private static Logger LOG;
     
     private static Activator plugin = null;
     private static Core pluginCore = null;
@@ -53,6 +54,7 @@ public class Activator implements BundleActivator {
         pluginCore.loadPluginPreferences();
     }
 
+    @Override
     public void stop(BundleContext bundleContext) throws Exception {
         appContext.dispose();
         AsyncActions.stopAll();
@@ -63,17 +65,6 @@ public class Activator implements BundleActivator {
      */
     public IEclipseContext getAppContext() {
         return appContext;
-    }
-
-    private void configureLogbackInBundle(Bundle bundle) throws JoranException, IOException {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        JoranConfigurator jc = new JoranConfigurator();
-        jc.setContext(context);
-        context.reset();
-        
-        // this assumes that the logback.xml file is in the root of the bundle.
-        URL logbackConfigFileUrl = FileLocator.find(bundle, new Path("logback.xml"),null);
-        jc.doConfigure(logbackConfigFileUrl.openStream());
     }
 
     public Bundle getBundle() {

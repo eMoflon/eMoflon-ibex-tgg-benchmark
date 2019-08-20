@@ -10,11 +10,12 @@ import java.util.LinkedList;
 import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -26,7 +27,7 @@ import javafx.beans.property.StringProperty;
  */
 public class EclipseProject {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
     private final StringProperty name;
     private final Path path;

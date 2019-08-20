@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.LinkedList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ReportBuilder creates a report from a list of benchmark results and saves
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ReportBuilder {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    protected static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     protected final Path reportFilePath;
     protected final LinkedList<BenchmarkResult> benchmarkResults;
     protected final boolean includeErrors;

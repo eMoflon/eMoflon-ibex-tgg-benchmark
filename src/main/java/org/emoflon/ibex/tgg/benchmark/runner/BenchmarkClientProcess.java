@@ -11,8 +11,13 @@ import org.emoflon.ibex.tgg.benchmark.runner.benchmark.FwdOptBenchmark;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.ModelgenBenchmark;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.SyncBenchmark;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.spi.StandardLevel;
 import org.terracotta.ipceventbus.event.EventBusClient;
 
 /**
@@ -20,8 +25,8 @@ import org.terracotta.ipceventbus.event.EventBusClient;
  */
 public class BenchmarkClientProcess {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
     private static final int EVENT_BUS_PORT = 24842;
+    private static Logger LOG;
 
     private static volatile EventBusClient eventBus = null;
     private static volatile Thread benchmarkThread = null;
@@ -73,6 +78,19 @@ public class BenchmarkClientProcess {
     }
 
     public static void main(String[] args) {
+        // configure log4j2
+        Level logLevel = Level.ALL;
+        if (args.length > 0) {
+            try {
+                logLevel = Level.getLevel(StandardLevel.valueOf(args[0]).toString());
+            } catch (IllegalArgumentException e) {
+                // keep default
+            }
+        }
+        Configurator.initialize(new DefaultConfiguration());
+        Configurator.setRootLevel(logLevel);
+        LOG = LogManager.getLogger(Core.PLUGIN_NAME);
+        
         LOG.debug("Benchmark client process started");
 
         // handle process termination

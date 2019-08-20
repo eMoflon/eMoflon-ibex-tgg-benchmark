@@ -7,14 +7,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
 import org.emoflon.ibex.tgg.benchmark.runner.PatternMatchingEngine;
 import org.emoflon.ibex.tgg.benchmark.runner.SingleRunResult;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Exception thrown when the execution of the benchmark failed.
@@ -32,7 +32,7 @@ class BenchmarkFaildException extends Exception {
  */
 public abstract class Benchmark<O extends OperationalStrategy> {
 
-	protected static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+	protected static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
 	protected final BenchmarkRunParameters runParameters;
 	protected O op;

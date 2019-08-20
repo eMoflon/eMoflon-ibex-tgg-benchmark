@@ -5,9 +5,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class Action extends Thread {
 
@@ -81,7 +81,7 @@ class Action extends Thread {
  */
 public class AsyncActions {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     private static final Hashtable<String, Action> uniqueActions = new Hashtable<>();
     private static final Vector<Action> nonUniqueActions = new Vector<>();
 

@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.benchmark.runner;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +16,8 @@ import java.util.Stack;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
@@ -28,8 +29,6 @@ import org.emoflon.ibex.tgg.benchmark.runner.report.ExcelReportBuilder;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportBuilder;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
 import org.emoflon.ibex.tgg.benchmark.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.terracotta.ipceventbus.event.EventBusException;
 import org.terracotta.ipceventbus.event.EventBusServer;
 import org.terracotta.ipceventbus.proc.JavaProcess;
@@ -41,7 +40,7 @@ import org.terracotta.ipceventbus.proc.JavaProcess;
  */
 public class BenchmarkRunner implements Runnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Core.PLUGIN_NAME);
+    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     private static final int EVENT_BUS_PORT = 24842;
     private static final LinkedList<File> CLASS_PATHS;
 
@@ -422,7 +421,7 @@ public class BenchmarkRunner implements Runnable {
             // ByteArrayOutputStream stdout = new ByteArrayOutputStream();
             JavaProcess javaProcess = JavaProcess.newBuilder().mainClass(BenchmarkClientProcess.class.getName())
                     .classpath(CLASS_PATHS).addJvmArg("-Xmx" + pluginPreferences.getMaxMemorySize() + "m")
-                    .addJvmArg("-Xms" + pluginPreferences.getMaxMemorySize() + "m").pipeStdout().pipeStderr().build();
+                    .addJvmArg("-Xms" + pluginPreferences.getMaxMemorySize() + "m").arguments(LOG.getLevel().getStandardLevel().toString()).pipeStdout().pipeStderr().build();
             try {
                 javaProcess.waitFor();
                 // LOG.debug(stdout.toString("UTF-8"));
