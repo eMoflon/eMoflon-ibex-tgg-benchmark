@@ -269,7 +269,14 @@ public class ExcelReportBuilder extends ReportBuilder {
         error.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getError);
         error.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(error);
-        rawResultsSheetDefinition.add(error);
+        
+        Map<String, Object> rawError = new HashMap<>();
+        rawError.put("name", "Error");
+        rawError.put("columnWidth", 20000);
+        rawError.put("valueType", CellType.STRING);
+        rawError.put("valueSelector", (Function<SingleRunResult, String>) SingleRunResult::getError);
+        rawError.put("valueSelectorClass", SingleRunResult.class);
+        rawResultsSheetDefinition.add(rawError);
     }
 
     @Override
