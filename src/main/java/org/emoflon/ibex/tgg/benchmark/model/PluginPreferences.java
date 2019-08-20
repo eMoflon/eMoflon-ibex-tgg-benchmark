@@ -7,15 +7,21 @@ import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import ch.qos.logback.*;
 
 public class PluginPreferences implements IPreferences {
 
     // general
     private final StringProperty benchmarkPreferencesFileName;
+    // TODO: implement LogLevel
 
     // benchmark
     private final IntegerProperty maxMemorySize;
@@ -27,6 +33,17 @@ public class PluginPreferences implements IPreferences {
     private final BooleanProperty includeErrors;
 
     // default values
+    private IntegerProperty defaultTimeout;
+    private ListProperty<Integer> defaultModelSizes;
+    private BooleanProperty defaultModelgenIncludeReport;
+    private BooleanProperty defaultInitialFwdActive;
+    private BooleanProperty defaultInitialBwdActive;
+    private BooleanProperty defaultFwdActive;
+    private BooleanProperty defaultBwdActive;
+    private BooleanProperty defaultFwdOptActive;
+    private BooleanProperty defaultBwdOptActive;
+    private BooleanProperty defaultCcActive;
+    private BooleanProperty defaultCoActive;
 
     public PluginPreferences() {
         // general
@@ -40,6 +57,19 @@ public class PluginPreferences implements IPreferences {
         reportFilePath = new SimpleStringProperty("{workspace_path}/{Y}-{M}-{D} {h}-{m} TGGBenchmarkReport");
         reportFileType = new SimpleStringProperty(ReportFileType.EXCEL.toString());
         includeErrors = new SimpleBooleanProperty(true);
+
+        // defaults
+        defaultTimeout = new SimpleIntegerProperty(300);
+        defaultModelSizes = new SimpleListProperty<>(FXCollections.observableArrayList(500, 1000, 2000, 4000));
+        defaultModelgenIncludeReport = new SimpleBooleanProperty(true);
+        defaultInitialFwdActive = new SimpleBooleanProperty(true);
+        defaultInitialBwdActive = new SimpleBooleanProperty(true);
+        defaultFwdActive = new SimpleBooleanProperty(true);
+        defaultBwdActive = new SimpleBooleanProperty(true);
+        defaultFwdOptActive = new SimpleBooleanProperty(false);
+        defaultBwdOptActive = new SimpleBooleanProperty(false);
+        defaultCcActive = new SimpleBooleanProperty(false);
+        defaultCoActive = new SimpleBooleanProperty(false);
     }
 
     public PluginPreferences(JsonObject data) {
@@ -152,5 +182,170 @@ public class PluginPreferences implements IPreferences {
     public final void setRepetitions(final int repetitions) {
         this.repetitionsProperty().set(repetitions);
     }
+
+    public final IntegerProperty defaultTimeoutProperty() {
+        return this.defaultTimeout;
+    }
+    
+
+    public final int getDefaultTimeout() {
+        return this.defaultTimeoutProperty().get();
+    }
+    
+
+    public final void setDefaultTimeout(final int defaultTimeout) {
+        this.defaultTimeoutProperty().set(defaultTimeout);
+    }
+    
+
+    public final ListProperty<Integer> defaultModelSizesProperty() {
+        return this.defaultModelSizes;
+    }
+    
+
+    public final ObservableList<Integer> getDefaultModelSizes() {
+        return this.defaultModelSizesProperty().get();
+    }
+    
+
+    public final void setDefaultModelSizes(final ObservableList<Integer> defaultModelSizes) {
+        this.defaultModelSizesProperty().set(defaultModelSizes);
+    }
+    
+
+    public final BooleanProperty defaultModelgenIncludeReportProperty() {
+        return this.defaultModelgenIncludeReport;
+    }
+    
+
+    public final boolean isDefaultModelgenIncludeReport() {
+        return this.defaultModelgenIncludeReportProperty().get();
+    }
+    
+
+    public final void setDefaultModelgenIncludeReport(final boolean defaultModelgenIncludeReport) {
+        this.defaultModelgenIncludeReportProperty().set(defaultModelgenIncludeReport);
+    }
+    
+
+    public final BooleanProperty defaultInitialFwdActiveProperty() {
+        return this.defaultInitialFwdActive;
+    }
+    
+
+    public final boolean isDefaultInitialFwdActive() {
+        return this.defaultInitialFwdActiveProperty().get();
+    }
+    
+
+    public final void setDefaultInitialFwdActive(final boolean defaultInitialFwdActive) {
+        this.defaultInitialFwdActiveProperty().set(defaultInitialFwdActive);
+    }
+    
+
+    public final BooleanProperty defaultInitialBwdActiveProperty() {
+        return this.defaultInitialBwdActive;
+    }
+    
+
+    public final boolean isDefaultInitialBwdActive() {
+        return this.defaultInitialBwdActiveProperty().get();
+    }
+    
+
+    public final void setDefaultInitialBwdActive(final boolean defaultInitialBwdActive) {
+        this.defaultInitialBwdActiveProperty().set(defaultInitialBwdActive);
+    }
+    
+
+    public final BooleanProperty defaultFwdActiveProperty() {
+        return this.defaultFwdActive;
+    }
+    
+
+    public final boolean isDefaultFwdActive() {
+        return this.defaultFwdActiveProperty().get();
+    }
+    
+
+    public final void setDefaultFwdActive(final boolean defaultFwdActive) {
+        this.defaultFwdActiveProperty().set(defaultFwdActive);
+    }
+    
+
+    public final BooleanProperty defaultBwdActiveProperty() {
+        return this.defaultBwdActive;
+    }
+    
+
+    public final boolean isDefaultBwdActive() {
+        return this.defaultBwdActiveProperty().get();
+    }
+    
+
+    public final void setDefaultBwdActive(final boolean defaultBwdActive) {
+        this.defaultBwdActiveProperty().set(defaultBwdActive);
+    }
+    
+
+    public final BooleanProperty defaultFwdOptActiveProperty() {
+        return this.defaultFwdOptActive;
+    }
+    
+
+    public final boolean isDefaultFwdOptActive() {
+        return this.defaultFwdOptActiveProperty().get();
+    }
+    
+
+    public final void setDefaultFwdOptActive(final boolean defaultFwdOptActive) {
+        this.defaultFwdOptActiveProperty().set(defaultFwdOptActive);
+    }
+    
+
+    public final BooleanProperty defaultBwdOptActiveProperty() {
+        return this.defaultBwdOptActive;
+    }
+    
+
+    public final boolean isDefaultBwdOptActive() {
+        return this.defaultBwdOptActiveProperty().get();
+    }
+    
+
+    public final void setDefaultBwdOptActive(final boolean defaultBwdOptActive) {
+        this.defaultBwdOptActiveProperty().set(defaultBwdOptActive);
+    }
+    
+
+    public final BooleanProperty defaultCcActiveProperty() {
+        return this.defaultCcActive;
+    }
+    
+
+    public final boolean isDefaultCcActive() {
+        return this.defaultCcActiveProperty().get();
+    }
+    
+
+    public final void setDefaultCcActive(final boolean defaultCcActive) {
+        this.defaultCcActiveProperty().set(defaultCcActive);
+    }
+    
+
+    public final BooleanProperty defaultCoActiveProperty() {
+        return this.defaultCoActive;
+    }
+    
+
+    public final boolean isDefaultCoActive() {
+        return this.defaultCoActiveProperty().get();
+    }
+    
+
+    public final void setDefaultCoActive(final boolean defaultCoActive) {
+        this.defaultCoActiveProperty().set(defaultCoActive);
+    }
+    
 
 }

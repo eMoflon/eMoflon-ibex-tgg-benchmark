@@ -1,5 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.runner;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,11 +90,10 @@ public class BenchmarkRunner implements Runnable {
         this.startTime = LocalDateTime.now();
         this.modelInstancesBasePath = eclipseWorkspace.getPluginStateLocation().resolve("model_instances");
 
-        // try to create report files (multiple files might be used depending on user
-        // input)
+        // try to create report file(s). If an error occours the user will know right away instead of learning of it 
         this.reportBuilders = new HashMap<>();
         Map<OperationalizationType, Function<BenchmarkCasePreferences, Boolean>> includeOps = new HashMap<>();
-        includeOps.put(OperationalizationType.MODELGEN, BenchmarkCasePreferences::isModelgenCreateReport);
+        includeOps.put(OperationalizationType.MODELGEN, BenchmarkCasePreferences::isModelgenIncludeReport);
         includeOps.put(OperationalizationType.INITIAL_FWD, BenchmarkCasePreferences::isInitialFwdActive);
         includeOps.put(OperationalizationType.INITIAL_BWD, BenchmarkCasePreferences::isInitialBwdActive);
         includeOps.put(OperationalizationType.FWD,
@@ -178,7 +178,7 @@ public class BenchmarkRunner implements Runnable {
             BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                     repetition);
             runParameters.setOperationalization(OperationalizationType.MODELGEN);
-            runParameters.setTimeout(bcp.getFinalModelgenTimeout());
+            runParameters.setTimeout(bcp.getEffectiveModelgenTimeout());
             runParameters.setTggRule(bcp.getModelgenTggRule());
             return runParameters;
         };
@@ -187,7 +187,7 @@ public class BenchmarkRunner implements Runnable {
                         eclipseProject.getPath(), eclipseProject.getName(), OperationalizationType.MODELGEN, startTime));
         Integer maxSuccessfullModelSize = benchmarkOperationalization(runParametersGenerator,
                 bcp.getModelgenModelSizes(), bcp.getModelgenModelSizes().get(bcp.getModelgenModelSizes().size() - 1),
-                pluginPreferences.getRepetitions(), bcp.isModelgenCreateReport(), reportBuilder);
+                pluginPreferences.getRepetitions(), bcp.isModelgenIncludeReport(), reportBuilder);
 
         // INITIAL_FWD
         if (bcp.isInitialFwdActive()) {
@@ -195,14 +195,14 @@ public class BenchmarkRunner implements Runnable {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
                 runParameters.setOperationalization(OperationalizationType.INITIAL_FWD);
-                runParameters.setTimeout(bcp.getInitialFwdTimeout());
+                runParameters.setTimeout(bcp.getEffectiveInitialFwdTimeout());
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
                     pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
                     eclipseProject.getName(), OperationalizationType.INITIAL_FWD, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getInitialFwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveInitialFwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -212,14 +212,14 @@ public class BenchmarkRunner implements Runnable {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
                 runParameters.setOperationalization(OperationalizationType.INITIAL_BWD);
-                runParameters.setTimeout(bcp.getInitialBwdTimeout());
+                runParameters.setTimeout(bcp.getEffectiveInitialBwdTimeout());
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
                     pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
                     eclipseProject.getName(), OperationalizationType.INITIAL_BWD, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getInitialBwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveInitialBwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -228,7 +228,7 @@ public class BenchmarkRunner implements Runnable {
             runParametersGenerator = (Integer modelSize, Integer repetition) -> {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
-                runParameters.setTimeout(bcp.getFwdTimeout());
+                runParameters.setTimeout(bcp.getEffectiveFwdTimeout());
                 if (bcp.getFwdIncrementalEditMethod() == "") {
                     runParameters.setOperationalization(OperationalizationType.FWD);
                 } else {
@@ -242,7 +242,7 @@ public class BenchmarkRunner implements Runnable {
                     eclipseProject.getName(), bcp.getFwdIncrementalEditMethod() == "" ? OperationalizationType.FWD
                             : OperationalizationType.INCREMENTAL_FWD, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getFwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveFwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -251,7 +251,7 @@ public class BenchmarkRunner implements Runnable {
             runParametersGenerator = (Integer modelSize, Integer repetition) -> {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp,
                         modelSize.intValue(), repetition);
-                runParameters.setTimeout(bcp.getBwdTimeout());
+                runParameters.setTimeout(bcp.getEffectiveBwdTimeout());
                 if (bcp.getBwdIncrementalEditMethod() == "") {
                     runParameters.setOperationalization(OperationalizationType.BWD);
                 } else {
@@ -265,7 +265,7 @@ public class BenchmarkRunner implements Runnable {
                     eclipseProject.getName(), bcp.getBwdIncrementalEditMethod() == "" ? OperationalizationType.BWD
                             : OperationalizationType.INCREMENTAL_BWD, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getBwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveBwdMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -275,14 +275,14 @@ public class BenchmarkRunner implements Runnable {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
                 runParameters.setOperationalization(OperationalizationType.FWD_OPT);
-                runParameters.setTimeout(bcp.getFwdOptTimeout());
+                runParameters.setTimeout(bcp.getEffectiveFwdOptTimeout());
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
                     pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
                     eclipseProject.getName(), OperationalizationType.FWD_OPT, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getFwdOptMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveFwdOptMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -292,14 +292,14 @@ public class BenchmarkRunner implements Runnable {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
                 runParameters.setOperationalization(OperationalizationType.BWD_OPT);
-                runParameters.setTimeout(bcp.getBwdOptTimeout());
+                runParameters.setTimeout(bcp.getEffectiveBwdOptTimeout());
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
                     pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
                     eclipseProject.getName(), OperationalizationType.BWD_OPT, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getBwdOptMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveBwdOptMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -309,14 +309,14 @@ public class BenchmarkRunner implements Runnable {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
                 runParameters.setOperationalization(OperationalizationType.CC);
-                runParameters.setTimeout(bcp.getCcTimeout());
+                runParameters.setTimeout(bcp.getEffectiveCcTimeout());
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
                     pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
                     eclipseProject.getName(), OperationalizationType.CC, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getCcMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveCcMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
 
@@ -326,14 +326,14 @@ public class BenchmarkRunner implements Runnable {
                 BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,
                         repetition);
                 runParameters.setOperationalization(OperationalizationType.CO);
-                runParameters.setTimeout(bcp.getCoTimeout());
+                runParameters.setTimeout(bcp.getEffectiveCoTimeout());
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
                     pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
                     eclipseProject.getName(), OperationalizationType.CO, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
-                    min.apply(maxSuccessfullModelSize, bcp.getCoMaxModelSize()), pluginPreferences.getRepetitions(), true,
+                    min.apply(maxSuccessfullModelSize, bcp.getEffectiveCoMaxModelSize()), pluginPreferences.getRepetitions(), true,
                     reportBuilder);
         }
     }
@@ -345,7 +345,7 @@ public class BenchmarkRunner implements Runnable {
      * 
      * @param runParametersGenerator generator for run parameters
      * @param modelSizes             model size that need to be benchmarked
-     * @param maxModelSize           max model size to test
+     * @param maxEffectiveModelSize           max model size to test
      * @param numberOfRepetitions    number of repetition to run each model size
      * @param includeInReport        wheter to include the results into the report
      *                               or not
@@ -355,7 +355,7 @@ public class BenchmarkRunner implements Runnable {
      */
     private Integer benchmarkOperationalization(
             BiFunction<Integer, Integer, BenchmarkRunParameters> runParametersGenerator, List<Integer> modelSizes,
-            Integer maxModelSize, Integer numberOfRepetitions, boolean includeInReport, ReportBuilder reportBuilder)
+            Integer maxEffectiveModelSize, Integer numberOfRepetitions, boolean includeInReport, ReportBuilder reportBuilder)
             throws IOException, InterruptedException {
 
         Integer lastSuccessfullModelSize = -1;
@@ -365,7 +365,7 @@ public class BenchmarkRunner implements Runnable {
         }
 
         opBenchmark: for (Integer modelSize : modelSizes) {
-            if (modelSize > maxModelSize) {
+            if (modelSize > maxEffectiveModelSize) {
                 break;
             }
 
@@ -418,21 +418,27 @@ public class BenchmarkRunner implements Runnable {
             });
 
             LOG.debug("Starting benchmark in child process");
+            // TODO: make the piping better
+            // ByteArrayOutputStream stdout = new ByteArrayOutputStream();
             JavaProcess javaProcess = JavaProcess.newBuilder().mainClass(BenchmarkClientProcess.class.getName())
                     .classpath(CLASS_PATHS).addJvmArg("-Xmx" + pluginPreferences.getMaxMemorySize() + "m")
                     .addJvmArg("-Xms" + pluginPreferences.getMaxMemorySize() + "m").pipeStdout().pipeStderr().build();
             try {
                 javaProcess.waitFor();
-                if (javaProcess.exitValue() == 1) {
-                    LOG.error("Benchmark child process execution failed");
-                }
-                // wait that the results are pushed on resultWrapper stack
-                Thread.sleep(10);
+                // LOG.debug(stdout.toString("UTF-8"));
             } catch (InterruptedException e) {
                 javaProcess.destroy();
                 LOG.error("Benchmark process interrupted");
                 throw e;
             }
+
+            if (javaProcess.exitValue() == 1) {
+                LOG.error("Benchmark child process execution failed");
+            }
+
+            // wait that the results are pushed on resultWrapper stack
+            Thread.sleep(10);
+
             
             if (!resultWrapper.empty()) {
                 result = resultWrapper.pop();

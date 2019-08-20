@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
+import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.PatternMatchingEngine;
 
 import javafx.beans.Observable;
@@ -26,20 +28,18 @@ import javafx.collections.ObservableList;
 
 public class BenchmarkCasePreferences implements IPreferences {
 
-    // general
+    private final PluginPreferences pluginPreferences;
     private BooleanProperty markedForExecution;
+
+    // general
+    private StringProperty eclipseProject;
+    private StringProperty benchmarkCaseName;
+    private StringProperty metamodelsRegistrationMethod;
     private StringProperty patternMatchingEngine;
     private IntegerProperty defaultTimeout;
 
-    
-
-    // input
-    private StringProperty metamodelsRegistrationMethod;
-
-    // output
-
     // operationalizations
-    private BooleanProperty modelgenCreateReport;
+    private BooleanProperty modelgenIncludeReport;
     private IntegerProperty modelgenTimeout;
     private ListProperty<Integer> modelgenModelSizes;
     private StringProperty modelgenTggRule;
@@ -79,60 +79,55 @@ public class BenchmarkCasePreferences implements IPreferences {
     private IntegerProperty coMaxModelSize;
 
     public BenchmarkCasePreferences() {
-        // general
+        pluginPreferences = Core.getInstance().getPluginPreferences();
         markedForExecution = new SimpleBooleanProperty(true);
-        patternMatchingEngine = new SimpleStringProperty(PatternMatchingEngine.Democles.toString());
-        defaultTimeout = new SimpleIntegerProperty(600);
-
-        // input
+        
+        // general
+        eclipseProject = new SimpleStringProperty("");
+        benchmarkCaseName = new SimpleStringProperty("");
         metamodelsRegistrationMethod = new SimpleStringProperty("");
-
-        // output
+        patternMatchingEngine = new SimpleStringProperty(PatternMatchingEngine.Democles.toString());
+        defaultTimeout = new SimpleIntegerProperty(0);
 
         // operationalizations
-        modelgenCreateReport = new SimpleBooleanProperty(true);
+        modelgenIncludeReport = new SimpleBooleanProperty(pluginPreferences.isDefaultModelgenIncludeReport());
         modelgenTimeout = new SimpleIntegerProperty(0);
-        modelgenModelSizes = new SimpleListProperty<>(FXCollections.observableArrayList(1000, 2000, 4000, 8000));
+        modelgenModelSizes = new SimpleListProperty<>(FXCollections.observableArrayList(pluginPreferences.getDefaultModelSizes()));
         modelgenTggRule = new SimpleStringProperty("");
 
-        initialFwdActive = new SimpleBooleanProperty(true);
+        initialFwdActive = new SimpleBooleanProperty(pluginPreferences.isDefaultInitialFwdActive());
         initialFwdTimeout = new SimpleIntegerProperty(0);
         initialFwdMaxModelSize = new SimpleIntegerProperty(-1);
 
-        initialBwdActive = new SimpleBooleanProperty(true);
+        initialBwdActive = new SimpleBooleanProperty(pluginPreferences.isDefaultInitialBwdActive());
         initialBwdTimeout = new SimpleIntegerProperty(0);
         initialBwdMaxModelSize = new SimpleIntegerProperty(-1);
 
-        fwdActive = new SimpleBooleanProperty(true);
+        fwdActive = new SimpleBooleanProperty(pluginPreferences.isDefaultFwdActive());
         fwdTimeout = new SimpleIntegerProperty(0);
         fwdMaxModelSize = new SimpleIntegerProperty(-1);
         fwdIncrementalEditMethod = new SimpleStringProperty("");
 
-        bwdActive = new SimpleBooleanProperty(true);
+        bwdActive = new SimpleBooleanProperty(pluginPreferences.isDefaultBwdActive());
         bwdTimeout = new SimpleIntegerProperty(0);
         bwdMaxModelSize = new SimpleIntegerProperty(-1);
         bwdIncrementalEditMethod = new SimpleStringProperty("");
 
-        fwdOptActive = new SimpleBooleanProperty(true);
+        fwdOptActive = new SimpleBooleanProperty(pluginPreferences.isDefaultFwdOptActive());
         fwdOptTimeout = new SimpleIntegerProperty(0);
         fwdOptMaxModelSize = new SimpleIntegerProperty(-1);
 
-        bwdOptActive = new SimpleBooleanProperty(true);
+        bwdOptActive = new SimpleBooleanProperty(pluginPreferences.isDefaultBwdOptActive());
         bwdOptTimeout = new SimpleIntegerProperty(0);
         bwdOptMaxModelSize = new SimpleIntegerProperty(-1);
 
-        ccActive = new SimpleBooleanProperty(true);
+        ccActive = new SimpleBooleanProperty(pluginPreferences.isDefaultCcActive());
         ccTimeout = new SimpleIntegerProperty(0);
         ccMaxModelSize = new SimpleIntegerProperty(-1);
 
-        coActive = new SimpleBooleanProperty(true);
+        coActive = new SimpleBooleanProperty(pluginPreferences.isDefaultCoActive());
         coTimeout = new SimpleIntegerProperty(0);
         coMaxModelSize = new SimpleIntegerProperty(-1);
-    }
-
-    public BenchmarkCasePreferences(EclipseProject project) {
-        // TODO: implement it
-        this();
     }
 
     public BenchmarkCasePreferences(BenchmarkCasePreferences source) {
@@ -164,7 +159,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         if (operationalizations != null) {
             JsonObject modelgen = operationalizations.getJsonObject("modelgen");
             if (modelgen != null) {
-                setModelgenCreateReport(modelgen.getBoolean("createReport", isModelgenCreateReport()));
+                setModelgenIncludeReport(modelgen.getBoolean("includeReport", isModelgenIncludeReport()));
                 setModelgenTimeout(modelgen.getInt("timeout", getModelgenTimeout()));
                 JsonArray modelSizesArray = modelgen.getJsonArray("modelSizes");
                 if (modelSizesArray != null) {
@@ -260,7 +255,7 @@ public class BenchmarkCasePreferences implements IPreferences {
                 .add("operationalizations",
                         Json.createObjectBuilder()
                                 .add("modelgen",
-                                        Json.createObjectBuilder().add("createReport", isModelgenCreateReport())
+                                        Json.createObjectBuilder().add("includeReport", isModelgenIncludeReport())
                                                 .add("timeout", getModelgenTimeout())
                                                 .add("modelSizes", modelSizesBuilder.build())
                                                 .add("tggRule", getModelgenTggRule()).build())
@@ -309,7 +304,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     public final List<Observable> getAllProperties() {
         // TODO: Liste aktualisieren
         return new LinkedList<Observable>(Arrays.asList(markedForExecution, defaultTimeout, 
-                modelgenCreateReport, modelgenTimeout, modelgenModelSizes, initialFwdActive, initialFwdTimeout,
+                modelgenIncludeReport, modelgenTimeout, modelgenModelSizes, initialFwdActive, initialFwdTimeout,
                 initialFwdMaxModelSize, initialBwdActive, initialBwdTimeout, initialBwdMaxModelSize, fwdOptActive,
                 fwdOptTimeout, fwdOptMaxModelSize, bwdOptActive, bwdOptTimeout, bwdOptMaxModelSize, ccActive, ccTimeout,
                 ccMaxModelSize, coActive, coTimeout, coMaxModelSize));
@@ -348,7 +343,7 @@ public class BenchmarkCasePreferences implements IPreferences {
         }
     }
 
-    private <T> T getFinalValue(T value, T whenValue, T defaultValue) {
+    private <T> T getValueOrDefault(T value, T whenValue, T defaultValue) {
         if (value == whenValue) {
             return defaultValue;
         }
@@ -363,20 +358,24 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.defaultTimeoutProperty().get();
     }
 
+    public final int getEffectiveDefaultTimeout() {
+        return getValueOrDefault(getDefaultTimeout(), 0, pluginPreferences.getDefaultTimeout());
+    }
+
     public final void setDefaultTimeout(final int defaultTimeout) {
         this.defaultTimeoutProperty().set(defaultTimeout);
     }
 
-    public final BooleanProperty modelgenCreateReportProperty() {
-        return this.modelgenCreateReport;
+    public final BooleanProperty modelgenIncludeReportProperty() {
+        return this.modelgenIncludeReport;
     }
 
-    public final boolean isModelgenCreateReport() {
-        return this.modelgenCreateReportProperty().get();
+    public final boolean isModelgenIncludeReport() {
+        return this.modelgenIncludeReportProperty().get();
     }
 
-    public final void setModelgenCreateReport(final boolean modelgenCreateReport) {
-        this.modelgenCreateReportProperty().set(modelgenCreateReport);
+    public final void setModelgenIncludeReport(final boolean modelgenIncludeReport) {
+        this.modelgenIncludeReportProperty().set(modelgenIncludeReport);
     }
 
     public final IntegerProperty modelgenTimeoutProperty() {
@@ -387,8 +386,8 @@ public class BenchmarkCasePreferences implements IPreferences {
         return this.modelgenTimeoutProperty().get();
     }
 
-    public final int getFinalModelgenTimeout() {
-        return getFinalValue(getModelgenTimeout(), 0, getDefaultTimeout());
+    public final int getEffectiveModelgenTimeout() {
+        return getValueOrDefault(getModelgenTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setModelgenTimeout(final int modelgenTimeout) {
@@ -416,7 +415,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveInitialFwdTimeout() {
-        return getFinalValue(getInitialFwdTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getInitialFwdTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setInitialFwdTimeout(final int initialFwdTimeout) {
@@ -432,7 +431,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveInitialFwdMaxModelSize() {
-        return getFinalValue(getInitialFwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getInitialFwdMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setInitialFwdMaxModelSize(final int initialFwdMaxModelSize) {
@@ -460,7 +459,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveInitialBwdTimeout() {
-        return getFinalValue(getInitialBwdTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getInitialBwdTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setInitialBwdTimeout(final int initialBwdTimeout) {
@@ -476,7 +475,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveInitialBwdMaxModelSize() {
-        return getFinalValue(getInitialBwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getInitialBwdMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setInitialBwdMaxModelSize(final int initialBwdMaxModelSize) {
@@ -504,7 +503,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveFwdOptTimeout() {
-        return getFinalValue(getFwdOptTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getFwdOptTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setFwdOptTimeout(final int fwdOptTimeout) {
@@ -520,7 +519,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveFwdOptMaxModelSize() {
-        return getFinalValue(getFwdOptMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getFwdOptMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setFwdOptMaxModelSize(final int fwdOptMaxModelSize) {
@@ -548,7 +547,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveBwdOptTimeout() {
-        return getFinalValue(getBwdOptTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getBwdOptTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setBwdOptTimeout(final int bwdOptTimeout) {
@@ -564,7 +563,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveBwdOptMaxModelSize() {
-        return getFinalValue(getBwdOptMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getBwdOptMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setBwdOptMaxModelSize(final int bwdOptMaxModelSize) {
@@ -592,7 +591,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveCcTimeout() {
-        return getFinalValue(getCcTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getCcTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setCcTimeout(final int ccTimeout) {
@@ -608,7 +607,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveCcMaxModelSize() {
-        return getFinalValue(getCcMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getCcMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setCcMaxModelSize(final int ccMaxModelSize) {
@@ -636,7 +635,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveCoTimeout() {
-        return getFinalValue(getCoTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getCoTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setCoTimeout(final int coTimeout) {
@@ -652,7 +651,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveCoMaxModelSize() {
-        return getFinalValue(getCoMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getCoMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setCoMaxModelSize(final int coMaxModelSize) {
@@ -728,7 +727,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveFwdTimeout() {
-        return getFinalValue(getFwdTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getFwdTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setFwdTimeout(final int fwdTimeout) {
@@ -744,7 +743,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveFwdMaxModelSize() {
-        return getFinalValue(getFwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getFwdMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setFwdMaxModelSize(final int fwdMaxModelSize) {
@@ -784,7 +783,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveBwdTimeout() {
-        return getFinalValue(getFwdTimeout(), 0, getDefaultTimeout());
+        return getValueOrDefault(getFwdTimeout(), 0, getEffectiveDefaultTimeout());
     }
 
     public final void setBwdTimeout(final int bwdTimeout) {
@@ -800,7 +799,7 @@ public class BenchmarkCasePreferences implements IPreferences {
     }
 
     public final int getEffectiveBwdMaxModelSize() {
-        return getFinalValue(getBwdMaxModelSize(), -1, modelgenModelSizes.get(modelgenModelSizes.size() - 1));
+        return getValueOrDefault(getBwdMaxModelSize(), -1, Collections.max(modelgenModelSizes));
     }
 
     public final void setBwdMaxModelSize(final int bwdMaxModelSize) {
@@ -832,6 +831,36 @@ public class BenchmarkCasePreferences implements IPreferences {
     public final void setPatternMatchingEngine(final String patternMatchingEngine) {
         this.patternMatchingEngineProperty().set(patternMatchingEngine);
     }
+
+    public final StringProperty eclipseProjectProperty() {
+        return this.eclipseProject;
+    }
+    
+
+    public final String getEclipseProject() {
+        return this.eclipseProjectProperty().get();
+    }
+    
+
+    public final void setEclipseProject(final String eclipseProject) {
+        this.eclipseProjectProperty().set(eclipseProject);
+    }
+    
+
+    public final StringProperty benchmarkCaseNameProperty() {
+        return this.benchmarkCaseName;
+    }
+    
+
+    public final String getBenchmarkCaseName() {
+        return this.benchmarkCaseNameProperty().get();
+    }
+    
+
+    public final void setBenchmarkCaseName(final String benchmarkCaseName) {
+        this.benchmarkCaseNameProperty().set(benchmarkCaseName);
+    }
+    
     
 
 }
