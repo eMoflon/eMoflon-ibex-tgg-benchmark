@@ -50,11 +50,17 @@ public abstract class ReportBuilder {
     public abstract void close() throws IOException;
 
     protected Double toSeconds(long milliseconds) {
-        return roundDouble(milliseconds/1000.0);
+        if (milliseconds > 0L) {
+            return roundDouble(milliseconds/1000.0);
+        }
+        return -1.0;
     }
 
     protected Double toSeconds(double milliseconds) {
-        return roundDouble(milliseconds/1000.0);
+        if (milliseconds > 0.0) {
+            return roundDouble(milliseconds/1000.0);
+        }
+        return -1.0;
     }
 
     protected Double roundDouble(Double d) {
