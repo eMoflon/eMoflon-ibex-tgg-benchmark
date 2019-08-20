@@ -71,13 +71,13 @@ public class ExcelReportBuilder extends ReportBuilder {
         // styles
         headerStyle = reportWorkbook.createCellStyle();
         XSSFFont headerFont = reportWorkbook.createFont();
-        headerFont.setFontHeightInPoints((short) 10);
+        headerFont.setFontHeightInPoints((short) 9);
         headerFont.setBold(true);
         headerStyle.setFont(headerFont);
 
         cellStyle = reportWorkbook.createCellStyle();
         XSSFFont cellFont = reportWorkbook.createFont();
-        cellFont.setFontHeightInPoints((short) 10);
+        cellFont.setFontHeightInPoints((short) 9);
         cellStyle.setFont(cellFont);
 
         resultsSheet = reportWorkbook.createSheet("Benchmark Results");
@@ -120,7 +120,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> patternMatchingEngine = new HashMap<>();
         patternMatchingEngine.put("name", "Pattern Matching Engine");
-        patternMatchingEngine.put("columnWidth", 6000);
+        patternMatchingEngine.put("columnWidth", 5700);
         patternMatchingEngine.put("valueType", CellType.STRING);
         patternMatchingEngine.put("valueSelector",
                 (Function<BenchmarkResult, String>) br -> br.getPatternMatchingEngine().toString());
@@ -140,7 +140,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> modelSize = new HashMap<>();
         modelSize.put("name", "Model Size");
-        modelSize.put("columnWidth", 4000);
+        modelSize.put("columnWidth", 2500);
         modelSize.put("valueType", CellType.NUMERIC);
         modelSize.put("valueSelector", (Function<BenchmarkResult, Double>) br -> (double) br.getModelSize());
         modelSize.put("valueSelectorClass", BenchmarkResult.class);
@@ -149,7 +149,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> run = new HashMap<>();
         run.put("name", "Run");
-        run.put("columnWidth", 4000);
+        run.put("columnWidth", 1300);
         run.put("valueType", CellType.NUMERIC);
         run.put("valueSelector", (Function<SingleRunResult, Double>) sr -> (double) sr.getRepetition());
         run.put("valueSelectorClass", SingleRunResult.class);
@@ -174,7 +174,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> averageInitalizationTime = new HashMap<>();
         averageInitalizationTime.put("name", "Average Initalization Time");
-        averageInitalizationTime.put("columnWidth", 4000);
+        averageInitalizationTime.put("columnWidth", 5500);
         averageInitalizationTime.put("valueType", CellType.NUMERIC);
         averageInitalizationTime.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> toSeconds(br.getAverageInitalizationTime()));
@@ -183,7 +183,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> medianInitalizationTime = new HashMap<>();
         medianInitalizationTime.put("name", "Median Initalization Time");
-        medianInitalizationTime.put("columnWidth", 4000);
+        medianInitalizationTime.put("columnWidth", 5500);
         medianInitalizationTime.put("valueType", CellType.NUMERIC);
         medianInitalizationTime.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> toSeconds(br.getMedianInitializationTime()));
@@ -192,7 +192,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> averageExecutionTime = new HashMap<>();
         averageExecutionTime.put("name", "Average Execution Time");
-        averageExecutionTime.put("columnWidth", 4000);
+        averageExecutionTime.put("columnWidth", 5500);
         averageExecutionTime.put("valueType", CellType.NUMERIC);
         averageExecutionTime.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> toSeconds(br.getAverageExecutionTime()));
@@ -201,7 +201,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> medianExecutionTime = new HashMap<>();
         medianExecutionTime.put("name", "Median Execution Time");
-        medianExecutionTime.put("columnWidth", 4000);
+        medianExecutionTime.put("columnWidth", 5500);
         medianExecutionTime.put("valueType", CellType.NUMERIC);
         medianExecutionTime.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> toSeconds(br.getMedianExecutionTime()));
@@ -228,7 +228,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> averageCreatedElements = new HashMap<>();
         averageCreatedElements.put("name", "Average Created Elements");
-        averageCreatedElements.put("columnWidth", 4000);
+        averageCreatedElements.put("columnWidth", 5300);
         averageCreatedElements.put("valueType", CellType.NUMERIC);
         averageCreatedElements.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> roundDouble(br.getAverageCreatedElements()));
@@ -237,7 +237,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> medianCreatedElements = new HashMap<>();
         medianCreatedElements.put("name", "Median Created Elements");
-        medianCreatedElements.put("columnWidth", 4000);
+        medianCreatedElements.put("columnWidth", 5300);
         medianCreatedElements.put("valueType", CellType.NUMERIC);
         medianCreatedElements.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianCreatedElements()));
@@ -246,7 +246,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> averageDeletedElements = new HashMap<>();
         averageDeletedElements.put("name", "Average Deleted Elements");
-        averageDeletedElements.put("columnWidth", 4000);
+        averageDeletedElements.put("columnWidth", 5300);
         averageDeletedElements.put("valueType", CellType.NUMERIC);
         averageDeletedElements.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> roundDouble(br.getAverageDeletedElements()));
@@ -255,7 +255,7 @@ public class ExcelReportBuilder extends ReportBuilder {
 
         Map<String, Object> medianDeletedElements = new HashMap<>();
         medianDeletedElements.put("name", "Median Deleted Elements");
-        medianDeletedElements.put("columnWidth", 4000);
+        medianDeletedElements.put("columnWidth", 5300);
         medianDeletedElements.put("valueType", CellType.NUMERIC);
         medianDeletedElements.put("valueSelector",
                 (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianDeletedElements()));
