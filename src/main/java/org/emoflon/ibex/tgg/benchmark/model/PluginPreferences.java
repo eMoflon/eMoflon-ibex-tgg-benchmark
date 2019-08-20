@@ -23,6 +23,11 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+/**
+ * PluginPreferences is the data model for preferences of the plugin.
+ *
+ * @author Andre Lehmann
+ */
 public class PluginPreferences implements IPreferences {
 
     // general
@@ -31,7 +36,7 @@ public class PluginPreferences implements IPreferences {
 
     // benchmark
     private final IntegerProperty maxMemorySize;
-    private IntegerProperty repetitions;
+    private final IntegerProperty repetitions;
 
     // report
     private final StringProperty reportFilePath;
@@ -39,26 +44,29 @@ public class PluginPreferences implements IPreferences {
     private final BooleanProperty includeErrors;
 
     // default values
-    private IntegerProperty defaultTimeout;
-    private ListProperty<Integer> defaultModelSizes;
-    private BooleanProperty defaultModelgenIncludeReport;
-    private BooleanProperty defaultInitialFwdActive;
-    private BooleanProperty defaultInitialBwdActive;
-    private BooleanProperty defaultFwdActive;
-    private BooleanProperty defaultBwdActive;
-    private BooleanProperty defaultFwdOptActive;
-    private BooleanProperty defaultBwdOptActive;
-    private BooleanProperty defaultCcActive;
-    private BooleanProperty defaultCoActive;
+    private final IntegerProperty defaultTimeout;
+    private final ListProperty<Integer> defaultModelSizes;
+    private final BooleanProperty defaultModelgenIncludeReport;
+    private final BooleanProperty defaultInitialFwdActive;
+    private final BooleanProperty defaultInitialBwdActive;
+    private final BooleanProperty defaultFwdActive;
+    private final BooleanProperty defaultBwdActive;
+    private final BooleanProperty defaultFwdOptActive;
+    private final BooleanProperty defaultBwdOptActive;
+    private final BooleanProperty defaultCcActive;
+    private final BooleanProperty defaultCoActive;
 
+    /**
+     * Constructor for {@link PluginPreferences}.
+     */
     public PluginPreferences() {
         // general
         benchmarkPreferencesFileName = new SimpleStringProperty(".tgg-benchmark.json"); // relative to project
         logLevel = new SimpleObjectProperty<>(StandardLevel.ALL);
 
         // benchmark
-        repetitions = new SimpleIntegerProperty(3);
         maxMemorySize = new SimpleIntegerProperty(4096);
+        repetitions = new SimpleIntegerProperty(3);
 
         // report
         reportFilePath = new SimpleStringProperty("{workspace_path}/{Y}-{M}-{D} {h}-{m} TGGBenchmarkReport");
@@ -79,13 +87,32 @@ public class PluginPreferences implements IPreferences {
         defaultCoActive = new SimpleBooleanProperty(false);
     }
 
+    /**
+     * Constructor for {@link PluginPreferences} that copies the values from a
+     * source instance.
+     * 
+     * @param source The source instance to copy from
+     */
+    public PluginPreferences(PluginPreferences source) {
+        this();
+        copyValues(source);
+    }
+
+    /**
+     * Constructor for {@link PluginPreferences} initalizes the values from a
+     * {@link JsonObject}.
+     * 
+     * @param data The JSONObject as a value source
+     */
     public PluginPreferences(JsonObject data) {
         this();
 
         JsonObject general = data.getJsonObject("general");
         if (general != null) {
-            String benchmarkPreferencesFileName = general.getString("benchmarkPreferencesFileName", getBenchmarkPreferencesFileName());
-            setBenchmarkPreferencesFileName(benchmarkPreferencesFileName != null ? benchmarkPreferencesFileName : getBenchmarkPreferencesFileName());
+            String benchmarkPreferencesFileName = general.getString("benchmarkPreferencesFileName",
+                    getBenchmarkPreferencesFileName());
+            setBenchmarkPreferencesFileName(benchmarkPreferencesFileName != null ? benchmarkPreferencesFileName
+                    : getBenchmarkPreferencesFileName());
             try {
                 setLogLevel(StandardLevel.valueOf(general.getString("logLevel", getLogLevel().toString())));
             } catch (IllegalArgumentException e) {
@@ -96,7 +123,7 @@ public class PluginPreferences implements IPreferences {
         JsonObject benchmark = data.getJsonObject("benchmark");
         if (benchmark != null) {
             int maxMemorxSize = benchmark.getInt("maxMemorySize", getMaxMemorySize());
-            setMaxMemorySize(maxMemorxSize > 0 ? maxMemorxSize : getMaxMemorySize());         
+            setMaxMemorySize(maxMemorxSize > 0 ? maxMemorxSize : getMaxMemorySize());
             int repetitions = benchmark.getInt("repetitions", getRepetitions());
             setRepetitions(repetitions > 0 ? repetitions : getRepetitions());
         }
@@ -106,7 +133,8 @@ public class PluginPreferences implements IPreferences {
             String reportFilePath = general.getString("filePath", getReportFilePath());
             setReportFilePath(reportFilePath != null ? reportFilePath : getReportFilePath());
             try {
-                setReportFileType(ReportFileType.valueOf(general.getString("fileType", getBenchmarkPreferencesFileName())));
+                setReportFileType(
+                        ReportFileType.valueOf(general.getString("fileType", getBenchmarkPreferencesFileName())));
             } catch (IllegalArgumentException e) {
                 // keep default
             }
@@ -116,7 +144,7 @@ public class PluginPreferences implements IPreferences {
         JsonObject defaults = data.getJsonObject("defaults");
         if (defaults != null) {
             int defaultTimeout = benchmark.getInt("timeout", getDefaultTimeout());
-            setDefaultTimeout(defaultTimeout > 0 ? defaultTimeout : getDefaultTimeout());         
+            setDefaultTimeout(defaultTimeout > 0 ? defaultTimeout : getDefaultTimeout());
             JsonArray modelSizesArray = benchmark.getJsonArray("modelSizes");
             if (modelSizesArray != null) {
                 ObservableList<Integer> modelSizes = FXCollections.observableArrayList();
@@ -129,7 +157,8 @@ public class PluginPreferences implements IPreferences {
                 }
                 setDefaultModelSizes(modelSizes);
             }
-            setDefaultModelgenIncludeReport(general.getBoolean("modelgenIncludeReport", isDefaultModelgenIncludeReport()));
+            setDefaultModelgenIncludeReport(
+                    general.getBoolean("modelgenIncludeReport", isDefaultModelgenIncludeReport()));
             setDefaultInitialFwdActive(general.getBoolean("initialFwdActive", isDefaultInitialFwdActive()));
             setDefaultInitialBwdActive(general.getBoolean("initialBwdActive", isDefaultInitialBwdActive()));
             setDefaultFwdActive(general.getBoolean("fwdActive", isDefaultFwdActive()));
@@ -141,6 +170,39 @@ public class PluginPreferences implements IPreferences {
         }
     }
 
+    /**
+     * Copies the values of the given {@link PluginPreferences} into this instance.
+     *
+     * @param source The source instance
+     */
+    public void copyValues(PluginPreferences source) {
+        setBenchmarkPreferencesFileName(source.getBenchmarkPreferencesFileName());
+        setLogLevel(source.getLogLevel());
+
+        // benchmark
+        setMaxMemorySize(source.getMaxMemorySize());
+        setRepetitions(source.getRepetitions());
+
+        // report
+        setReportFilePath(source.getReportFilePath());
+        setReportFileType(source.getReportFileType());
+        setIncludeErrors(source.isIncludeErrors());
+
+        // defaults
+        setDefaultTimeout(source.getDefaultTimeout());
+        setDefaultModelSizes(FXCollections.observableArrayList(source.getDefaultModelSizes()));
+        setDefaultModelgenIncludeReport(source.isDefaultModelgenIncludeReport());
+        setDefaultInitialFwdActive(source.isDefaultInitialFwdActive());
+        setDefaultInitialBwdActive(source.isDefaultInitialBwdActive());
+        setDefaultFwdActive(source.isDefaultFwdActive());
+        setDefaultBwdActive(source.isDefaultBwdActive());
+        setDefaultFwdOptActive(source.isDefaultFwdOptActive());
+        setDefaultBwdOptActive(source.isDefaultBwdOptActive());
+        setDefaultCcActive(source.isDefaultCcActive());
+        setDefaultCoActive(source.isDefaultCoActive());
+    }
+
+    /** {@inheritDoc} */
     @Override
     public JsonObject toJson() {
 
@@ -149,37 +211,26 @@ public class PluginPreferences implements IPreferences {
             modelSizesBuilder.add(integer);
         }
 
-        JsonObject preferences = Json.createObjectBuilder()
-                .add("general",
-                    Json.createObjectBuilder()
-                            .add("benchmarkPreferencesFileName", getBenchmarkPreferencesFileName())
-                            .add("logLevel", getLogLevel().toString())
-                            .build())
+        JsonObject preferences = Json.createObjectBuilder().add("general",
+                Json.createObjectBuilder().add("benchmarkPreferencesFileName", getBenchmarkPreferencesFileName())
+                        .add("logLevel", getLogLevel().toString()).build())
+
                 .add("benchmark",
-                    Json.createObjectBuilder()
-                            .add("maxMemorySize", getMaxMemorySize())
-                            .add("repetitions", getRepetitions())
-                            .build())
+                        Json.createObjectBuilder().add("maxMemorySize", getMaxMemorySize())
+                                .add("repetitions", getRepetitions()).build())
+
                 .add("report",
-                    Json.createObjectBuilder()
-                            .add("filePath", getReportFilePath())
-                            .add("fileType", getReportFileType().toString())
-                            .add("includeErrors", isIncludeErrors())
-                            .build())
-                .add("defaults",
-                    Json.createObjectBuilder()
-                            .add("timeout", getBenchmarkPreferencesFileName())
-                            .add("modelSizes", modelSizesBuilder.build())
-                            .add("modelgenIncludeReport", isDefaultModelgenIncludeReport())
-                            .add("initialFwdActive", isDefaultInitialFwdActive())
-                            .add("initialBwdActive", isDefaultInitialBwdActive())
-                            .add("fwdActive", isDefaultFwdActive())
-                            .add("bwdActive", isDefaultBwdActive())
-                            .add("fwdOptActive", isDefaultFwdOptActive())
-                            .add("bwdOptActive", isDefaultBwdOptActive())
-                            .add("ccActive", isDefaultCcActive())
-                            .add("coActive", isDefaultCoActive())
-                            .build())
+                        Json.createObjectBuilder().add("filePath", getReportFilePath())
+                                .add("fileType", getReportFileType().toString()).add("includeErrors", isIncludeErrors())
+                                .build())
+                .add("defaults", Json.createObjectBuilder().add("timeout", getBenchmarkPreferencesFileName())
+                        .add("modelSizes", modelSizesBuilder.build())
+                        .add("modelgenIncludeReport", isDefaultModelgenIncludeReport())
+                        .add("initialFwdActive", isDefaultInitialFwdActive())
+                        .add("initialBwdActive", isDefaultInitialBwdActive()).add("fwdActive", isDefaultFwdActive())
+                        .add("bwdActive", isDefaultBwdActive()).add("fwdOptActive", isDefaultFwdOptActive())
+                        .add("bwdOptActive", isDefaultBwdOptActive()).add("ccActive", isDefaultCcActive())
+                        .add("coActive", isDefaultCoActive()).build())
                 .build();
 
         return preferences;
@@ -392,16 +443,12 @@ public class PluginPreferences implements IPreferences {
     public final ObjectProperty<ReportFileType> reportFileTypeProperty() {
         return this.reportFileType;
     }
-    
 
     public final ReportFileType getReportFileType() {
         return this.reportFileTypeProperty().get();
     }
-    
 
     public final void setReportFileType(final ReportFileType reportFileType) {
         this.reportFileTypeProperty().set(reportFileType);
     }
-    
-
 }
