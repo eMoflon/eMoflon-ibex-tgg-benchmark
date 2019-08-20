@@ -47,20 +47,20 @@ public class SYNC_App extends SYNC {
 		Path instPath = runParameters.getModelInstancesPath();
 
 		if (isIncremental) {
-			s = loadResource(instPath.resolve("/src.xmi").toString());
-			t = loadResource(instPath.resolve("/trg.xmi").toString());
-			c = loadResource(instPath.resolve("/corr.xmi").toString());
-			p = loadResource(instPath.resolve("/protocol.xmi").toString());
+			s = loadResource(instPath.resolve("src.xmi").toString());
+			t = loadResource(instPath.resolve("trg.xmi").toString());
+			c = loadResource(instPath.resolve("corr.xmi").toString());
+			p = loadResource(instPath.resolve("protocol.xmi").toString());
 		} else {
 			if (isForward) {
-				s = loadResource(instPath.resolve("/src.xmi").toString());
-				t = createResource(instPath.resolve("/trg.xmi").toString());
+				s = loadResource(instPath.resolve("src.xmi").toString());
+				t = createResource(instPath.resolve("trg.xmi").toString());
 			} else {
-				s = createResource(instPath.resolve("/src.xmi").toString());
-				t = loadResource(instPath.resolve("/trg.xmi").toString());
+				s = createResource(instPath.resolve("src.xmi").toString());
+				t = loadResource(instPath.resolve("trg.xmi").toString());
 			}
-			c = createResource(instPath.resolve("/corr.xmi").toString());
-			p = createResource(instPath.resolve("/protocol.xmi").toString());
+			c = createResource(instPath.resolve("corr.xmi").toString());
+			p = createResource(instPath.resolve("protocol.xmi").toString());
 		}
 
 		EcoreUtil.resolveAll(rs);
