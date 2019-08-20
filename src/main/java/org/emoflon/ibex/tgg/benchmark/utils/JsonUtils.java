@@ -1,8 +1,10 @@
 package org.emoflon.ibex.tgg.benchmark.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +30,29 @@ import javax.json.stream.JsonGenerator;
  * @author Andre Lehmann
  */
 public abstract class JsonUtils {
+
+    public static String jsonToString(JsonObject jsonObject) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        Map<String, Object> properties = new HashMap<>(1);
+        properties.put(JsonGenerator.PRETTY_PRINTING, true);
+        JsonWriterFactory writerFactory = Json.createWriterFactory(properties);
+
+        try (JsonWriter jsonWriter = writerFactory.createWriter(out)) {
+            jsonWriter.writeObject(jsonObject);
+            jsonWriter.close();
+        } catch (JsonException e) {
+            throw e;
+        }
+
+        String result = "";
+        try {
+            result = out.toString("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // ignore
+        }
+        return result;
+    }
 
     /**
      * Saves a {@link JsonObject} to a file.
