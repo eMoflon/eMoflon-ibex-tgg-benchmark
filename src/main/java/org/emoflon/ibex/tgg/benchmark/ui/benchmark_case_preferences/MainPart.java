@@ -12,8 +12,6 @@ import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesP
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -60,7 +58,7 @@ public class MainPart extends GenericPreferencesPart {
 
         // init categories
         categoriesViewData = FXCollections.observableArrayList();
-        categoriesViewData.add(new CategoryDataModel("General", Glyph.CUBES, categoryGeneralController.getContent()));
+        categoriesViewData.add(new CategoryDataModel("General", Glyph.CIRCLE, categoryGeneralController.getContent()));
         categoriesViewData.add(new CategoryDataModel("Input", Glyph.SIGN_IN, categoryInputController.getContent()));
         categoriesViewData.add(new CategoryDataModel("Output", Glyph.SIGN_OUT, categoryOutputController.getContent()));
         categoriesViewData.add(new CategoryDataModel("Operationalizations", Glyph.GEARS,

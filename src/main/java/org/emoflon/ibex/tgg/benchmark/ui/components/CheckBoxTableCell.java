@@ -30,8 +30,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableCell;
@@ -69,6 +67,7 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
     // --- converter
     private ObjectProperty<StringConverter<Boolean>> converter = 
             new SimpleObjectProperty<StringConverter<Boolean>>(this, "converter") {
+        @Override
         protected void invalidated() {
             updateShowLabel();
         }

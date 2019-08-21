@@ -24,8 +24,8 @@
                   <Label styleClass="h2" text="MODELGEN" />
                   <GridPane hgap="10" vgap="8.0">
                      <children>
-                        <Label text="Create Report" wrapText="true" />
-                        <CheckBox fx:id="modelgenCreateReport" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
+                        <Label text="Include Report" wrapText="true" />
+                        <CheckBox fx:id="modelgenIncludeReport" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
                         <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
                         <TimeTextField fx:id="modelgenTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="TGG Rule" GridPane.rowIndex="2" wrapText="true" />

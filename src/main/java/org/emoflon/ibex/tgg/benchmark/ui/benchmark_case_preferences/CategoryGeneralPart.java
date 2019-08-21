@@ -8,7 +8,6 @@ import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 
 public class CategoryGeneralPart extends CategoryPart<BenchmarkCasePreferences> {

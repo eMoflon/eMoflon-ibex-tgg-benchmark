@@ -173,6 +173,8 @@ public class BenchmarkRunner implements Runnable {
         BiFunction<Integer, Integer, BenchmarkRunParameters> runParametersGenerator = null;
         ReportBuilder reportBuilder = null;
 
+        LOG.info("Benchmark case '{}'", bcp.getBenchmarkCaseName());
+
         // MODELGEN
         runParametersGenerator = (Integer modelSize, Integer repetition) -> {
             BenchmarkRunParameters runParameters = createGenericRunParameters(eclipseProject, bcp, modelSize,

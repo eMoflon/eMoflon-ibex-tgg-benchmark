@@ -33,7 +33,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
 
     // elements from the FXML resource
     @FXML
-    private CheckBox modelgenCreateReport;
+    private CheckBox modelgenIncludeReport;
     @FXML
     private TimeTextField modelgenTimeout;
     @FXML
@@ -109,7 +109,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         };
 
         // MODELGEN
-        bindCheckbox(modelgenCreateReport, bcp.modelgenCreateReportProperty());
+        bindCheckbox(modelgenIncludeReport, bcp.modelgenIncludeReportProperty());
         bindTimeTextField(modelgenTimeout, bcp.modelgenTimeoutProperty());
         modelgenTimeout.setTooltip(timeoutTooltip);
 

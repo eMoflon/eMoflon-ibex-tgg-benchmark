@@ -135,7 +135,7 @@ public class TGGBenchmarkViewPart extends Part {
                     ep -> (ep.getBenchmarkCasePreferences().markedForExecutionProperty()));
             nameColumn = createTextColumn("Benchmark Case Name", EclipseProject::nameProperty);
             modelgenActiveColumn = createCheckboxColumn("MG", "Enable the operationalization MODELGEN",
-                    ep -> (ep.getBenchmarkCasePreferences().modelgenCreateReportProperty()));
+                    ep -> (ep.getBenchmarkCasePreferences().modelgenIncludeReportProperty()));
             initialFwdActiveColumn = createCheckboxColumn("IF", "Enable the operationalization INITIAL_FWD",
                     ep -> (ep.getBenchmarkCasePreferences().initialFwdActiveProperty()));
             initialBwdActiveColumn = createCheckboxColumn("IB", "Enable the operationalization INITIAL_BWD",

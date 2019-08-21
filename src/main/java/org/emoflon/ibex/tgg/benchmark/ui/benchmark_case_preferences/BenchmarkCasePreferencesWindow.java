@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;

@@ -3,7 +3,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -12,6 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField?>
+<?import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea?>
 
 <VBox fx:id="categoryDefaults"
 	stylesheets="@../../css/preference-category.css"
@@ -32,8 +32,8 @@
 									maxWidth="Infinity" GridPane.columnIndex="1" />
 								<Label text="model sizes" wrapText="true"
 									GridPane.rowIndex="1" />
-								<ListView fx:id="defaultModelSizes" maxHeight="140.0"
-									maxWidth="Infinity" GridPane.columnIndex="1"
+								<ModelSizesTextArea fx:id="defaultModelSizes"
+									maxHeight="80.0" maxWidth="Infinity" GridPane.columnIndex="1"
 									GridPane.rowIndex="1" />
 								<Label text="MODELGEN include report" wrapText="true"
 									GridPane.rowIndex="2" />

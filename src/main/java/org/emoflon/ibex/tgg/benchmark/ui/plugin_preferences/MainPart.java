@@ -56,7 +56,8 @@ public class MainPart extends GenericPreferencesPart {
         categoriesViewData
                 .add(new CategoryDataModel("Benchmark", Glyph.TACHOMETER, categoryBenchmarkController.getContent()));
         categoriesViewData.add(new CategoryDataModel("Report", Glyph.FILE, categoryReportController.getContent()));
-        categoriesViewData.add(new CategoryDataModel("Defaults", Glyph.SITEMAP, categoryDefaultsController.getContent()));
+        categoriesViewData
+                .add(new CategoryDataModel("Defaults", Glyph.SITEMAP, categoryDefaultsController.getContent()));
 
         // init and add buttons
         saveButton = new Button("Save");
@@ -72,6 +73,7 @@ public class MainPart extends GenericPreferencesPart {
         });
 
         populateButtonPane(Arrays.asList(cancelButton), Arrays.asList(saveButton));
+        initData();
     }
 
     /**
@@ -81,13 +83,9 @@ public class MainPart extends GenericPreferencesPart {
      * 
      * @param preferencesData The data model
      */
-    public void initData(PluginPreferences preferencesData) {
-        this.preferencesData = preferencesData;
-        if (preferencesData != null) {
-            this.preferencesDataWorkingCopy = new PluginPreferences(preferencesData);
-        } else {
-            this.preferencesDataWorkingCopy = new PluginPreferences();
-        }
+    public void initData() {
+        this.preferencesData = Core.getInstance().getPluginPreferences();
+        this.preferencesDataWorkingCopy = new PluginPreferences(preferencesData);
 
         initCategoriesView(categoriesViewData);
 
@@ -103,8 +101,15 @@ public class MainPart extends GenericPreferencesPart {
      * @return true if saving was successfull
      */
     private boolean savePreferences() {
-        if (preferencesDataWorkingCopy != null) {
+        this.preferencesData.copyValues(preferencesDataWorkingCopy);
+        if (true) {
             // TODO: save the changes
+
+            // try to save
+
+            // close on success
+
+            // error message on fail
         }
 
         return true;
