@@ -23,7 +23,7 @@ public class PluginPreferencesWindowTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        PluginPreferencesWindow ppw = new PluginPreferencesWindow(pluginPreferences);
+        PluginPreferencesWindow ppw = new PluginPreferencesWindow();
 
         try {
             ppw.show();
@@ -41,10 +41,14 @@ public class PluginPreferencesWindowTest extends Application {
         eclipseWorkspace = new EclipseWorkspaceDebug();
         pluginPreferences = new PluginPreferences();
         pluginCore = Core.createInstance(eclipseWorkspace);
+        pluginCore.setPluginPreferences(pluginPreferences);
+
+        System.out.println("Initial Plugin Preferences");
+        System.out.println(JsonUtils.jsonToString(pluginPreferences.toJson()));
 
         launch(args);
 
-        // print results
+        System.out.println("\n\nPlugin Preferences after closing");
         System.out.println(JsonUtils.jsonToString(pluginPreferences.toJson()));
     }
 }
