@@ -144,8 +144,10 @@ public class BenchmarkRunner implements Runnable {
             } finally {
                 closeAllReportBuilders();
                 try {
-                    Files.walk(modelInstancesBasePath).sorted(Comparator.reverseOrder()).map(Path::toFile)
-                            .forEach(File::delete);
+                    if (Files.exists(modelInstancesBasePath)) {
+                        Files.walk(modelInstancesBasePath).sorted(Comparator.reverseOrder()).map(Path::toFile)
+                                .forEach(File::delete);
+                    }
                 } catch (IOException e) {
                     LOG.error("Failed to delete model instances. Reason: {}", e.getMessage());
                 }
@@ -469,7 +471,7 @@ public class BenchmarkRunner implements Runnable {
                 eclipseWorkspace.getLocation().relativize(modelInstancesBasePath).toString());
         runParameters.setWorkspacePath(eclipseWorkspace.getLocation().toString());
         runParameters.setClassPaths(project.getClassPathURLs());
-        runParameters.setPatternMatchingEngine(PatternMatchingEngine.valueOf(bcp.getPatternMatchingEngine()));
+        runParameters.setPatternMatchingEngine(bcp.getPatternMatchingEngine());
         runParameters.setMetamodelsRegistrationMethod(bcp.getMetamodelsRegistrationMethod());
         runParameters.setModelSize(modelSize.intValue());
         runParameters.setRepetition(repetition.intValue());
