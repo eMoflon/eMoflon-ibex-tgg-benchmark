@@ -28,7 +28,7 @@ import javafx.collections.ObservableList;
  *
  * @author Andre Lehmann
  */
-public class PluginPreferences implements IPreferences {
+public class PluginPreferences {
 
     // general
     private final StringProperty benchmarkPreferencesFileName;
@@ -134,7 +134,7 @@ public class PluginPreferences implements IPreferences {
             setReportFilePath(reportFilePath != null ? reportFilePath : getReportFilePath());
             try {
                 setReportFileType(
-                        ReportFileType.valueOf(general.getString("fileType", getBenchmarkPreferencesFileName())));
+                        ReportFileType.valueOf(general.getString("fileType", getReportFileType().toString())));
             } catch (IllegalArgumentException e) {
                 // keep default
             }
@@ -202,8 +202,11 @@ public class PluginPreferences implements IPreferences {
         setDefaultCoActive(source.isDefaultCoActive());
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Converts the preferences object into a {@link JsonObject}.
+     * 
+     * @return JSON representation
+     */
     public JsonObject toJson() {
 
         JsonArrayBuilder modelSizesBuilder = Json.createArrayBuilder();
