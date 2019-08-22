@@ -97,6 +97,8 @@ public abstract class Benchmark<O extends OperationalStrategy> {
 			BenchmarkLogger benchmarkLogger = op.getOptions().getBenchmarkLogger();
 			runResult.setCreatedElements(benchmarkLogger.getTotalElementsCreated());
 			runResult.setDeletedElements(benchmarkLogger.getTotalElementsDeleted());
+			runResult.setFoundMatches(benchmarkLogger.getTotalMatchesFound());
+			runResult.setAppliedMatches(benchmarkLogger.getTotalMatchesApplied());
 
 		} catch (TimeoutException e) {
 			runResult.setError("Execution timed out");

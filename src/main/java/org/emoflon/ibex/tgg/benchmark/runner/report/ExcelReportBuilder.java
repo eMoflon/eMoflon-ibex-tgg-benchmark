@@ -226,6 +226,24 @@ public class ExcelReportBuilder extends ReportBuilder {
         deletedElements.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(deletedElements);
 
+        Map<String, Object> foundMatches = new HashMap<>();
+        foundMatches.put("name", "Found Matches");
+        foundMatches.put("columnWidth", 4000);
+        foundMatches.put("valueType", CellType.NUMERIC);
+        foundMatches.put("valueSelector",
+                (Function<SingleRunResult, Double>) sr -> (double) sr.getFoundMatches());
+        foundMatches.put("valueSelectorClass", SingleRunResult.class);
+        rawResultsSheetDefinition.add(foundMatches);
+
+        Map<String, Object> appliedMatches = new HashMap<>();
+        appliedMatches.put("name", "Applied Matches");
+        appliedMatches.put("columnWidth", 4000);
+        appliedMatches.put("valueType", CellType.NUMERIC);
+        appliedMatches.put("valueSelector",
+                (Function<SingleRunResult, Double>) sr -> (double) sr.getAppliedMatches());
+        appliedMatches.put("valueSelectorClass", SingleRunResult.class);
+        rawResultsSheetDefinition.add(appliedMatches);
+
         Map<String, Object> averageCreatedElements = new HashMap<>();
         averageCreatedElements.put("name", "Average Created Elements");
         averageCreatedElements.put("columnWidth", 5300);
@@ -261,6 +279,42 @@ public class ExcelReportBuilder extends ReportBuilder {
                 (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianDeletedElements()));
         medianDeletedElements.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(medianDeletedElements);
+
+        Map<String, Object> averageFoundMatches = new HashMap<>();
+        averageFoundMatches.put("name", "Average Found Matches");
+        averageFoundMatches.put("columnWidth", 5300);
+        averageFoundMatches.put("valueType", CellType.NUMERIC);
+        averageFoundMatches.put("valueSelector",
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getAverageFoundMatches()));
+        averageFoundMatches.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(averageFoundMatches);
+
+        Map<String, Object> medianFoundMatches = new HashMap<>();
+        medianFoundMatches.put("name", "Median Found Matches");
+        medianFoundMatches.put("columnWidth", 5300);
+        medianFoundMatches.put("valueType", CellType.NUMERIC);
+        medianFoundMatches.put("valueSelector",
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianFoundMatches()));
+        medianFoundMatches.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(medianFoundMatches);
+
+        Map<String, Object> averageAppliedMatches = new HashMap<>();
+        averageAppliedMatches.put("name", "Average Applied Matches");
+        averageAppliedMatches.put("columnWidth", 5300);
+        averageAppliedMatches.put("valueType", CellType.NUMERIC);
+        averageAppliedMatches.put("valueSelector",
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getAverageAppliedMatches()));
+        averageAppliedMatches.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(averageAppliedMatches);
+
+        Map<String, Object> medianAppliedMatches = new HashMap<>();
+        medianAppliedMatches.put("name", "Median Applied Matches");
+        medianAppliedMatches.put("columnWidth", 5300);
+        medianAppliedMatches.put("valueType", CellType.NUMERIC);
+        medianAppliedMatches.put("valueSelector",
+                (Function<BenchmarkResult, Double>) br -> roundDouble(br.getMedianAppliedMatches()));
+        medianAppliedMatches.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(medianAppliedMatches);
 
         Map<String, Object> error = new HashMap<>();
         error.put("name", "Error");

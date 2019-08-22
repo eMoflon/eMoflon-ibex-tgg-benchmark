@@ -20,6 +20,8 @@ public class SingleRunResult implements Serializable {
 
     private long createdElements;
     private long deletedElements;
+    private long foundMatches;
+    private long appliedMatches;
 
     private String error;
 
@@ -31,6 +33,8 @@ public class SingleRunResult implements Serializable {
         this.createdElements = -1;
         this.deletedElements = -1;
         this.initializationTime = -1L;
+        this.foundMatches = -1;
+        this.appliedMatches = -1L;
         this.executionTime = -1L;
         this.error = null;
     }
@@ -117,5 +121,33 @@ public class SingleRunResult implements Serializable {
      */
     public void setError(String error) {
         this.error = error;
+    }
+
+    /**
+     * @return the foundMatches
+     */
+    public long getFoundMatches() {
+        return foundMatches;
+    }
+
+    /**
+     * @param foundMatches the foundMatches to set
+     */
+    public void setFoundMatches(long foundMatches) {
+        this.foundMatches = foundMatches;
+    }
+
+    /**
+     * @return the appliedMatches
+     */
+    public long getAppliedMatches() {
+        return appliedMatches;
+    }
+
+    /**
+     * @param appliedMatches the appliedMatches to set
+     */
+    public void setAppliedMatches(long appliedMatches) {
+        this.appliedMatches = appliedMatches;
     }
 }

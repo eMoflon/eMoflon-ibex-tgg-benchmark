@@ -114,6 +114,20 @@ public class BenchmarkResult {
     }
 
     /**
+     * @return the averageFoundMatches
+     */
+    public double getAverageFoundMatches() {
+        return getAverageOf(SingleRunResult::getFoundMatches);
+    }
+
+    /**
+     * @return the averageAppliedMatches
+     */
+    public double getAverageAppliedMatches() {
+        return getAverageOf(SingleRunResult::getAppliedMatches);
+    }
+
+    /**
      * @return the medianExecutionTime
      */
     public double getMedianExecutionTime() {
@@ -139,6 +153,20 @@ public class BenchmarkResult {
      */
     public double getMedianDeletedElements() {
         return getMedianOf(SingleRunResult::getDeletedElements);
+    }
+
+    /**
+     * @return the medianFoundMatches
+     */
+    public double getMedianFoundMatches() {
+        return getMedianOf(SingleRunResult::getFoundMatches);
+    }
+
+    /**
+     * @return the medianAppliedMatches
+     */
+    public double getMedianAppliedMatches() {
+        return getMedianOf(SingleRunResult::getAppliedMatches);
     }
 
     /**
