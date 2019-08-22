@@ -1,10 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -14,28 +10,29 @@ import javax.json.JsonObject;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.PatternMatchingEngine;
 
-import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.ListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class BenchmarkCasePreferences implements IPreferences {
+public class BenchmarkCasePreferences {
 
     private final PluginPreferences pluginPreferences;
-    private BooleanProperty markedForExecution;
 
-    // general
+    // benchmark
+    private BooleanProperty markedForExecution;
     private StringProperty eclipseProject;
     private StringProperty benchmarkCaseName;
     private StringProperty metamodelsRegistrationMethod;
-    private StringProperty patternMatchingEngine;
+    private ObjectProperty<PatternMatchingEngine> patternMatchingEngine;
     private IntegerProperty defaultTimeout;
 
     // operationalizations
@@ -80,19 +77,20 @@ public class BenchmarkCasePreferences implements IPreferences {
 
     public BenchmarkCasePreferences() {
         pluginPreferences = Core.getInstance().getPluginPreferences();
+
+        // benchmark
         markedForExecution = new SimpleBooleanProperty(true);
-        
-        // general
         eclipseProject = new SimpleStringProperty("");
         benchmarkCaseName = new SimpleStringProperty("");
         metamodelsRegistrationMethod = new SimpleStringProperty("");
-        patternMatchingEngine = new SimpleStringProperty(PatternMatchingEngine.Democles.toString());
+        patternMatchingEngine = new SimpleObjectProperty<>(PatternMatchingEngine.Democles);
         defaultTimeout = new SimpleIntegerProperty(0);
 
         // operationalizations
         modelgenIncludeReport = new SimpleBooleanProperty(pluginPreferences.isDefaultModelgenIncludeReport());
         modelgenTimeout = new SimpleIntegerProperty(0);
-        modelgenModelSizes = new SimpleListProperty<>(FXCollections.observableArrayList(pluginPreferences.getDefaultModelSizes()));
+        modelgenModelSizes = new SimpleListProperty<>(
+                FXCollections.observableArrayList(pluginPreferences.getDefaultModelSizes()));
         modelgenTggRule = new SimpleStringProperty("");
 
         initialFwdActive = new SimpleBooleanProperty(pluginPreferences.isDefaultInitialFwdActive());
@@ -132,27 +130,26 @@ public class BenchmarkCasePreferences implements IPreferences {
 
     public BenchmarkCasePreferences(BenchmarkCasePreferences source) {
         this();
-        setChanges(source);
+        copyValues(source);
     }
 
     public BenchmarkCasePreferences(JsonObject data) {
         this();
 
-        JsonObject general = data.getJsonObject("general");
-        if (general != null) {
-            setMarkedForExecution(general.getBoolean("markedForExecution", isMarkedForExecution()));
-            setDefaultTimeout(general.getInt("defaultTimeout", getDefaultTimeout()));
-        }
-
-        JsonObject input = data.getJsonObject("input");
-        if (input != null) {
+        JsonObject benchmark = data.getJsonObject("benchmark");
+        if (benchmark != null) {
+            setMarkedForExecution(benchmark.getBoolean("markedForExecution", isMarkedForExecution()));
+            setBenchmarkCaseName(benchmark.getString("benchmarkCaseName", getBenchmarkCaseName()));
             setMetamodelsRegistrationMethod(
-                    input.getString("metamodelsRegistrationMethod", getMetamodelsRegistrationMethod()));
-        }
-
-        JsonObject output = data.getJsonObject("output");
-        if (output != null) {
-            // TODO: implement it
+                    benchmark.getString("metamodelsRegistrationMethod", getMetamodelsRegistrationMethod()));
+            try {
+                setPatternMatchingEngine(PatternMatchingEngine
+                        .valueOf(benchmark.getString("patternMatchingEngine", getPatternMatchingEngine().toString())));
+            } catch (IllegalArgumentException e) {
+                // keep default
+            }
+            int defaultTimeout = benchmark.getInt("timeout", getDefaultTimeout());
+            setDefaultTimeout(defaultTimeout > 0 ? defaultTimeout : getDefaultTimeout());
         }
 
         JsonObject operationalizations = data.getJsonObject("operationalizations");
@@ -160,7 +157,8 @@ public class BenchmarkCasePreferences implements IPreferences {
             JsonObject modelgen = operationalizations.getJsonObject("modelgen");
             if (modelgen != null) {
                 setModelgenIncludeReport(modelgen.getBoolean("includeReport", isModelgenIncludeReport()));
-                setModelgenTimeout(modelgen.getInt("timeout", getModelgenTimeout()));
+                int timout = modelgen.getInt("timeout", getModelgenTimeout());
+                setModelgenTimeout(timout > 0 ? timout : getModelgenTimeout());
                 JsonArray modelSizesArray = modelgen.getJsonArray("modelSizes");
                 if (modelSizesArray != null) {
                     ObservableList<Integer> modelSizes = FXCollections.observableArrayList();
@@ -180,21 +178,24 @@ public class BenchmarkCasePreferences implements IPreferences {
             JsonObject initialFwd = operationalizations.getJsonObject("initialFwd");
             if (initialFwd != null) {
                 setInitialFwdActive(initialFwd.getBoolean("active", isInitialFwdActive()));
-                setInitialFwdTimeout(initialFwd.getInt("timeout", getInitialFwdTimeout()));
+                int timout = initialFwd.getInt("timeout", getInitialFwdTimeout());
+                setInitialFwdTimeout(timout > 0 ? timout : getInitialFwdTimeout());
                 setInitialFwdMaxModelSize(initialFwd.getInt("maxModelSize", getInitialFwdMaxModelSize()));
             }
 
             JsonObject initialBwd = operationalizations.getJsonObject("initialBwd");
             if (initialBwd != null) {
                 setInitialBwdActive(initialBwd.getBoolean("active", isInitialBwdActive()));
-                setInitialBwdTimeout(initialBwd.getInt("timeout", getInitialBwdTimeout()));
+                int timout = initialBwd.getInt("timeout", getInitialBwdTimeout());
+                setInitialBwdTimeout(timout > 0 ? timout : getInitialBwdTimeout());
                 setInitialBwdMaxModelSize(initialBwd.getInt("maxModelSize", getInitialBwdMaxModelSize()));
             }
 
             JsonObject fwd = operationalizations.getJsonObject("fwd");
             if (fwd != null) {
                 setFwdActive(fwd.getBoolean("active", isFwdActive()));
-                setFwdTimeout(fwd.getInt("timeout", getFwdTimeout()));
+                int timout = fwd.getInt("timeout", getFwdTimeout());
+                setFwdTimeout(timout > 0 ? timout : getFwdTimeout());
                 setFwdMaxModelSize(fwd.getInt("maxModelSize", getFwdMaxModelSize()));
                 setFwdIncrementalEditMethod(fwd.getString("incrementalEditMethod", getFwdIncrementalEditMethod()));
             }
@@ -202,7 +203,8 @@ public class BenchmarkCasePreferences implements IPreferences {
             JsonObject bwd = operationalizations.getJsonObject("bwd");
             if (bwd != null) {
                 setBwdActive(bwd.getBoolean("active", isBwdActive()));
-                setBwdTimeout(bwd.getInt("timeout", getBwdTimeout()));
+                int timout = bwd.getInt("timeout", getBwdTimeout());
+                setBwdTimeout(timout > 0 ? timout : getBwdTimeout());
                 setBwdMaxModelSize(bwd.getInt("maxModelSize", getBwdMaxModelSize()));
                 setBwdIncrementalEditMethod(bwd.getString("incrementalEditMethod", getBwdIncrementalEditMethod()));
             }
@@ -210,34 +212,42 @@ public class BenchmarkCasePreferences implements IPreferences {
             JsonObject fwdOpt = operationalizations.getJsonObject("fwdOpt");
             if (fwdOpt != null) {
                 setFwdOptActive(fwdOpt.getBoolean("active", isFwdOptActive()));
-                setFwdOptTimeout(fwdOpt.getInt("timeout", getFwdOptTimeout()));
+                int timout = fwdOpt.getInt("timeout", getFwdOptTimeout());
+                setFwdOptTimeout(timout > 0 ? timout : getFwdOptTimeout());
                 setFwdOptMaxModelSize(fwdOpt.getInt("maxModelSize", getFwdOptMaxModelSize()));
             }
 
             JsonObject bwdOpt = operationalizations.getJsonObject("bwdOpt");
             if (bwdOpt != null) {
                 setBwdOptActive(bwdOpt.getBoolean("active", isBwdOptActive()));
-                setBwdOptTimeout(bwdOpt.getInt("timeout", getBwdOptTimeout()));
+                int timout = bwdOpt.getInt("timeout", getBwdOptTimeout());
+                setBwdOptTimeout(timout > 0 ? timout : getBwdOptTimeout());
                 setBwdOptMaxModelSize(bwdOpt.getInt("maxModelSize", getBwdOptMaxModelSize()));
             }
 
             JsonObject cc = operationalizations.getJsonObject("cc");
             if (cc != null) {
                 setCcActive(cc.getBoolean("active", isCcActive()));
-                setCcTimeout(cc.getInt("timeout", getCcTimeout()));
+                int timout = cc.getInt("timeout", getCcTimeout());
+                setCcTimeout(timout > 0 ? timout : getCcTimeout());
                 setCcMaxModelSize(cc.getInt("maxModelSize", getCcMaxModelSize()));
             }
 
             JsonObject co = operationalizations.getJsonObject("co");
             if (co != null) {
                 setCoActive(co.getBoolean("active", isCoActive()));
-                setCoTimeout(co.getInt("timeout", getCoTimeout()));
+                int timout = co.getInt("timeout", getCoTimeout());
+                setCoTimeout(timout > 0 ? timout : getCoTimeout());
                 setCoMaxModelSize(co.getInt("maxModelSize", getCoMaxModelSize()));
             }
         }
     }
 
-    @Override
+    /**
+     * Converts the preferences object into a {@link JsonObject}.
+     * 
+     * @return JSON representation
+     */
     public JsonObject toJson() {
 
         JsonArrayBuilder modelSizesBuilder = Json.createArrayBuilder();
@@ -246,101 +256,99 @@ public class BenchmarkCasePreferences implements IPreferences {
         }
 
         JsonObject preferences = Json.createObjectBuilder()
-                .add("general", Json.createObjectBuilder().add("markedForExecution", isMarkedForExecution())
-                        .add("defaultTimeout", getDefaultTimeout()).build())
-                .add("input",
-                        Json.createObjectBuilder()
-                                .add("metamodelsRegistrationMethod", getMetamodelsRegistrationMethod()).build())
-                .add("output", Json.createObjectBuilder().build())
-                .add("operationalizations",
-                        Json.createObjectBuilder()
-                                .add("modelgen",
-                                        Json.createObjectBuilder().add("includeReport", isModelgenIncludeReport())
-                                                .add("timeout", getModelgenTimeout())
-                                                .add("modelSizes", modelSizesBuilder.build())
-                                                .add("tggRule", getModelgenTggRule()).build())
-                                .add("initialFwd",
-                                        Json.createObjectBuilder().add("active", isInitialFwdActive())
-                                                .add("timeout", getInitialFwdTimeout())
-                                                .add("maxModelSize", getInitialFwdMaxModelSize()).build())
-                                .add("initialBwd",
-                                        Json.createObjectBuilder().add("active", isInitialBwdActive())
-                                                .add("timeout", getInitialBwdTimeout())
-                                                .add("maxModelSize", getInitialBwdMaxModelSize()).build())
-                                .add("fwd",
-                                        Json.createObjectBuilder().add("active", isFwdActive())
-                                                .add("timeout", getFwdTimeout())
-                                                .add("maxModelSize", getFwdMaxModelSize())
-                                                .add("incrementalEditMethod", getFwdIncrementalEditMethod())
-                                                .build())
-                                .add("bwd",
-                                        Json.createObjectBuilder().add("active", isBwdActive())
-                                                .add("timeout", getBwdTimeout())
-                                                .add("maxModelSize", getBwdMaxModelSize())
-                                                .add("incrementalEditMethod", getBwdIncrementalEditMethod())
-                                                .build())
-                                .add("fwdOpt",
-                                        Json.createObjectBuilder().add("active", isFwdOptActive())
-                                                .add("timeout", getFwdOptTimeout())
-                                                .add("maxModelSize", getFwdOptMaxModelSize()).build())
-                                .add("bwdOpt",
-                                        Json.createObjectBuilder().add("active", isBwdOptActive())
-                                                .add("timeout", getBwdOptTimeout())
-                                                .add("maxModelSize", getBwdOptMaxModelSize()).build())
-                                .add("cc",
-                                        Json.createObjectBuilder().add("active", isCcActive())
-                                                .add("timeout", getCcTimeout()).add("maxModelSize", getCcMaxModelSize())
-                                                .build())
-                                .add("co",
-                                        Json.createObjectBuilder().add("active", isCoActive())
-                                                .add("timeout", getCoTimeout()).add("maxModelSize", getCoMaxModelSize())
-                                                .build())
-                                .build())
+                .add("benchmark",
+                        Json.createObjectBuilder().add("markedForExecution", isMarkedForExecution())
+                                .add("benchmarkCaseName", getBenchmarkCaseName())
+                                .add("metamodelsRegistrationMethod", getMetamodelsRegistrationMethod())
+                                .add("patternMatchingEngine", getPatternMatchingEngine().toString())
+                                .add("timeout", getDefaultTimeout()).build())
+                .add("operationalizations", Json.createObjectBuilder()
+                        .add("modelgen", Json.createObjectBuilder().add("includeReport", isModelgenIncludeReport())
+                                .add("timeout", getModelgenTimeout()).add("modelSizes", modelSizesBuilder.build())
+                                .add("tggRule", getModelgenTggRule()).build())
+                        .add("initialFwd",
+                                Json.createObjectBuilder().add("active", isInitialFwdActive())
+                                        .add("timeout", getInitialFwdTimeout())
+                                        .add("maxModelSize", getInitialFwdMaxModelSize()).build())
+                        .add("initialBwd",
+                                Json.createObjectBuilder().add("active", isInitialBwdActive())
+                                        .add("timeout", getInitialBwdTimeout())
+                                        .add("maxModelSize", getInitialBwdMaxModelSize()).build())
+                        .add("fwd",
+                                Json.createObjectBuilder().add("active", isFwdActive()).add("timeout", getFwdTimeout())
+                                        .add("maxModelSize", getFwdMaxModelSize())
+                                        .add("incrementalEditMethod", getFwdIncrementalEditMethod()).build())
+                        .add("bwd",
+                                Json.createObjectBuilder().add("active", isBwdActive()).add("timeout", getBwdTimeout())
+                                        .add("maxModelSize", getBwdMaxModelSize())
+                                        .add("incrementalEditMethod", getBwdIncrementalEditMethod()).build())
+                        .add("fwdOpt",
+                                Json.createObjectBuilder().add("active", isFwdOptActive())
+                                        .add("timeout", getFwdOptTimeout()).add("maxModelSize", getFwdOptMaxModelSize())
+                                        .build())
+                        .add("bwdOpt",
+                                Json.createObjectBuilder().add("active", isBwdOptActive())
+                                        .add("timeout", getBwdOptTimeout()).add("maxModelSize", getBwdOptMaxModelSize())
+                                        .build())
+                        .add("cc",
+                                Json.createObjectBuilder().add("active", isCcActive()).add("timeout", getCcTimeout())
+                                        .add("maxModelSize", getCcMaxModelSize()).build())
+                        .add("co", Json.createObjectBuilder().add("active", isCoActive()).add("timeout", getCoTimeout())
+                                .add("maxModelSize", getCoMaxModelSize()).build())
+                        .build())
                 .build();
 
         return preferences;
     }
 
-    public final List<Observable> getAllProperties() {
-        // TODO: Liste aktualisieren
-        return new LinkedList<Observable>(Arrays.asList(markedForExecution, defaultTimeout, 
-                modelgenIncludeReport, modelgenTimeout, modelgenModelSizes, initialFwdActive, initialFwdTimeout,
-                initialFwdMaxModelSize, initialBwdActive, initialBwdTimeout, initialBwdMaxModelSize, fwdOptActive,
-                fwdOptTimeout, fwdOptMaxModelSize, bwdOptActive, bwdOptTimeout, bwdOptMaxModelSize, ccActive, ccTimeout,
-                ccMaxModelSize, coActive, coTimeout, coMaxModelSize));
-    }
+    public void copyValues(BenchmarkCasePreferences source) {
+        // benchmark
+        setMarkedForExecution(source.isMarkedForExecution());
+        setEclipseProject(source.getEclipseProject());
+        setBenchmarkCaseName(source.getBenchmarkCaseName());
+        setMetamodelsRegistrationMethod(source.getMetamodelsRegistrationMethod());
+        setPatternMatchingEngine(source.getPatternMatchingEngine());
+        setDefaultTimeout(source.getDefaultTimeout());
 
-    public void setChanges(BenchmarkCasePreferences source) {
-        List<Observable> myProperties = getAllProperties();
-        List<Observable> theirProperties = source.getAllProperties();
+        // operationalizations
+        setModelgenIncludeReport(source.isModelgenIncludeReport());
+        setModelgenTimeout(source.getModelgenTimeout());
+        setModelgenModelSizes(source.getModelgenModelSizes());
+        setModelgenTggRule(source.getModelgenTggRule());
 
-        for (int i = 0; i < myProperties.size(); i++) {
-            if (myProperties.get(i) instanceof StringProperty) {
-                StringProperty myProperty = (StringProperty) myProperties.get(i);
-                StringProperty theirProperty = (StringProperty) theirProperties.get(i);
-                if (!myProperty.getValue().equals(theirProperty.getValue())) {
-                    myProperty.setValue(theirProperty.getValue());
-                }
-            } else if (myProperties.get(i) instanceof BooleanProperty) {
-                BooleanProperty myProperty = (BooleanProperty) myProperties.get(i);
-                BooleanProperty theirProperty = (BooleanProperty) theirProperties.get(i);
-                if (!myProperty.getValue().equals(theirProperty.getValue())) {
-                    myProperty.setValue(theirProperty.getValue());
-                }
-            } else if (myProperties.get(i) instanceof IntegerProperty) {
-                IntegerProperty myProperty = (IntegerProperty) myProperties.get(i);
-                IntegerProperty theirProperty = (IntegerProperty) theirProperties.get(i);
-                if (!myProperty.getValue().equals(theirProperty.getValue())) {
-                    myProperty.setValue(theirProperty.getValue());
-                }
-            } else if (myProperties.get(i) instanceof ListProperty<?>) {
-                ListProperty<?> myProperty = (ListProperty<?>) myProperties.get(i);
-                ListProperty<?> theirProperty = (ListProperty<?>) theirProperties.get(i);
-                if (!myProperty.getValue().equals(theirProperty.getValue())) {
-                    myProperty.setAll((List) theirProperty.stream().collect(Collectors.toList()));
-                }
-            }
-        }
+        setInitialFwdActive(source.isInitialFwdActive());
+        setInitialFwdTimeout(source.getInitialFwdTimeout());
+        setInitialFwdMaxModelSize(source.getInitialFwdMaxModelSize());
+
+        setInitialBwdActive(source.isInitialBwdActive());
+        setInitialBwdTimeout(source.getInitialBwdTimeout());
+        setInitialBwdMaxModelSize(source.getInitialBwdMaxModelSize());
+
+        setFwdActive(source.isFwdActive());
+        setFwdTimeout(source.getFwdTimeout());
+        setFwdMaxModelSize(source.getFwdMaxModelSize());
+        setFwdIncrementalEditMethod(source.getFwdIncrementalEditMethod());
+
+        setBwdActive(source.isBwdActive());
+        setBwdTimeout(source.getBwdTimeout());
+        setBwdMaxModelSize(source.getBwdMaxModelSize());
+        setBwdIncrementalEditMethod(source.getBwdIncrementalEditMethod());
+
+        setFwdOptActive(source.isFwdOptActive());
+        setFwdOptTimeout(source.getFwdOptTimeout());
+        setFwdOptMaxModelSize(source.getFwdOptMaxModelSize());
+
+        setBwdOptActive(source.isBwdOptActive());
+        setBwdOptTimeout(source.getBwdOptTimeout());
+        setBwdOptMaxModelSize(source.getBwdOptMaxModelSize());
+
+        setCcActive(source.isCcActive());
+        setCcTimeout(source.getCcTimeout());
+        setCcMaxModelSize(source.getCcMaxModelSize());
+
+        setCoActive(source.isCoActive());
+        setCoTimeout(source.getCoTimeout());
+        setCoMaxModelSize(source.getCoMaxModelSize());
     }
 
     private <T> T getValueOrDefault(T value, T whenValue, T defaultValue) {
@@ -818,49 +826,40 @@ public class BenchmarkCasePreferences implements IPreferences {
         this.bwdIncrementalEditMethodProperty().set(bwdIncrementalEditMethod);
     }
 
-    public final StringProperty patternMatchingEngineProperty() {
-        return this.patternMatchingEngine;
-    }
-    
-
-    public final String getPatternMatchingEngine() {
-        return this.patternMatchingEngineProperty().get();
-    }
-    
-
-    public final void setPatternMatchingEngine(final String patternMatchingEngine) {
-        this.patternMatchingEngineProperty().set(patternMatchingEngine);
-    }
-
     public final StringProperty eclipseProjectProperty() {
         return this.eclipseProject;
     }
-    
 
     public final String getEclipseProject() {
         return this.eclipseProjectProperty().get();
     }
-    
 
     public final void setEclipseProject(final String eclipseProject) {
         this.eclipseProjectProperty().set(eclipseProject);
     }
-    
 
     public final StringProperty benchmarkCaseNameProperty() {
         return this.benchmarkCaseName;
     }
-    
 
     public final String getBenchmarkCaseName() {
         return this.benchmarkCaseNameProperty().get();
     }
-    
 
     public final void setBenchmarkCaseName(final String benchmarkCaseName) {
         this.benchmarkCaseNameProperty().set(benchmarkCaseName);
     }
-    
-    
+
+    public final ObjectProperty<PatternMatchingEngine> patternMatchingEngineProperty() {
+        return this.patternMatchingEngine;
+    }
+
+    public final PatternMatchingEngine getPatternMatchingEngine() {
+        return this.patternMatchingEngineProperty().get();
+    }
+
+    public final void setPatternMatchingEngine(final PatternMatchingEngine patternMatchingEngine) {
+        this.patternMatchingEngineProperty().set(patternMatchingEngine);
+    }
 
 }
