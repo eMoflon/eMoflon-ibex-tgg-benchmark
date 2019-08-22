@@ -8,8 +8,6 @@ import java.net.URLClassLoader;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
-import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.Initial_SYNC_App;
-import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.SYNC_App;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
@@ -28,13 +26,7 @@ public class SyncBenchmark extends Benchmark<SYNC> {
                 runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                 runParameters.getRepetition());
 		try {
-			SYNC_App sync = null;
-			if (runParameters.getOperationalization() == OperationalizationType.INITIAL_FWD
-					|| runParameters.getOperationalization() == OperationalizationType.INITIAL_BWD) {
-				sync = new Initial_SYNC_App(runParameters);
-			} else {
-				sync = new SYNC_App(runParameters);
-			}
+			SYNC_App sync = new SYNC_App(runParameters);
 			op = sync;
 
 			// apply incremental edit method

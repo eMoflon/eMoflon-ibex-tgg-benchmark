@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
+import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGEN;
 import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
@@ -20,7 +21,8 @@ public class MODELGEN_App extends MODELGEN {
 
     public MODELGEN_App(BenchmarkRunParameters runParameters) throws IOException {
         super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
-                .workspacePath(runParameters.getWorkspacePath().toString()));
+                .workspacePath(runParameters.getWorkspacePath().toString())
+                .setBenchmarkLogger(new FullBenchmarkLogger()));
 
         this.runParameters = runParameters;
         this.classLoader = new URLClassLoader(runParameters.getClassPaths());
@@ -51,7 +53,7 @@ public class MODELGEN_App extends MODELGEN {
         p = createResource(instPath.resolve("protocol.xmi").toString());
 
         EcoreUtil.resolveAll(rs);
-        
+
         setStopCriterion(createStopCriterion(runParameters.getTggRule(), runParameters.getModelSize()));
         setUpdatePolicy(
                 new TimedUpdatePolicy(new RandomMatchUpdatePolicy(10), runParameters.getTimeout(), TimeUnit.SECONDS));

@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
 import org.emoflon.ibex.tgg.benchmark.runner.PatternMatchingEngine;
 import org.emoflon.ibex.tgg.benchmark.runner.SingleRunResult;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
 
@@ -92,6 +93,10 @@ public abstract class Benchmark<O extends OperationalStrategy> {
                     runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                     runParameters.getRepetition());
 			runResult.setExecutionTime(executionResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
+			
+			BenchmarkLogger benchmarkLogger = op.getOptions().getBenchmarkLogger();
+			runResult.setCreatedElements(benchmarkLogger.getTotalElementsCreated());
+			runResult.setDeletedElements(benchmarkLogger.getTotalElementsDeleted());
 
 		} catch (TimeoutException e) {
 			runResult.setError("Execution timed out");

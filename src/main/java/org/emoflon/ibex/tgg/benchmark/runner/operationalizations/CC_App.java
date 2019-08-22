@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
+import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 
 public class CC_App extends CC {
@@ -16,7 +17,8 @@ public class CC_App extends CC {
 
 	public CC_App(BenchmarkRunParameters runParameters) throws IOException {
 		super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
-				.workspacePath(runParameters.getWorkspacePath().toString()));
+				.workspacePath(runParameters.getWorkspacePath().toString())
+				.setBenchmarkLogger(new FullBenchmarkLogger()));
 
 		this.runParameters = runParameters;
 		this.classLoader = new URLClassLoader(runParameters.getClassPaths());
