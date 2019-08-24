@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
-import org.emoflon.ibex.tgg.benchmark.utils.RefelctionUtils;
+import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
 
 /**
  * Class BenchmarkRunParameters holds the parameters needed to run a benchmark.
@@ -192,7 +192,7 @@ public class BenchmarkRunParameters implements Serializable {
      * @param metamodelsRegistrationMethod the metamodelsRegistrationMethod to set
      */
     public void setMetamodelsRegistrationMethod(String metamodelsRegistrationMethod) {
-        String[] names = RefelctionUtils.splitClassAndMethodName(metamodelsRegistrationMethod);
+        String[] names = ReflectionUtils.splitMethodIdentifier(metamodelsRegistrationMethod);
         this.metamodelsRegistrationClassName = names[0];
         this.metamodelsRegistrationMethodName = names[1];
     }
@@ -229,7 +229,7 @@ public class BenchmarkRunParameters implements Serializable {
      * @param incrementalEditClassName the incrementalEditClassName to set
      */
     public void setIncrementalEditMethod(String incrementalEditMethod) {
-        String[] names = RefelctionUtils.splitClassAndMethodName(incrementalEditMethod);
+        String[] names = ReflectionUtils.splitMethodIdentifier(incrementalEditMethod);
         this.incrementalEditClassName = names[0];
         this.incrementalEditMethodName = names[1];
     }

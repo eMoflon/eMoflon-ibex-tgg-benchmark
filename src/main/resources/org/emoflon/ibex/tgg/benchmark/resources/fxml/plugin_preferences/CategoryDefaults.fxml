@@ -27,10 +27,10 @@
 					<children>
 						<GridPane hgap="10" vgap="8.0">
 							<children>
-								<Label text="timeout" />
+								<Label text="Timeout" />
 								<TimeTextField fx:id="defaultTimeout"
 									maxWidth="Infinity" GridPane.columnIndex="1" />
-								<Label text="model sizes" wrapText="true"
+								<Label text="Model Sizes" wrapText="true"
 									GridPane.rowIndex="1" />
 								<ModelSizesTextArea fx:id="defaultModelSizes"
 									maxHeight="80.0" maxWidth="Infinity" GridPane.columnIndex="1"

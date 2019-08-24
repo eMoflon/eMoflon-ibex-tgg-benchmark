@@ -1,11 +1,9 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedList;
+import java.util.Set;
 
 import javax.json.Json;
 import javax.json.JsonException;
@@ -17,30 +15,26 @@ import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
- * EclipseProject is a simple representation of an Eclipse project.
+ * 
  *
  * @author Andre Lehmann
  */
-public class EclipseProject {
-
+public class EclipseTggProject extends EclipseJavaProject {
+    
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
-    private final StringProperty name;
-    private final Path path;
-    private final Path[] classPaths;
-    private BenchmarkCasePreferences benchmarkCasePreferences;
+    private final ObjectProperty<BenchmarkCasePreferences> benchmarkCasePreferences;
 
     /**
-     * Constructor for {@link EclipseProject}.
+     * Constructor for {@link EclipseTggProject}.
      */
-    public EclipseProject(String name, Path path, Path[] classPaths) {
-        this.name = new SimpleStringProperty(name);
-        this.path = path;
-        this.classPaths = classPaths;
+    public EclipseTggProject(String name, Path projectPath, Path outputPath, Set<EclipseJavaProject> referencedProjects) {
+        super(name, projectPath, outputPath, referencedProjects);
+        this.benchmarkCasePreferences = new SimpleObjectProperty<BenchmarkCasePreferences>();
     }
 
     /**
@@ -51,7 +45,7 @@ public class EclipseProject {
     }
 
     public void savePreferences(long waitBeforeSaving) {
-        if (benchmarkCasePreferences == null)
+        if (getBenchmarkCasePreferences() == null)
             return;
 
         Runnable saveAction = () -> {
@@ -66,7 +60,7 @@ public class EclipseProject {
             LOG.debug("Save preferences of project '{}' to file '{}'", getName(), preferencesFilePath);
     
             JsonObject prefsJsonObject = Json.createObjectBuilder().add("version", Core.VERSION)
-                    .add("benchmarkCase", benchmarkCasePreferences.toJson()).build();
+                    .add("benchmarkCase", getBenchmarkCasePreferences().toJson()).build();
     
             try {
                 JsonUtils.saveJsonToFile(prefsJsonObject, preferencesFilePath);
@@ -113,60 +107,10 @@ public class EclipseProject {
     }
 
     /**
-     * @return the name property
-     */
-    public final StringProperty nameProperty() {
-        return this.name;
-    }
-    
-    /**
-     * @return the project name
-     */
-    public final String getName() {
-        return this.nameProperty().get();
-    }
-    
-    /**
-     * @param name the project name to set
-     */
-    public final void setName(final String name) {
-        this.nameProperty().set(name);
-    }
-
-    /**
-     * @return the class paths for this project
-     */
-    public Path[] getClassPaths() {
-        return classPaths;
-    }
-    
-    /**
-     * @return the class paths for this project as URLs
-     */
-    public URL[] getClassPathURLs() {
-        LinkedList<URL> urls = new LinkedList<URL>();
-        for (Path path : classPaths) {
-            try {
-                urls.add(path.toUri().toURL());
-            } catch (MalformedURLException e) {
-                // ignore
-            }
-        }
-        return urls.toArray(new URL[urls.size()]);
-    }
-    
-    /**
-     * @return the project path
-     */
-    public Path getPath() {
-        return path;
-    }
-
-    /**
      * @return the file path for the preference file
      */
     public Path getPreferencesPath() {
-        return path.resolve(Core.getInstance().getPluginPreferences().getBenchmarkPreferencesFileName());
+        return getProjectPath().resolve(Core.getInstance().getPluginPreferences().getBenchmarkPreferencesFileName());
     }
 
     /**
@@ -176,17 +120,18 @@ public class EclipseProject {
         return Files.exists(getPreferencesPath());
     }
 
-    /**
-     * @return the preferences object
-     */
-    public BenchmarkCasePreferences getBenchmarkCasePreferences() {
-        return benchmarkCasePreferences;
+    public final ObjectProperty<BenchmarkCasePreferences> benchmarkCasePreferencesProperty() {
+        return this.benchmarkCasePreferences;
     }
+    
 
-    /**
-     * @param benchmarkCasePreferences the benchmarkCasePreferences to set
-     */
-    public void setBenchmarkCasePreferences(BenchmarkCasePreferences benchmarkCasePreferences) {
-        this.benchmarkCasePreferences = benchmarkCasePreferences;
+    public final BenchmarkCasePreferences getBenchmarkCasePreferences() {
+        return this.benchmarkCasePreferencesProperty().get();
     }
+    
+
+    public final void setBenchmarkCasePreferences(final BenchmarkCasePreferences benchmarkCasePreferences) {
+        this.benchmarkCasePreferencesProperty().set(benchmarkCasePreferences);
+    }
+    
 }

@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;

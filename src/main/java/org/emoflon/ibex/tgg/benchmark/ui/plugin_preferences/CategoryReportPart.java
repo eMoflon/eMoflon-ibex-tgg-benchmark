@@ -7,15 +7,12 @@ import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.util.StringConverter;
 
 public class CategoryReportPart extends CategoryPart<PluginPreferences> {
 

@@ -32,31 +32,13 @@ public class SyncBenchmark extends Benchmark<SYNC> {
 			// apply incremental edit method
 			if (sync.isIncremental()) {
 				Resource model = sync.isForward() ? sync.getSourceResource() : sync.getTargetResource();
-				Method incrementalEditMethod = org.emoflon.ibex.tgg.benchmark.utils.RefelctionUtils.getMethodForName(
+				Method incrementalEditMethod = org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils.getMethodByName(
 						classLoader, runParameters.getIncrementalEditClassName(),
 						runParameters.getIncrementalEditMethodName(), EObject.class);
 				incrementalEditMethod.invoke(null, new Object[] { model.getContents().get(0) });
 			}
-		} catch (ClassNotFoundException e) {
-			String msg = String.format(
-					"Class '%s' containing the incremental edit method not found. Check your benchmark preferences.",
-					runParameters.getIncrementalEditClassName());
-			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
-					runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-					runParameters.getRepetition(), msg);
-			runResult.setError(msg);
-			throw new BenchmarkFaildException();
-		} catch (NoSuchMethodException e) {
-			String msg = String.format(
-					"Class '%s' doesn't contain a method '%s' or its signature is wrong. Check your benchmark preferences.",
-					runParameters.getIncrementalEditClassName(), runParameters.getIncrementalEditMethodName());
-			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
-					runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-					runParameters.getRepetition(), msg);
-			runResult.setError(msg);
-			throw new BenchmarkFaildException();
-		} catch (IOException | SecurityException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
+		} catch (NoSuchMethodException | IOException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
 			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
 					runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
 					runParameters.getRepetition(), e.getMessage());

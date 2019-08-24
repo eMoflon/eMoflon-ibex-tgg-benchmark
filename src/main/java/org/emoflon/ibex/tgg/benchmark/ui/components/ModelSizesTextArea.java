@@ -1,10 +1,14 @@
 package org.emoflon.ibex.tgg.benchmark.ui.components;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
@@ -21,12 +25,17 @@ import javafx.scene.input.KeyEvent;
 public class ModelSizesTextArea extends TextArea {
 
     private ObservableList<Integer> property;
+    private Set<Integer> modelSizeValues;
+    private List<ChangeListener<Set<Integer>>> commitListener;
 
     /**
      * Constructor for {@link ModelSizesTextArea}.
      */
     public ModelSizesTextArea() {
         super();
+
+        commitListener = new LinkedList<>();
+        modelSizeValues = new TreeSet<>();
 
         setWrapText(true);
 
@@ -80,10 +89,19 @@ public class ModelSizesTextArea extends TextArea {
             property.setAll(sortedValues);
         }
         this.setText(sortedValues.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+
+        // execute listener
+        for (ChangeListener<Set<Integer>> listener : commitListener) {
+            listener.changed(null, sortedValues, sortedValues);
+        }
     }
 
     public void bindListProperty(ObservableList<Integer> property) {
         this.property = property;
         this.setText(property.stream().map(String::valueOf).collect(Collectors.joining(" ")));
+    }
+
+    public void addCommitListener(ChangeListener<Set<Integer>> listener) {
+        commitListener.add(listener);
     }
 }

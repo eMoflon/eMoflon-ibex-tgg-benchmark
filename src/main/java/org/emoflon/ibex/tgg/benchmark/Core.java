@@ -9,7 +9,7 @@ import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
 
-import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
@@ -21,10 +21,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
-import org.apache.logging.log4j.spi.StandardLevel;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  * Core class for TGG Benchmark plugin.
@@ -37,7 +33,6 @@ public class Core {
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
     private static Core instance;
-    private final ObservableList<EclipseProject> tggProjects;
 
     private PluginPreferences pluginPreferences;
 
@@ -49,8 +44,13 @@ public class Core {
         super();
 
         this.workspace = workspace;
-        this.tggProjects = FXCollections.observableArrayList();
-        this.pluginPreferencesFilePath = workspace.getPluginStateLocation().resolve("tgg-benchmark-plugin.json");
+        this.pluginPreferencesFilePath = workspace.getPluginStateLocation().resolve("tgg-benchmark.json");
+    }
+
+    public static void configureLogger() {
+        Configurator.initialize(new DefaultConfiguration());
+        // set loglevel until the user preferences has been loaded
+        Configurator.setRootLevel(Level.INFO);
     }
 
     public void loadPluginPreferences() throws JsonException, IOException {
@@ -75,8 +75,6 @@ public class Core {
             pluginPreferences = new PluginPreferences();
             savePluginPreferences();
         }
-
-        tggProjects.addAll(workspace.getTGGProjects());
     }
 
     public void savePluginPreferences() {
@@ -109,7 +107,7 @@ public class Core {
         // }
     }
 
-    public void editBenchmarkCase(EclipseProject project) {
+    public void editBenchmarkCase(EclipseTggProject project) {
         try {
             BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(project);
             bcpw.show();
@@ -140,13 +138,6 @@ public class Core {
     }
     
     /**
-     * @return the tggProjects
-     */
-    public ObservableList<EclipseProject> getTggProjects() {
-        return tggProjects;
-    }
-
-    /**
      * @return the instance
      */
     public static Core getInstance() {
@@ -162,7 +153,7 @@ public class Core {
      * 
      * @param projects the benchmark cases that shall be executed
      */
-    public void scheduleJobs(List<EclipseProject> projects) {
+    public void scheduleJobs(List<EclipseTggProject> projects) {
 
     }
 

@@ -1,12 +1,9 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.json.JsonException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +18,12 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.emoflon.ibex.tgg.benchmark.Activator;
 import org.emoflon.ibex.tgg.benchmark.Core;
 
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
+
 /**
  * EclipseWorkspace represents an Eclipse workspace. It allows easy access to
  * TGG projects.
@@ -30,67 +33,68 @@ import org.emoflon.ibex.tgg.benchmark.Core;
 public class EclipseWorkspace implements IEclipseWorkspace {
 
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
-    private final Path location;
+    
+    private final ObjectProperty<Path> location;
     private final IWorkspaceRoot workspaceRoot;
+    private final ListProperty<EclipseTggProject> tggProjects;
 
     /**
      * Constructor for {@link EclipseWorkspace}.
      */
     public EclipseWorkspace() {
         this.workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-        this.location = Paths.get(workspaceRoot.getLocation().toOSString());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Path getLocation() {
-        return location;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<EclipseProject> getTGGProjects() {
-        List<EclipseProject> tggProjects = new LinkedList<>();
-
-        IProject[] projects = workspaceRoot.getProjects();
-        for (IProject project : projects) {
-            
+        this.location = new SimpleObjectProperty<Path>(Paths.get(workspaceRoot.getLocation().toOSString()));
+        this.tggProjects = new SimpleListProperty<EclipseTggProject>();
+        
+        for (IProject project : workspaceRoot.getProjects()) {
             try {
-                // TODO: get the correct project natures
-                for (IProject referencedProjects : project.getReferencedProjects()) {
-                    System.out.println(referencedProjects.getName());
-                    for (String nature : referencedProjects.getDescription().getNatureIds()) {
-                        System.out.println("  " + nature);
-                    };
-                }
-                
                 if (project.isOpen() && project.hasNature("org.emoflon.ibex.tgg.ide.nature")
                         && project.hasNature(JavaCore.NATURE_ID)) {
-                    IJavaProject javaProject = JavaCore.create(project);
-                    try {
-                        LinkedList<Path> paths = new LinkedList<Path>();
-                        paths.add(getOutputPath(javaProject));
-                        for (IProject referencedProject : project.getReferencedProjects()) {
-                            if (referencedProject.hasNature("org.emoflon.ibex.tgg.ide.nature")) {
-                                paths.add(getOutputPath((IJavaProject) referencedProject));
-                            }
-                        }
-                        
-                        EclipseProject tggProject = new EclipseProject(project.getName(), Paths.get(project.getFullPath().toString()), paths.toArray(new Path[paths.size()]));
-                        tggProject.loadPreferences();
-                        tggProjects.add(tggProject);
-                    } catch (JsonException | IOException e) {
-                        // ignore, can't do anything about it
-                    }
+                    addTggProject((IJavaProject) project);
                 }
             } catch (CoreException e) {
-               // ignore, can't do anything about it
+                // ignore, can't do anything about it
             }
         }
 
-        return tggProjects;
     }
     
+    private EclipseJavaProject getJavaProject(IJavaProject javaProject) {
+        IProject project = javaProject.getProject();
+        Path projectPath = Paths.get(project.getFullPath().toString());
+        Path outputPath = getOutputPath(javaProject);
+        
+        Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                if (referencedProject.hasNature(JavaCore.NATURE_ID)) {
+                    referencedProjects.add(getJavaProject((IJavaProject) referencedProject));
+                }
+            }
+        } catch (CoreException e) {
+            // ignore, can't do anything about it
+        }
+        return new EclipseJavaProject(project.getName(), projectPath, outputPath, referencedProjects);
+    }
+    
+    public void addTggProject(IJavaProject tggProject) {
+        IProject project = tggProject.getProject();
+        Path projectPath = Paths.get(project.getFullPath().toString());
+        Path outputPath = getOutputPath(tggProject);
+        
+        Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                if (referencedProject.hasNature(JavaCore.NATURE_ID)) {
+                    referencedProjects.add(getJavaProject((IJavaProject) referencedProject));
+                }
+            }
+            getTggProjects().add(new EclipseTggProject(project.getName(), projectPath, outputPath, referencedProjects));
+        } catch (CoreException e) {
+            // ignore, can't do anything about it
+        }
+    }
+
     private Path getOutputPath(IJavaProject javaProject) {
         try {
             return Paths.get(javaProject.getProject().getLocation().toOSString(), javaProject.getOutputLocation().removeFirstSegments(1).toString());
@@ -105,4 +109,36 @@ public class EclipseWorkspace implements IEclipseWorkspace {
     public Path getPluginStateLocation() {
         return Paths.get(Platform.getStateLocation(Activator.getInstance().getBundle()).toOSString());
     }
+
+    public final ListProperty<EclipseTggProject> tggProjectsProperty() {
+        return this.tggProjects;
+    }
+    
+
+    @Override
+    public final ObservableList<EclipseTggProject> getTggProjects() {
+        return this.tggProjectsProperty().get();
+    }
+    
+    /** {@inheritDoc} */
+    public final void setTggProjects(final ObservableList<EclipseTggProject> tggProjects) {
+        this.tggProjectsProperty().set(tggProjects);
+    }
+    
+
+    public final ObjectProperty<Path> locationProperty() {
+        return this.location;
+    }
+    
+
+    @Override
+    public final Path getLocation() {
+        return this.locationProperty().get();
+    }
+    
+
+    public final void setLocation(final Path location) {
+        this.locationProperty().set(location);
+    }
+    
 }

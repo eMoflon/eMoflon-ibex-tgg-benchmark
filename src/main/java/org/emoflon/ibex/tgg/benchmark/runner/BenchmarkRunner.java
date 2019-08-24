@@ -20,7 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
-import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
@@ -45,7 +45,7 @@ public class BenchmarkRunner implements Runnable {
     private static final LinkedList<File> CLASS_PATHS;
 
     private final PluginPreferences pluginPreferences;
-    private final List<EclipseProject> eclipseProjects;
+    private final List<EclipseTggProject> eclipseProjects;
     private final IEclipseWorkspace eclipseWorkspace;
     private final LocalDateTime startTime;
     private final Path modelInstancesBasePath;
@@ -70,7 +70,7 @@ public class BenchmarkRunner implements Runnable {
      * @param eclipseProject   a single eclipse project
      * @throws IOException if the report file couldn't be created
      */
-    public BenchmarkRunner(IEclipseWorkspace eclipseWorkspace, EclipseProject eclipseProject) throws IOException {
+    public BenchmarkRunner(IEclipseWorkspace eclipseWorkspace, EclipseTggProject eclipseProject) throws IOException {
         this(eclipseWorkspace, Arrays.asList(eclipseProject));
     }
 
@@ -81,7 +81,7 @@ public class BenchmarkRunner implements Runnable {
      * @param eclipseProjects  a list of eclipse projects
      * @throws IOException if the report file couldn't be created
      */
-    public BenchmarkRunner(IEclipseWorkspace eclipseWorkspace, List<EclipseProject> eclipseProjects)
+    public BenchmarkRunner(IEclipseWorkspace eclipseWorkspace, List<EclipseTggProject> eclipseProjects)
             throws IOException {
         this.eclipseWorkspace = eclipseWorkspace;
         this.eclipseProjects = eclipseProjects;
@@ -108,14 +108,14 @@ public class BenchmarkRunner implements Runnable {
         includeOps.put(OperationalizationType.BWD_OPT, BenchmarkCasePreferences::isBwdOptActive);
         includeOps.put(OperationalizationType.CO, BenchmarkCasePreferences::isCoActive);
         includeOps.put(OperationalizationType.CC, BenchmarkCasePreferences::isCoActive);
-        for (EclipseProject eclipseProject : eclipseProjects) {
+        for (EclipseTggProject eclipseProject : eclipseProjects) {
             BenchmarkCasePreferences bcp = eclipseProject.getBenchmarkCasePreferences();
             for (Map.Entry<OperationalizationType, Function<BenchmarkCasePreferences, Boolean>> includeOp : includeOps
                     .entrySet()) {
                 if (includeOp.getValue().apply(bcp)) {
                     try {
                         getReportBuilderByPath(StringUtils.createPathFromString(pluginPreferences.getReportFilePath(),
-                                eclipseWorkspace.getLocation(), eclipseProject.getPath(), eclipseProject.getName(),
+                                eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(), eclipseProject.getName(),
                                 includeOp.getKey(), startTime));
                     } catch (IOException e) {
                         closeAllReportBuilders();
@@ -133,7 +133,7 @@ public class BenchmarkRunner implements Runnable {
             LOG.info("Benchmark started");
             try {
                 // benchmark all projects
-                for (EclipseProject eclipseProject : eclipseProjects) {
+                for (EclipseTggProject eclipseProject : eclipseProjects) {
                     // benchmark a single project
                     BenchmarkCasePreferences bcp = eclipseProject.getBenchmarkCasePreferences();
                     benchmarkCase(eclipseProject, bcp);
@@ -167,7 +167,7 @@ public class BenchmarkRunner implements Runnable {
      * @throws IOException          if writing the report fails
      * @throws InterruptedException
      */
-    private void benchmarkCase(EclipseProject eclipseProject, BenchmarkCasePreferences bcp)
+    private void benchmarkCase(EclipseTggProject eclipseProject, BenchmarkCasePreferences bcp)
             throws IOException, InterruptedException {
 
         BiFunction<Integer, Integer, Integer> min = (i1, i2) -> i1 < i2 ? i1 : i2;
@@ -187,7 +187,7 @@ public class BenchmarkRunner implements Runnable {
             return runParameters;
         };
         reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(pluginPreferences.getReportFilePath(),
-                eclipseWorkspace.getLocation(), eclipseProject.getPath(), eclipseProject.getName(),
+                eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(), eclipseProject.getName(),
                 OperationalizationType.MODELGEN, startTime));
         Integer maxSuccessfullModelSize = benchmarkOperationalization(runParametersGenerator,
                 bcp.getModelgenModelSizes(), bcp.getModelgenModelSizes().get(bcp.getModelgenModelSizes().size() - 1),
@@ -203,7 +203,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), OperationalizationType.INITIAL_FWD, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
                     min.apply(maxSuccessfullModelSize, bcp.getEffectiveInitialFwdMaxModelSize()),
@@ -220,7 +220,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), OperationalizationType.INITIAL_BWD, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
                     min.apply(maxSuccessfullModelSize, bcp.getEffectiveInitialBwdMaxModelSize()),
@@ -242,7 +242,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), bcp.getFwdIncrementalEditMethod() == "" ? OperationalizationType.FWD
                             : OperationalizationType.INCREMENTAL_FWD,
                     startTime));
@@ -266,7 +266,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), bcp.getBwdIncrementalEditMethod() == "" ? OperationalizationType.BWD
                             : OperationalizationType.INCREMENTAL_BWD,
                     startTime));
@@ -285,7 +285,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), OperationalizationType.FWD_OPT, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
                     min.apply(maxSuccessfullModelSize, bcp.getEffectiveFwdOptMaxModelSize()),
@@ -302,7 +302,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), OperationalizationType.BWD_OPT, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
                     min.apply(maxSuccessfullModelSize, bcp.getEffectiveBwdOptMaxModelSize()),
@@ -319,7 +319,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), OperationalizationType.CC, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
                     min.apply(maxSuccessfullModelSize, bcp.getEffectiveCcMaxModelSize()),
@@ -336,7 +336,7 @@ public class BenchmarkRunner implements Runnable {
                 return runParameters;
             };
             reportBuilder = getReportBuilderByPath(StringUtils.createPathFromString(
-                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getPath(),
+                    pluginPreferences.getReportFilePath(), eclipseWorkspace.getLocation(), eclipseProject.getProjectPath(),
                     eclipseProject.getName(), OperationalizationType.CO, startTime));
             benchmarkOperationalization(runParametersGenerator, bcp.getModelgenModelSizes(),
                     min.apply(maxSuccessfullModelSize, bcp.getEffectiveCoMaxModelSize()),
@@ -462,7 +462,7 @@ public class BenchmarkRunner implements Runnable {
      * @param repetition the repetition number
      * @return a generic instance of {@link BenchmarkRunParameters}
      */
-    private BenchmarkRunParameters createGenericRunParameters(EclipseProject project, BenchmarkCasePreferences bcp,
+    private BenchmarkRunParameters createGenericRunParameters(EclipseTggProject project, BenchmarkCasePreferences bcp,
             Integer modelSize, Integer repetition) {
         BenchmarkRunParameters runParameters = new BenchmarkRunParameters();
 

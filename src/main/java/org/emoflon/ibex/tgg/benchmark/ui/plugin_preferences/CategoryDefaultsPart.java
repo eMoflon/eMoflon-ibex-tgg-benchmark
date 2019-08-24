@@ -3,14 +3,12 @@ package org.emoflon.ibex.tgg.benchmark.ui.plugin_preferences;
 import java.io.IOException;
 
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
-import org.emoflon.ibex.tgg.benchmark.ui.components.IntegerTextField;
 import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea;
 import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Tooltip;
 
 public class CategoryDefaultsPart extends CategoryPart<PluginPreferences> {
@@ -56,7 +54,7 @@ public class CategoryDefaultsPart extends CategoryPart<PluginPreferences> {
         defaultTimeout.bindIntegerProperty(preferencesData.defaultTimeoutProperty());
         defaultTimeout.setTooltip(defaultTimeoutTooltip);
 
-        defaultModelSizes.bindListProperty(preferencesData.getDefaultModelSizes());
+        defaultModelSizes.bindListProperty(preferencesData.defaultModelSizesProperty());
 
         defaultModelgenIncludeReport.selectedProperty().bind(preferencesData.defaultModelgenIncludeReportProperty());
         defaultInitialFwdActive.selectedProperty().bind(preferencesData.defaultInitialFwdActiveProperty());

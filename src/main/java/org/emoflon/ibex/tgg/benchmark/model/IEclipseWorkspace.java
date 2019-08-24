@@ -1,7 +1,8 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
 import java.nio.file.Path;
-import java.util.List;
+
+import javafx.collections.ObservableList;
 
 /**
  * IEclipseWorkspace allows access to an Eclipse workspace without necessarily
@@ -19,8 +20,8 @@ public interface IEclipseWorkspace {
     /**
      * @return the TGG projects contained in this workspace
      */
-    public List<EclipseProject> getTGGProjects();
-    
+    public ObservableList<EclipseTggProject> getTggProjects();
+
     /**
      * @return the plugin state location where preferences might be safed
      */

@@ -137,7 +137,7 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
             setText(null);
             setGraphic(null);
         } else {
-            StringConverter c = getConverter();
+            StringConverter<Boolean> c = getConverter();
             
             if (showLabel) {
                 setText(c.toString(item));
@@ -147,7 +147,7 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
             if (booleanProperty instanceof BooleanProperty) {
                 checkBox.selectedProperty().unbindBidirectional((BooleanProperty)booleanProperty);
             }
-            ObservableValue obsValue = getSelectedProperty();
+            ObservableValue<Boolean> obsValue = getSelectedProperty();
             if (obsValue instanceof BooleanProperty) {
                 booleanProperty = obsValue;
                 checkBox.selectedProperty().bindBidirectional((BooleanProperty)booleanProperty);
@@ -166,7 +166,7 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
         this.checkBox.setAlignment(showLabel ? Pos.CENTER_LEFT : Pos.CENTER);
     }
     
-    private ObservableValue getSelectedProperty() {
+    private ObservableValue<Boolean> getSelectedProperty() {
         return getSelectedStateCallback() != null ?
                 getSelectedStateCallback().call(getIndex()) :
                 getTableColumn().getCellObservableValue(getIndex());
