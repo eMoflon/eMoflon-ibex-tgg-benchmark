@@ -5,10 +5,10 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
 import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 
 public class CC_App extends CC {
 

@@ -1,25 +1,19 @@
 package org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
-import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
+import org.emoflon.ibex.tgg.benchmark.ui.components.CheckBoxTableCell;
 import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
 import org.emoflon.ibex.tgg.benchmark.ui.components.SelectAllCheckBox;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener.Change;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -29,7 +23,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
-import org.emoflon.ibex.tgg.benchmark.ui.components.CheckBoxTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;

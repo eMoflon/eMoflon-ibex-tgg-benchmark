@@ -6,6 +6,132 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - TestChoiceBox",
+            "request": "launch",
+            "mainClass": "TestChoiceBox",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestBla",
+            "request": "launch",
+            "mainClass": "TestBla",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestLogger",
+            "request": "launch",
+            "mainClass": "TestLogger",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestExcel",
+            "request": "launch",
+            "mainClass": "TestExcel",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestRefelections",
+            "request": "launch",
+            "mainClass": "TestRefelections",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestBenchmarkRunner",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.TestBenchmarkRunner",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Bla",
+            "request": "launch",
+            "mainClass": "Bla",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestWhatever",
+            "request": "launch",
+            "mainClass": "TestWhatever",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EventBusTestClient",
+            "request": "launch",
+            "mainClass": "EventBusTestClient",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EventBusTestServer",
+            "request": "launch",
+            "mainClass": "EventBusTestServer",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestRefelections2",
+            "request": "launch",
+            "mainClass": "TestRefelections2",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestRefelections",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.executor.TestRefelections",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestNumberfield2",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.TestNumberfield2",
+            "projectName": "TGG-Benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestNumberfield3",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.TestNumberfield3",
+            "projectName": "tgg-benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestNumberfield2",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.TestNumberfield2",
+            "projectName": "tgg-benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EditableListView2",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.EditableListView2",
+            "projectName": "tgg-benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EditableListView",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.EditableListView",
+            "projectName": "tgg-benchmark"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - TestNumberfield",
+            "request": "launch",
+            "mainClass": "org.emoflon.ibex.tgg.benchmark.tests.gui.TestNumberfield",
+            "projectName": "tgg-benchmark"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"

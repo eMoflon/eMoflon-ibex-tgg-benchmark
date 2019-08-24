@@ -2,6 +2,12 @@ package org.emoflon.ibex.tgg.benchmark.runner;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.spi.StandardLevel;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.Benchmark;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.BwdOptBenchmark;
@@ -11,13 +17,6 @@ import org.emoflon.ibex.tgg.benchmark.runner.benchmark.FwdOptBenchmark;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.ModelgenBenchmark;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.SyncBenchmark;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
-import org.apache.logging.log4j.spi.StandardLevel;
 import org.terracotta.ipceventbus.event.EventBusClient;
 
 /**
