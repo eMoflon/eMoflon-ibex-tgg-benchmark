@@ -9,18 +9,16 @@ import javax.json.Json;
 import javax.json.JsonException;
 import javax.json.JsonObject;
 
-import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
-import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
-import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
-import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
-import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
-import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
+import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
+import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
+import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
+import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
 /**
  * Core class for TGG Benchmark plugin.
@@ -108,12 +106,12 @@ public class Core {
     }
 
     public void editBenchmarkCase(EclipseTggProject project) {
-        try {
-            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(project);
-            bcpw.show();
-        } catch (IOException e) {
-            LOG.error("Error creating window: " + e.getMessage());
-        }
+//        try {
+//            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(project);
+//            bcpw.show();
+//        } catch (IOException e) {
+//            LOG.error("Error creating window: " + e.getMessage());
+//        }
     }
 
     // public void deleteBenchmarkCase(BenchmarkCasePreferences bcp) {

@@ -3,7 +3,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -12,209 +11,275 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField?>
+<?import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea?>
+<?import javafx.scene.control.ComboBox?>
 
-<VBox fx:id="categoryOperationalizations" stylesheets="@../../css/preference-category.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Label styleClass="h1" text="Operationalizations" />
-      <Separator styleClass="header-underline" />
-      <FlowPane>
-         <children>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="MODELGEN" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Include Report" wrapText="true" />
-                        <CheckBox fx:id="modelgenIncludeReport" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="modelgenTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="TGG Rule" GridPane.rowIndex="2" wrapText="true" />
-                        <TextField fx:id="modelgenTggRule" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="Max Model Size" GridPane.rowIndex="3" wrapText="true" />
-                        <ListView fx:id="modelgenModelSizes" maxHeight="140.0" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="INITIAL FWD" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="initialFwdActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="initialFwdTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="initialFwdMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="INITIAL BWD" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="initialBwdActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="initialBwdTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="initialBwdMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="FWD OPT" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="fwdOptActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="fwdOptTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="fwdOptMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="BWD OPT" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="bwdOptActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="bwdOptTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="bwdOptMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="SYNC" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="syncActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="syncTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="syncMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="Direction" GridPane.rowIndex="3" wrapText="true" />
-                        <ChoiceBox fx:id="syncDirection" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Label text="Consumer" GridPane.rowIndex="4" wrapText="true" />
-                        <TextField fx:id="syncConsumer" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="CC" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="ccActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="ccTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="ccMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-            <VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
-               <children>
-                  <Label styleClass="h2" text="CO" />
-                  <GridPane hgap="10" vgap="8.0">
-                     <children>
-                        <Label text="Active" wrapText="true" />
-                        <CheckBox fx:id="coActive" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" />
-                        <Label text="Timeout" GridPane.rowIndex="1" wrapText="true" />
-                        <TimeTextField fx:id="coTimeout" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Max Model Size" GridPane.rowIndex="2" wrapText="true" />
-                        <ChoiceBox fx:id="coMaxModelSize" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                     </children>
-                     <columnConstraints>
-                        <ColumnConstraints minWidth="130.0" />
-                        <ColumnConstraints hgrow="ALWAYS" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints />
-                        <RowConstraints />
-                        <RowConstraints />
-                     </rowConstraints>
-                  </GridPane>
-               </children>
-            </VBox>
-         </children>
-      </FlowPane>
-   </children>
+<VBox fx:id="categoryOperationalizations"
+	stylesheets="@../../css/preference-category.css"
+	xmlns="http://javafx.com/javafx/8.0.171"
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<Label styleClass="h1" text="Operationalizations" />
+		<Separator styleClass="header-underline" />
+		<FlowPane>
+			<children>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="MODELGEN" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Include Report" wrapText="true" />
+								<CheckBox fx:id="modelgenIncludeReport"
+									mnemonicParsing="false" selected="true"
+									GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="modelgenTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="TGG Rule" GridPane.rowIndex="2"
+									wrapText="true" />
+								<TextField fx:id="modelgenTggRule" maxWidth="Infinity"
+									GridPane.columnIndex="1" GridPane.rowIndex="2" />
+								<Label text="Max Model Size" GridPane.rowIndex="3"
+									wrapText="true" />
+								<ModelSizesTextArea
+									fx:id="modelgenModelSizes" maxHeight="80.0" maxWidth="Infinity"
+									GridPane.columnIndex="1" GridPane.rowIndex="3" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="INITIAL FWD" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="initialFwdActive"
+									mnemonicParsing="false" selected="true"
+									GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="initialFwdTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="initialFwdMaxModelSize"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="2" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="INITIAL BWD" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="initialBwdActive"
+									mnemonicParsing="false" selected="true"
+									GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="initialBwdTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="initialBwdMaxModelSize"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="2" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="FWD" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="fwdActive" mnemonicParsing="false"
+									selected="true" GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="fwdTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="fwdMaxModelSize" maxWidth="Infinity"
+									GridPane.columnIndex="1" GridPane.rowIndex="2" />
+								<Label text="Incremental Edit Method" GridPane.rowIndex="3"
+									wrapText="true" />
+								<ComboBox fx:id="fwdIncrementalEditMethod"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="3" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="BWD" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="bwdActive" mnemonicParsing="false"
+									selected="true" GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="bwdTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="bwdMaxModelSize" maxWidth="Infinity"
+									GridPane.columnIndex="1" GridPane.rowIndex="2" />
+								<Label text="Incremental Edit Method" GridPane.rowIndex="3"
+									wrapText="true" />
+								<ComboBox fx:id="bwdIncrementalEditMethod"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="3" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="FWD OPT" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="fwdOptActive" mnemonicParsing="false"
+									selected="true" GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="fwdOptTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="fwdOptMaxModelSize"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="2" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="BWD OPT" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="bwdOptActive" mnemonicParsing="false"
+									selected="true" GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="bwdOptTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="bwdOptMaxModelSize"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="2" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="CC" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="ccActive" mnemonicParsing="false"
+									selected="true" GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="ccTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="ccMaxModelSize" maxWidth="Infinity"
+									GridPane.columnIndex="1" GridPane.rowIndex="2" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+				<VBox layoutX="10.0" layoutY="10.0"
+					styleClass="preference-container">
+					<children>
+						<Label styleClass="h2" text="CO" />
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="Active" wrapText="true" />
+								<CheckBox fx:id="coActive" mnemonicParsing="false"
+									selected="true" GridPane.columnIndex="1" />
+								<Label text="Timeout" GridPane.rowIndex="1"
+									wrapText="true" />
+								<TimeTextField fx:id="coTimeout"
+									maxWidth="Infinity" GridPane.columnIndex="1"
+									GridPane.rowIndex="1" />
+								<Label text="Max Model Size" GridPane.rowIndex="2"
+									wrapText="true" />
+								<ComboBox fx:id="coMaxModelSize" maxWidth="Infinity"
+									GridPane.columnIndex="1" GridPane.rowIndex="2" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+			</children>
+		</FlowPane>
+	</children>
 </VBox>

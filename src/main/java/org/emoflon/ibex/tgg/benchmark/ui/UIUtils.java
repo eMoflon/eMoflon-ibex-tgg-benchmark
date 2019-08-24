@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.benchmark.ui;
 
 import java.lang.reflect.Method;
+
 import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
 
 import javafx.beans.property.ObjectProperty;
@@ -48,7 +49,11 @@ public abstract class UIUtils {
             }
         }
         chbx.getSelectionModel().selectedIndexProperty().addListener((observable, old_value, new_value) -> {
-            property.set(chbx.getItems().get(new_value.intValue()).toString());
+            if (new_value != null) {
+                property.set(chbx.getItems().get(new_value.intValue()).toString());
+            } else {
+                property.set(null);
+            }
         });
     }
 
@@ -102,7 +107,11 @@ public abstract class UIUtils {
         }
         // update property when an item has been selected
         comboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            property.setValue(ReflectionUtils.methodToString(newValue));
+            if (newValue != null) {
+                property.setValue(ReflectionUtils.methodToString(newValue));
+            } else {
+                property.setValue("");
+            }
         });
     }
 }

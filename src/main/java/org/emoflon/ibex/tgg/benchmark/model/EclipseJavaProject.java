@@ -34,7 +34,7 @@ public class EclipseJavaProject {
     public EclipseJavaProject(String name, Path projectPath, Path outputPath, Set<EclipseJavaProject> referencedProjects) {
         this.name = new SimpleStringProperty(name);
         this.projectPath = new SimpleObjectProperty<>(projectPath);
-        this.outputPath = new SimpleObjectProperty<>(projectPath);
+        this.outputPath = new SimpleObjectProperty<>(outputPath);
         this.referencedProjects = new SimpleListProperty<EclipseJavaProject>(FXCollections.observableArrayList(referencedProjects));
     }
 

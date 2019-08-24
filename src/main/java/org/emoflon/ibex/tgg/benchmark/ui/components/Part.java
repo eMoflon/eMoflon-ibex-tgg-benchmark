@@ -3,6 +3,10 @@ package org.emoflon.ibex.tgg.benchmark.ui.components;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.emoflon.ibex.tgg.benchmark.Core;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -14,13 +18,16 @@ import javafx.scene.Parent;
  */
 public abstract class Part {
 
+    protected static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
+
     protected Parent content;
     protected URL resourcePath;
 
     /**
      * Constructor for {@link Part}.
      */
-    public Part() {    }
+    public Part() {
+    }
 
     /**
      * Constructor for {@link Part}.

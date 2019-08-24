@@ -5,8 +5,6 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
-import java.lang.IllegalArgumentException;
-
 import org.apache.logging.log4j.spi.StandardLevel;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
 

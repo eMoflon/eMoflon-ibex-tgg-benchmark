@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
-import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
-import org.emoflon.ibex.tgg.benchmark.model.EclipseProject;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
@@ -27,16 +25,12 @@ public class MainPart extends GenericPreferencesPart {
     private final Button runButton;
     private final Button saveAndCloseButton;
 
-    private final CategoryGeneralPart categoryGeneralController;
-    private final CategoryInputPart categoryInputController;
-    private final CategoryOutputPart categoryOutputController;
+    private final CategoryBenchmarkPart categoryBenchmarkController;
     private final CategoryOperationalizationsPart categoryOperationalizationsController;
-
-    private final Core pluginCore;
 
     private ObservableList<CategoryDataModel> categoriesViewData;
 
-    private EclipseProject eclipseProject;
+    private BenchmarkCasePreferences preferencesData;
     private BenchmarkCasePreferences preferencesDataWorkingCopy;
 
     /**
@@ -47,20 +41,14 @@ public class MainPart extends GenericPreferencesPart {
     public MainPart() throws IOException {
         super();
 
-        // get plugin core object
-        pluginCore = Core.getInstance();
-
         // get sub parts
-        categoryGeneralController = new CategoryGeneralPart();
-        categoryInputController = new CategoryInputPart();
-        categoryOutputController = new CategoryOutputPart();
+        categoryBenchmarkController = new CategoryBenchmarkPart();
         categoryOperationalizationsController = new CategoryOperationalizationsPart();
 
         // init categories
         categoriesViewData = FXCollections.observableArrayList();
-        categoriesViewData.add(new CategoryDataModel("General", Glyph.CIRCLE, categoryGeneralController.getContent()));
-        categoriesViewData.add(new CategoryDataModel("Input", Glyph.SIGN_IN, categoryInputController.getContent()));
-        categoriesViewData.add(new CategoryDataModel("Output", Glyph.SIGN_OUT, categoryOutputController.getContent()));
+        categoriesViewData
+                .add(new CategoryDataModel("Benchmark", Glyph.TACHOMETER, categoryBenchmarkController.getContent()));
         categoriesViewData.add(new CategoryDataModel("Operationalizations", Glyph.GEARS,
                 categoryOperationalizationsController.getContent()));
 
@@ -95,20 +83,17 @@ public class MainPart extends GenericPreferencesPart {
      * 
      * @param preferencesData The data model
      */
-    public void initData(EclipseProject eclipseProject) {
-        this.eclipseProject = eclipseProject;
-        if (eclipseProject != null) {
-            this.preferencesDataWorkingCopy = new BenchmarkCasePreferences(
-                    eclipseProject.getBenchmarkCasePreferences());
+    public void initData(BenchmarkCasePreferences bcp) {
+        this.preferencesData = bcp;
+        if (preferencesData != null) {
+            this.preferencesDataWorkingCopy = new BenchmarkCasePreferences(preferencesData);
         } else {
             this.preferencesDataWorkingCopy = new BenchmarkCasePreferences();
         }
 
         initCategoriesView(categoriesViewData);
 
-        categoryGeneralController.initData(this.preferencesDataWorkingCopy);
-        categoryInputController.initData(this.preferencesDataWorkingCopy);
-        categoryOutputController.initData(this.preferencesDataWorkingCopy);
+        categoryBenchmarkController.initData(this.preferencesDataWorkingCopy);
         categoryOperationalizationsController.initData(this.preferencesDataWorkingCopy);
     }
 
@@ -116,7 +101,7 @@ public class MainPart extends GenericPreferencesPart {
      * Run the current open benchmark case(s).
      */
     private void runBenchmarkCase() {
-        pluginCore.scheduleJobs(Arrays.asList(eclipseProject));
+        // pluginCore.scheduleJobs(Arrays.asList(eclipseProject));
     }
 
     /**
@@ -127,22 +112,22 @@ public class MainPart extends GenericPreferencesPart {
     private boolean savePreferences() {
         if (preferencesDataWorkingCopy != null) {
             // write the changes back
-            eclipseProject.setBenchmarkCasePreferences(preferencesDataWorkingCopy);
+            // eclipseProject.setBenchmarkCasePreferences(preferencesDataWorkingCopy);
 
-            eclipseProject.savePreferences();
+            // eclipseProject.savePreferences();
 
             // TODO: remove
-//            try {
-//                eclipseProject.savePreferences();
-//            } catch (IOException e) {
-//                Alert alert = new Alert(AlertType.ERROR);
-//                alert.setTitle("Error saving benchmark case preferences");
-//                alert.setHeaderText("Could not save benchmark case preferences");
-//                alert.setContentText(e.getMessage());
-//                alert.showAndWait();
-//
-//                return false;
-//            }
+            // try {
+            // eclipseProject.savePreferences();
+            // } catch (IOException e) {
+            // Alert alert = new Alert(AlertType.ERROR);
+            // alert.setTitle("Error saving benchmark case preferences");
+            // alert.setHeaderText("Could not save benchmark case preferences");
+            // alert.setContentText(e.getMessage());
+            // alert.showAndWait();
+            //
+            // return false;
+            // }
         }
 
         return true;
