@@ -6,6 +6,7 @@ import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.WritableObjectValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
@@ -51,6 +52,19 @@ public abstract class UIUtils {
         chbx.getSelectionModel().selectedIndexProperty().addListener((observable, old_value, new_value) -> {
             if (new_value != null) {
                 property.set(chbx.getItems().get(new_value.intValue()).toString());
+            } else {
+                property.set(null);
+            }
+        });
+    }
+    
+    public static <T> void bindChoiceBox(ChoiceBox<T> chbx, ObservableList<T> items, WritableObjectValue<T> property) {
+        chbx.setItems(items);
+        // select the property if it is contained in the items list
+        chbx.getSelectionModel().select(property.get());
+        chbx.getSelectionModel().selectedIndexProperty().addListener((observable, old_value, new_value) -> {
+            if (new_value != null) {
+                property.set(chbx.getItems().get(new_value.intValue()));
             } else {
                 property.set(null);
             }

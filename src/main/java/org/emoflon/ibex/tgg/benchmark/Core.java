@@ -14,11 +14,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * Core class for TGG Benchmark plugin.
@@ -33,12 +37,10 @@ public class Core {
     private static Core instance;
     private PluginPreferences pluginPreferences;
     private IEclipseWorkspace workspace;
-    // private Path pluginPreferencesFilePath;
+    private ObservableList<BenchmarkCasePreferences> benchmarkCasePreferences;
 
     private Core() {
         super();
-
-        // this.pluginPreferencesFilePath = workspace.getPluginStateLocation().resolve("tgg-benchmark.json");
     }
 
     /**
@@ -49,12 +51,6 @@ public class Core {
             Core.instance = new Core();
         }
         return Core.instance;
-    }
-
-    public static void configureLogger() {
-        Configurator.initialize(new DefaultConfiguration());
-        // set loglevel until the user preferences has been loaded
-        Configurator.setRootLevel(Level.INFO);
     }
 
     // public void loadPluginPreferences() throws JsonException, IOException {
@@ -111,7 +107,7 @@ public class Core {
         // }
     }
 
-    public void editBenchmarkCase(EclipseTggProject project) {
+    public void editBenchmarkCase(BenchmarkCasePreferences project) {
 //        try {
 //            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(project);
 //            bcpw.show();
@@ -169,5 +165,19 @@ public class Core {
      */
     public void setPluginPreferences(PluginPreferences pluginPreferences) {
         this.pluginPreferences = pluginPreferences;
+    }
+
+    /**
+     * @return the benchmarkCasePreferences
+     */
+    public ObservableList<BenchmarkCasePreferences> getBenchmarkCasePreferences() {
+        if (benchmarkCasePreferences == null) {
+            benchmarkCasePreferences = FXCollections.observableArrayList();
+            for (EclipseTggProject project : workspace.getTggProjects()) {
+                benchmarkCasePreferences.addAll(project.getBenchmarkCasePreferences());
+            }
+        }
+        
+        return benchmarkCasePreferences;
     }
 }

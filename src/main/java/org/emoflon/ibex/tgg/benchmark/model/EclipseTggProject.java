@@ -3,11 +3,15 @@ package org.emoflon.ibex.tgg.benchmark.model;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedList;
 import java.util.Set;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonException;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +19,10 @@ import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  * 
@@ -24,17 +30,18 @@ import javafx.beans.property.SimpleObjectProperty;
  * @author Andre Lehmann
  */
 public class EclipseTggProject extends EclipseJavaProject {
-    
+
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
-    private final ObjectProperty<BenchmarkCasePreferences> benchmarkCasePreferences;
+    private final ListProperty<BenchmarkCasePreferences> benchmarkCasePreferences;
 
     /**
      * Constructor for {@link EclipseTggProject}.
      */
-    public EclipseTggProject(String name, Path projectPath, Path outputPath, Set<EclipseJavaProject> referencedProjects) {
+    public EclipseTggProject(String name, Path projectPath, Path outputPath,
+            Set<EclipseJavaProject> referencedProjects) {
         super(name, projectPath, outputPath, referencedProjects);
-        this.benchmarkCasePreferences = new SimpleObjectProperty<BenchmarkCasePreferences>();
+        this.benchmarkCasePreferences = new SimpleListProperty<BenchmarkCasePreferences>();
     }
 
     /**
@@ -52,21 +59,27 @@ public class EclipseTggProject extends EclipseJavaProject {
             if (waitBeforeSaving > 0) {
                 try {
                     Thread.sleep(waitBeforeSaving);
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
             }
-    
+
             Path preferencesFilePath = getPreferencesPath();
-    
+
             LOG.debug("Save preferences of project '{}' to file '{}'", getName(), preferencesFilePath);
-    
+
+            JsonArrayBuilder benchmarkCasesArray = Json.createArrayBuilder();
+            for (BenchmarkCasePreferences bcp : getBenchmarkCasePreferences()) {
+                benchmarkCasesArray.add(bcp.toJson());
+            }
+
             JsonObject prefsJsonObject = Json.createObjectBuilder().add("version", Core.VERSION)
-                    .add("benchmarkCase", getBenchmarkCasePreferences().toJson()).build();
-    
+                    .add("benchmarkCases", benchmarkCasesArray).build();
+
             try {
                 JsonUtils.saveJsonToFile(prefsJsonObject, preferencesFilePath);
             } catch (IOException e) {
-                LOG.error("Couldn't save preferences of project '{}' to file '{}'. Reason: {}", getName(), preferencesFilePath,
-                        e.getMessage());
+                LOG.error("Couldn't save preferences of project '{}' to file '{}'. Reason: {}", getName(),
+                        preferencesFilePath, e.getMessage());
             }
         };
 
@@ -74,12 +87,11 @@ public class EclipseTggProject extends EclipseJavaProject {
     }
 
     /**
-     * Load the benchmark case preferences of this project. If the project
-     * doesn't have a configuration yet a new one with default values will be
-     * created.
+     * Load the benchmark case preferences of this project. If the project doesn't
+     * have a configuration yet a new one with default values will be created.
      *
      * @throws JsonException if the file contains invalid json
-     * @throws IOException if an error ocurred while loading the file
+     * @throws IOException   if an error ocurred while loading the file
      */
     public void loadPreferences() throws JsonException, IOException {
         if (hasPreferencesFile()) {
@@ -91,17 +103,27 @@ public class EclipseTggProject extends EclipseJavaProject {
             // used in case of different versions of the file format
             String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
 
-            JsonObject benchmarkCase = prefsJsonObject.getJsonObject("benchmarkCase");
-            if (benchmarkCase != null && benchmarkCase instanceof JsonObject) {
-                setBenchmarkCasePreferences(new BenchmarkCasePreferences(benchmarkCase));
+            LinkedList<BenchmarkCasePreferences> benchmarkCasePreferences = new LinkedList<>();
+            JsonObject benchmarkCases = prefsJsonObject.getJsonObject("benchmarkCases");
+            if (benchmarkCases != null && benchmarkCases instanceof JsonArray) {
+                JsonArray benchmarkCasesArray = (JsonArray) benchmarkCases;
+                for (int i = 0; i < benchmarkCasesArray.size(); i++) {
+                    JsonValue benchmarkCase = benchmarkCasesArray.get(i);
+                    if (benchmarkCase instanceof JsonObject) {
+                        BenchmarkCasePreferences bcp = new BenchmarkCasePreferences((JsonObject) benchmarkCase);
+                        bcp.setEclipseProject(this);
+                        benchmarkCasePreferences.add(bcp);
+                    }
+                }
             } else {
                 LOG.info("Project '{}' has an empty configuration, use default parameters", getName());
-                setBenchmarkCasePreferences(new BenchmarkCasePreferences());
                 savePreferences();
             }
+
+            setBenchmarkCasePreferences(FXCollections.observableArrayList(benchmarkCasePreferences));
         } else {
             LOG.info("Create default preferences for project '{}'", getName());
-            setBenchmarkCasePreferences(new BenchmarkCasePreferences());
+            setBenchmarkCasePreferences(FXCollections.observableArrayList());
             savePreferences();
         }
     }
@@ -120,18 +142,17 @@ public class EclipseTggProject extends EclipseJavaProject {
         return Files.exists(getPreferencesPath());
     }
 
-    public final ObjectProperty<BenchmarkCasePreferences> benchmarkCasePreferencesProperty() {
+    public final ListProperty<BenchmarkCasePreferences> benchmarkCasePreferencesProperty() {
         return this.benchmarkCasePreferences;
     }
-    
 
-    public final BenchmarkCasePreferences getBenchmarkCasePreferences() {
+    public final ObservableList<BenchmarkCasePreferences> getBenchmarkCasePreferences() {
         return this.benchmarkCasePreferencesProperty().get();
     }
-    
 
-    public final void setBenchmarkCasePreferences(final BenchmarkCasePreferences benchmarkCasePreferences) {
+    public final void setBenchmarkCasePreferences(
+            final ObservableList<BenchmarkCasePreferences> benchmarkCasePreferences) {
         this.benchmarkCasePreferencesProperty().set(benchmarkCasePreferences);
     }
-    
+
 }

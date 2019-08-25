@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.spi.StandardLevel;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
-import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
 import javafx.beans.property.BooleanProperty;

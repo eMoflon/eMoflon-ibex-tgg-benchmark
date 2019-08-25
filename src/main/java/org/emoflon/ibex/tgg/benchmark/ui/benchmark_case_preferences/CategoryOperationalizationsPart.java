@@ -296,7 +296,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
     }
 
     private void updateIncrementalEditMethodComboBoxes() {
-        if (preferencesData.getEclipseProject() == null || preferencesData.getEclipseProject().isEmpty()) {
+        if (preferencesData.getEclipseProject() == null) {
             return;
         }
 
@@ -305,14 +305,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         fwdItems.clear();
         bwdItems.clear();
 
-        EclipseTggProject selectedProject = null;
-        for (EclipseTggProject eclipseProject : Core.getInstance().getWorkspace().getTggProjects()) {
-            if (preferencesData.getEclipseProject().equals(eclipseProject.getName())) {
-                selectedProject = eclipseProject;
-            }
-        }
-
-        Path classPath = selectedProject.getOutputPath();
+        Path classPath = preferencesData.getEclipseProject().getOutputPath();
         try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
             Set<Method> methods = ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath, EPackage.class);
             fwdItems.setAll(methods);

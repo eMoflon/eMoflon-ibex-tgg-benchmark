@@ -29,7 +29,7 @@ public class BenchmarkCasePreferences {
 
     // benchmark
     private BooleanProperty markedForExecution;
-    private StringProperty eclipseProject;
+    private ObjectProperty<EclipseTggProject> eclipseProject;
     private StringProperty benchmarkCaseName;
     private StringProperty metamodelsRegistrationMethod;
     private ObjectProperty<PatternMatchingEngine> patternMatchingEngine;
@@ -80,7 +80,7 @@ public class BenchmarkCasePreferences {
 
         // benchmark
         markedForExecution = new SimpleBooleanProperty(true);
-        eclipseProject = new SimpleStringProperty("");
+        eclipseProject = new SimpleObjectProperty<>();
         benchmarkCaseName = new SimpleStringProperty("");
         metamodelsRegistrationMethod = new SimpleStringProperty("");
         patternMatchingEngine = new SimpleObjectProperty<>(PatternMatchingEngine.Democles);
@@ -826,15 +826,15 @@ public class BenchmarkCasePreferences {
         this.bwdIncrementalEditMethodProperty().set(bwdIncrementalEditMethod);
     }
 
-    public final StringProperty eclipseProjectProperty() {
+    public final ObjectProperty<EclipseTggProject> eclipseProjectProperty() {
         return this.eclipseProject;
     }
 
-    public final String getEclipseProject() {
+    public final EclipseTggProject getEclipseProject() {
         return this.eclipseProjectProperty().get();
     }
 
-    public final void setEclipseProject(final String eclipseProject) {
+    public final void setEclipseProject(final EclipseTggProject eclipseProject) {
         this.eclipseProjectProperty().set(eclipseProject);
     }
 
