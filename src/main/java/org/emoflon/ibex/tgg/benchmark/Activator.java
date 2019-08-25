@@ -1,27 +1,18 @@
 package org.emoflon.ibex.tgg.benchmark;
 
-import java.io.IOException;
-import java.net.URL;
-
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
-import org.eclipse.e4.core.contexts.EclipseContextFactory;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
-import org.emoflon.ibex.tgg.benchmark.model.EclipseWorkspace;
-import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
-import org.apache.logging.log4j.spi.StandardLevel;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseWorkspace;
+import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
+import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 
 
@@ -40,7 +31,14 @@ public class Activator implements BundleActivator {
         return plugin;
     }
 
+    @Override
     public void start(BundleContext bundleContext) throws Exception {
+        // configure log4j2
+        Configurator.initialize(new DefaultConfiguration());
+        // set loglevel until the user preferences has been loaded
+        Configurator.setRootLevel(Level.INFO);
+        LOG = LogManager.getLogger(Core.PLUGIN_NAME);
+
         LOG.debug("Start plugin 'TGG Benchmark'");
 
         plugin = this;
@@ -49,9 +47,14 @@ public class Activator implements BundleActivator {
         appContext = serviceContext.createChild();
         
         // create instance of Core class
-        EclipseWorkspace workspace = new EclipseWorkspace();
-        pluginCore = Core.createInstance(workspace);
-        pluginCore.loadPluginPreferences();
+        pluginCore = Core.getInstance();
+        EclipseWorkspace eclipseWorkspace = new EclipseWorkspace();
+        pluginCore.setWorkspace(eclipseWorkspace);
+        PluginPreferences pluginPreferences = new PluginPreferences();
+        pluginCore.setPluginPreferences(pluginPreferences);
+
+        // set correct log level
+        Configurator.setRootLevel(Level.getLevel(pluginPreferences.getLogLevel().toString()));
     }
 
     @Override
@@ -67,6 +70,9 @@ public class Activator implements BundleActivator {
         return appContext;
     }
 
+    /**
+     * @return the bundle
+     */
     public Bundle getBundle() {
         return bundle;
     }

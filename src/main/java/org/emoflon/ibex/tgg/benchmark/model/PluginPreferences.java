@@ -1,12 +1,23 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonException;
 import javax.json.JsonObject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.spi.StandardLevel;
+import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
+import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
+import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
@@ -27,6 +38,8 @@ import javafx.collections.ObservableList;
  * @author Andre Lehmann
  */
 public class PluginPreferences {
+
+    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
     // general
     private final StringProperty benchmarkPreferencesFileName;
@@ -97,6 +110,20 @@ public class PluginPreferences {
     }
 
     /**
+     * Constructor for {@link PluginPreferences} that loads the preferences from a
+     * given JSON file.
+     * 
+     * @param filePath the file to load from
+     * @throws NoSuchFileException if file doesn't exists
+     * @throws JsonException       if JSON is invalid
+     * @throws IOException         if loading the file failed for some reason
+     */
+    public PluginPreferences(Path filePath) throws NoSuchFileException, JsonException, IOException {
+        this();
+        loadFromFile(filePath);
+    }
+
+    /**
      * Constructor for {@link PluginPreferences} initalizes the values from a
      * {@link JsonObject}.
      * 
@@ -104,7 +131,89 @@ public class PluginPreferences {
      */
     public PluginPreferences(JsonObject data) {
         this();
+        fromJson(data);
+    }
 
+    /**
+     * Copies the values of the given {@link PluginPreferences} into this instance.
+     *
+     * @param source The source instance
+     */
+    public void copyValues(PluginPreferences source) {
+        setBenchmarkPreferencesFileName(source.getBenchmarkPreferencesFileName());
+        setLogLevel(source.getLogLevel());
+
+        // benchmark
+        setMaxMemorySize(source.getMaxMemorySize());
+        setRepetitions(source.getRepetitions());
+
+        // report
+        setReportFilePath(source.getReportFilePath());
+        setReportFileType(source.getReportFileType());
+        setIncludeErrors(source.isIncludeErrors());
+
+        // defaults
+        setDefaultTimeout(source.getDefaultTimeout());
+        setDefaultModelSizes(FXCollections.observableArrayList(source.getDefaultModelSizes()));
+        setDefaultModelgenIncludeReport(source.isDefaultModelgenIncludeReport());
+        setDefaultInitialFwdActive(source.isDefaultInitialFwdActive());
+        setDefaultInitialBwdActive(source.isDefaultInitialBwdActive());
+        setDefaultFwdActive(source.isDefaultFwdActive());
+        setDefaultBwdActive(source.isDefaultBwdActive());
+        setDefaultFwdOptActive(source.isDefaultFwdOptActive());
+        setDefaultBwdOptActive(source.isDefaultBwdOptActive());
+        setDefaultCcActive(source.isDefaultCcActive());
+        setDefaultCoActive(source.isDefaultCoActive());
+    }
+
+    /**
+     * Loads the plugin preferences from a file.
+     * 
+     * @param filePath the file to load from
+     * @throws NoSuchFileException if file doesn't exists
+     * @throws JsonException       if JSON is invalid
+     * @throws IOException         if loading the file failed for some reason
+     */
+    private void loadFromFile(Path filePath) throws NoSuchFileException, JsonException, IOException {
+        if (!Files.exists(filePath)) {
+            throw new NoSuchFileException("File '" + filePath.toString() + "' doesn't exist");
+        }
+
+        LOG.debug("Load plugin preferences from file '{}'", filePath);
+
+        JsonObject prefsJsonObject = null;
+        try {
+            prefsJsonObject = JsonUtils.loadJsonFile(filePath);
+        } catch (JsonException | IOException e) {
+            LOG.error("Failed to load plugin preferences from file '{}'", filePath.toString());
+            throw e;
+        }
+
+        // used in case of different versions of the file format
+        String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
+
+        fromJson(prefsJsonObject);
+    }
+
+    public void saveToFile(Path filePath) {
+        LOG.debug("Save plugin preferences to file '{}'", filePath.toString());
+
+        JsonObject prefsJsonObject = toJson();
+        JsonUtils.addKey(prefsJsonObject, "version", Json.createValue(Core.VERSION));
+
+        try {
+            JsonUtils.saveJsonToFile(prefsJsonObject, filePath);
+        } catch (IOException e) {
+            LOG.error("Couldn't save plugin preferences to file '{}'. Reason: {}", filePath.toString(), e.getMessage());
+        }
+    }
+
+    /**
+     * Loads the plugin preferences from a {@link JsonObject}.
+     * 
+     * @param data The JSONObject as a value source
+     */
+    private void fromJson(JsonObject data) {
         JsonObject general = data.getJsonObject("general");
         if (general != null) {
             String benchmarkPreferencesFileName = general.getString("benchmarkPreferencesFileName",
@@ -166,38 +275,6 @@ public class PluginPreferences {
             setDefaultCcActive(general.getBoolean("ccActive", isDefaultCcActive()));
             setDefaultCoActive(general.getBoolean("coActive", isDefaultCoActive()));
         }
-    }
-
-    /**
-     * Copies the values of the given {@link PluginPreferences} into this instance.
-     *
-     * @param source The source instance
-     */
-    public void copyValues(PluginPreferences source) {
-        setBenchmarkPreferencesFileName(source.getBenchmarkPreferencesFileName());
-        setLogLevel(source.getLogLevel());
-
-        // benchmark
-        setMaxMemorySize(source.getMaxMemorySize());
-        setRepetitions(source.getRepetitions());
-
-        // report
-        setReportFilePath(source.getReportFilePath());
-        setReportFileType(source.getReportFileType());
-        setIncludeErrors(source.isIncludeErrors());
-
-        // defaults
-        setDefaultTimeout(source.getDefaultTimeout());
-        setDefaultModelSizes(FXCollections.observableArrayList(source.getDefaultModelSizes()));
-        setDefaultModelgenIncludeReport(source.isDefaultModelgenIncludeReport());
-        setDefaultInitialFwdActive(source.isDefaultInitialFwdActive());
-        setDefaultInitialBwdActive(source.isDefaultInitialBwdActive());
-        setDefaultFwdActive(source.isDefaultFwdActive());
-        setDefaultBwdActive(source.isDefaultBwdActive());
-        setDefaultFwdOptActive(source.isDefaultFwdOptActive());
-        setDefaultBwdOptActive(source.isDefaultBwdOptActive());
-        setDefaultCcActive(source.isDefaultCcActive());
-        setDefaultCoActive(source.isDefaultCoActive());
     }
 
     /**
