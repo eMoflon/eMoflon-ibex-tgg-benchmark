@@ -22,6 +22,7 @@ import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
@@ -33,7 +34,7 @@ import javafx.collections.ObservableList;
 public class EclipseWorkspace implements IEclipseWorkspace {
 
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
-    
+
     private final ObjectProperty<Path> location;
     private final IWorkspaceRoot workspaceRoot;
     private final ListProperty<EclipseTggProject> tggProjects;
@@ -45,25 +46,13 @@ public class EclipseWorkspace implements IEclipseWorkspace {
         this.workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
         this.location = new SimpleObjectProperty<Path>(Paths.get(workspaceRoot.getLocation().toOSString()));
         this.tggProjects = new SimpleListProperty<EclipseTggProject>();
-        
-        for (IProject project : workspaceRoot.getProjects()) {
-            try {
-                if (project.isOpen() && project.hasNature("org.emoflon.ibex.tgg.ide.nature")
-                        && project.hasNature(JavaCore.NATURE_ID)) {
-                    addTggProject((IJavaProject) project);
-                }
-            } catch (CoreException e) {
-                // ignore, can't do anything about it
-            }
-        }
-
     }
-    
+
     private EclipseJavaProject getJavaProject(IJavaProject javaProject) {
         IProject project = javaProject.getProject();
         Path projectPath = Paths.get(project.getFullPath().toString());
-        Path outputPath = getOutputPath(javaProject);
-        
+        Path outputPath = getJavaProjectOutputPath(javaProject);
+
         Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
         try {
             for (IProject referencedProject : project.getReferencedProjects()) {
@@ -76,12 +65,12 @@ public class EclipseWorkspace implements IEclipseWorkspace {
         }
         return new EclipseJavaProject(project.getName(), projectPath, outputPath, referencedProjects);
     }
-    
+
     public void addTggProject(IJavaProject tggProject) {
         IProject project = tggProject.getProject();
         Path projectPath = Paths.get(project.getFullPath().toString());
-        Path outputPath = getOutputPath(tggProject);
-        
+        Path outputPath = getJavaProjectOutputPath(tggProject);
+
         Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
         try {
             for (IProject referencedProject : project.getReferencedProjects()) {
@@ -89,18 +78,20 @@ public class EclipseWorkspace implements IEclipseWorkspace {
                     referencedProjects.add(getJavaProject((IJavaProject) referencedProject));
                 }
             }
-            getTggProjects().add(new EclipseTggProject(project.getName(), projectPath, outputPath, referencedProjects));
+            this.tggProjectsProperty().get()
+                    .add(new EclipseTggProject(project.getName(), projectPath, outputPath, referencedProjects));
         } catch (CoreException e) {
             // ignore, can't do anything about it
         }
     }
 
-    private Path getOutputPath(IJavaProject javaProject) {
+    private Path getJavaProjectOutputPath(IJavaProject javaProject) {
         try {
-            return Paths.get(javaProject.getProject().getLocation().toOSString(), javaProject.getOutputLocation().removeFirstSegments(1).toString());
+            return Paths.get(javaProject.getProject().getLocation().toOSString(),
+                    javaProject.getOutputLocation().removeFirstSegments(1).toString());
         } catch (JavaModelException e) {
             // fallback
-            return Paths.get(javaProject.getProject().getLocation().toOSString(), "bin"); 
+            return Paths.get(javaProject.getProject().getLocation().toOSString(), "bin");
         }
     }
 
@@ -109,36 +100,43 @@ public class EclipseWorkspace implements IEclipseWorkspace {
     public Path getPluginStateLocation() {
         return Paths.get(Platform.getStateLocation(Activator.getInstance().getBundle()).toOSString());
     }
+    
+    /** {@inheritDoc} */
+    @Override
+    public Path getPluginPreferencesFilePath() {
+        return getPluginStateLocation().resolve("tgg-benchmark.json");
+    }
 
     public final ListProperty<EclipseTggProject> tggProjectsProperty() {
         return this.tggProjects;
     }
-    
 
     @Override
     public final ObservableList<EclipseTggProject> getTggProjects() {
-        return this.tggProjectsProperty().get();
+        ObservableList<EclipseTggProject> tggProjects = this.tggProjectsProperty().get();
+        if (tggProjects == null) {
+            tggProjects = FXCollections.observableArrayList();
+            for (IProject project : workspaceRoot.getProjects()) {
+                try {
+                    if (project.isOpen() && project.hasNature("org.emoflon.ibex.tgg.ide.nature")
+                            && project.hasNature(JavaCore.NATURE_ID)) {
+                        addTggProject((IJavaProject) project);
+                    }
+                } catch (CoreException e) {
+                    // ignore, can't do anything about it
+                }
+            }
+        }
+
+        return tggProjects;
     }
-    
-    /** {@inheritDoc} */
-    public final void setTggProjects(final ObservableList<EclipseTggProject> tggProjects) {
-        this.tggProjectsProperty().set(tggProjects);
-    }
-    
 
     public final ObjectProperty<Path> locationProperty() {
         return this.location;
     }
-    
 
     @Override
     public final Path getLocation() {
         return this.locationProperty().get();
     }
-    
-
-    public final void setLocation(final Path location) {
-        this.locationProperty().set(location);
-    }
-    
 }
