@@ -63,7 +63,7 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
                 String.join("\n", "Default timeout for the operationalizations.",
                         "The time can be specified as follows: 30, 30s, 5m, 1h",
                         "When set to '0' the default value of '%s' will be used."),
-                preferencesData.getDefaultTimeout()));
+                Core.getInstance().getPluginPreferences().getDefaultTimeout()));
 
         UIUtils.bindChoiceBox(eclipseProject, Core.getInstance().getWorkspace().getTggProjects(),
                 preferencesData.eclipseProjectProperty());
