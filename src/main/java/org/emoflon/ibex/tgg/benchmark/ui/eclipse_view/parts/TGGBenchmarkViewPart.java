@@ -1,7 +1,5 @@
 package org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.function.Function;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
@@ -20,7 +18,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -50,7 +47,7 @@ public class TGGBenchmarkViewPart extends Part {
         AnchorPane.setLeftAnchor(table, 0.0);
         AnchorPane.setRightAnchor(table, 0.0);
 
-        this.benchmarkCasePreferences = pluginCore.getBenchmarkCasePreferences();
+        this.benchmarkCasePreferences = pluginCore.getBenchmarkCases();
         table.initData(benchmarkCasePreferences);
     }
 
@@ -303,5 +300,9 @@ public class TGGBenchmarkViewPart extends Part {
             //
             // }
         }
+    }
+    
+    public BenchmarkCaseTableView getTable() {
+        return table;
     }
 }

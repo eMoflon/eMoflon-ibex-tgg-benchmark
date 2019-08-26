@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
 
 /**
@@ -33,15 +34,14 @@ public abstract class StringUtils {
         return result;
     }
 
-    public static Path createPathFromString(String pathTemplate, Path workspacePath, Path projectPath,
-            String projectName, OperationalizationType operationalization) throws InvalidPathException {
-        return createPathFromString(pathTemplate, workspacePath, projectPath, projectName, operationalization,
+    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp, OperationalizationType operationalization) throws InvalidPathException {
+        return createPathFromString(pathTemplate, workspacePath, bcp, operationalization,
                 LocalDateTime.now());
     }
 
-    public static Path createPathFromString(String pathTemplate, Path workspacePath, Path projectPath,
-            String projectName, OperationalizationType operationalization, LocalDateTime dateTime)
+    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp, OperationalizationType operationalization, LocalDateTime dateTime)
             throws InvalidPathException {
+        
         Map<String, String> vars = new HashMap<>();
         vars.put("Y", String.valueOf(dateTime.getYear()));
         vars.put("year", String.valueOf(dateTime.getYear()));
@@ -60,8 +60,9 @@ public abstract class StringUtils {
                 dateTime.getDayOfMonth()));
 
         vars.put("workspace_path", workspacePath.toAbsolutePath().toString());
-        vars.put("project_path", projectPath.toAbsolutePath().toString());
-        vars.put("project_name", projectName);
+        vars.put("project_path", bcp.getEclipseProject().getProjectPath().toAbsolutePath().toString());
+        vars.put("project_name", bcp.getEclipseProject().getName());
+        vars.put("benchmark_case_name", bcp.getBenchmarkCaseName());
         vars.put("operationalization", operationalization.toString());
 
         return Paths.get(substituteString(pathTemplate, vars));

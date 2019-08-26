@@ -1,6 +1,8 @@
+/* CSS reference can be found here: https://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html */
+
 .preference-container {
-	-fx-padding: 0 30 40 0;
-	-fx-max-width: 400;
+	-fx-padding   : 0 30 40 0;
+	-fx-max-width : 400;
 	-fx-pref-width: 300;
 }
 
@@ -16,7 +18,7 @@
 
 #categories {
 	-fx-border-style: none;
-	
+
 }
 
 #categories .list-cell {
@@ -27,10 +29,10 @@
 	visibility: hidden;
 }
 
-#categories .list-cell:hover{
-    -fx-background-color: lightgrey ;
+#categories .list-cell:hover {
+	-fx-background-color: lightgrey;
 }
 
-#categories .list-cell:selected{
-    -fx-background-color: grey;
+#categories .list-cell:selected {
+	-fx-background-color: grey;
 }

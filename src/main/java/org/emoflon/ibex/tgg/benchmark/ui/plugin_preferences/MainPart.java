@@ -11,6 +11,8 @@ import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesP
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -50,16 +52,14 @@ public class MainPart extends GenericPreferencesPart {
         categoryDefaultsController = new CategoryDefaultsPart();
 
         // init categories
-        categoriesViewData = FXCollections.observableArrayList();
-        categoriesViewData.add(new CategoryDataModel("General", Glyph.CIRCLE, categoryGeneralController.getContent()));
-        categoriesViewData
-                .add(new CategoryDataModel("Benchmark", Glyph.TACHOMETER, categoryBenchmarkController.getContent()));
-        categoriesViewData.add(new CategoryDataModel("Report", Glyph.FILE, categoryReportController.getContent()));
-        categoriesViewData
-                .add(new CategoryDataModel("Defaults", Glyph.SITEMAP, categoryDefaultsController.getContent()));
+        categoriesViewData = FXCollections.observableArrayList(
+                new CategoryDataModel("General", Glyph.CIRCLE, categoryGeneralController.getContent()),
+                new CategoryDataModel("Benchmark", Glyph.TACHOMETER, categoryBenchmarkController.getContent()),
+                new CategoryDataModel("Report", Glyph.FILE, categoryReportController.getContent()),
+                new CategoryDataModel("Defaults", Glyph.SITEMAP, categoryDefaultsController.getContent()));
 
         // init and add buttons
-        saveButton = new Button("Save");
+        saveButton = new Button("Save and Close");
         saveButton.setOnAction((event) -> {
             if (savePreferences()) {
                 closeWindow();
@@ -101,16 +101,18 @@ public class MainPart extends GenericPreferencesPart {
      */
     private boolean savePreferences() {
         this.preferencesData.copyValues(preferencesDataWorkingCopy);
-        if (true) {
-            // TODO: save the changes
+        try {
+            preferencesData.saveToFile(Core.getInstance().getWorkspace().getPluginPreferencesFilePath());
+        } catch (IOException e) {
+            Alert alert = new Alert(AlertType.ERROR);
 
-            // try to save
+            alert.setTitle("Save Plugin Preferences");
+            alert.setHeaderText("Failed to save the plugin preferences.");
+            alert.setContentText(e.getMessage());
 
-            // close on success
-
-            // error message on fail
+            alert.showAndWait();
+            return false;
         }
-
         return true;
     }
 

@@ -16,7 +16,6 @@ import javax.json.JsonValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
 
 import javafx.beans.property.ListProperty;
@@ -35,6 +34,8 @@ public class EclipseTggProject extends EclipseJavaProject {
 
     private final ListProperty<BenchmarkCasePreferences> benchmarkCasePreferences;
 
+    private Thread preferencesSaveThread;
+
     /**
      * Constructor for {@link EclipseTggProject}.
      */
@@ -45,45 +46,53 @@ public class EclipseTggProject extends EclipseJavaProject {
     }
 
     /**
-     * Save the benchmark case preferences for this project.
+     * Save the benchmark cases for this project.
+     * 
+     * @throws IOException
      */
-    public void savePreferences() {
-        savePreferences(0L);
+    public void savePreferences() throws IOException {
+        Path preferencesFilePath = getPreferencesPath();
+
+        LOG.debug("Save benchmark cases of project '{}' to file '{}'", getName(), preferencesFilePath);
+
+        JsonArrayBuilder benchmarkCasesArray = Json.createArrayBuilder();
+        for (BenchmarkCasePreferences bcp : getBenchmarkCasePreferences()) {
+            benchmarkCasesArray.add(bcp.toJson());
+        }
+
+        JsonObject prefsJsonObject = Json.createObjectBuilder().add("version", Core.VERSION)
+                .add("benchmarkCases", benchmarkCasesArray).build();
+
+        try {
+            JsonUtils.saveJsonToFile(prefsJsonObject, preferencesFilePath);
+        } catch (IOException e) {
+            LOG.error("Couldn't save benchmark cases of project '{}' to file '{}'. Reason: {}", getName(),
+                    preferencesFilePath, e.getMessage());
+                    throw e;
+        }
     }
 
-    public void savePreferences(long waitBeforeSaving) {
-        if (getBenchmarkCasePreferences() == null)
-            return;
-
-        Runnable saveAction = () -> {
-            if (waitBeforeSaving > 0) {
+    /**
+     * Save the benchmark cases for this project with a delay of 5s.
+     * 
+     * The delay prevents multiple quick saving actions in a row.
+     */
+    public void delayedSavePreferences() {
+        if (preferencesSaveThread == null || !preferencesSaveThread.isAlive()) {
+            Runnable saveAction = () -> {
                 try {
-                    Thread.sleep(waitBeforeSaving);
+                    Thread.sleep(5000L);
                 } catch (InterruptedException e) {
                 }
-            }
-
-            Path preferencesFilePath = getPreferencesPath();
-
-            LOG.debug("Save preferences of project '{}' to file '{}'", getName(), preferencesFilePath);
-
-            JsonArrayBuilder benchmarkCasesArray = Json.createArrayBuilder();
-            for (BenchmarkCasePreferences bcp : getBenchmarkCasePreferences()) {
-                benchmarkCasesArray.add(bcp.toJson());
-            }
-
-            JsonObject prefsJsonObject = Json.createObjectBuilder().add("version", Core.VERSION)
-                    .add("benchmarkCases", benchmarkCasesArray).build();
-
-            try {
-                JsonUtils.saveJsonToFile(prefsJsonObject, preferencesFilePath);
-            } catch (IOException e) {
-                LOG.error("Couldn't save preferences of project '{}' to file '{}'. Reason: {}", getName(),
-                        preferencesFilePath, e.getMessage());
-            }
-        };
-
-        AsyncActions.runUniqueAction(saveAction, 30, getName());
+                try {
+                    savePreferences();
+                } catch (IOException e) {
+                }
+            };
+    
+            preferencesSaveThread = new Thread(saveAction);
+            preferencesSaveThread.start();
+        }
     }
 
     /**
@@ -141,6 +150,16 @@ public class EclipseTggProject extends EclipseJavaProject {
     public boolean hasPreferencesFile() {
         return Files.exists(getPreferencesPath());
     }
+    
+    public void addBenchmarkCase(BenchmarkCasePreferences bcp) {
+        getBenchmarkCasePreferences().add(bcp);
+        delayedSavePreferences();
+    }
+    
+    public void removeBenchmarkCase(BenchmarkCasePreferences bcp) {
+        getBenchmarkCasePreferences().remove(bcp);
+        delayedSavePreferences();
+    }
 
     public final ListProperty<BenchmarkCasePreferences> benchmarkCasePreferencesProperty() {
         return this.benchmarkCasePreferences;
@@ -154,5 +173,4 @@ public class EclipseTggProject extends EclipseJavaProject {
             final ObservableList<BenchmarkCasePreferences> benchmarkCasePreferences) {
         this.benchmarkCasePreferencesProperty().set(benchmarkCasePreferences);
     }
-
 }

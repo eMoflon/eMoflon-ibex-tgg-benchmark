@@ -5,11 +5,14 @@ import java.util.Arrays;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -46,11 +49,10 @@ public class MainPart extends GenericPreferencesPart {
         categoryOperationalizationsController = new CategoryOperationalizationsPart();
 
         // init categories
-        categoriesViewData = FXCollections.observableArrayList();
-        categoriesViewData
-                .add(new CategoryDataModel("Benchmark", Glyph.TACHOMETER, categoryBenchmarkController.getContent()));
-        categoriesViewData.add(new CategoryDataModel("Operationalizations", Glyph.GEARS,
-                categoryOperationalizationsController.getContent()));
+        categoriesViewData = FXCollections.observableArrayList(
+                new CategoryDataModel("Benchmark", Glyph.TACHOMETER, categoryBenchmarkController.getContent()),
+                new CategoryDataModel("Operationalizations", Glyph.GEARS,
+                        categoryOperationalizationsController.getContent()));
 
         // init and add buttons
         runButton = new Button("Run");
@@ -61,7 +63,7 @@ public class MainPart extends GenericPreferencesPart {
             }
         });
 
-        saveAndCloseButton = new Button("Save & Close");
+        saveAndCloseButton = new Button("Save and Close");
         saveAndCloseButton.setOnAction((event) -> {
             if (savePreferences()) {
                 closeWindow();
@@ -110,24 +112,28 @@ public class MainPart extends GenericPreferencesPart {
      * @return true if saving was successfull
      */
     private boolean savePreferences() {
-        if (preferencesDataWorkingCopy != null) {
-            // write the changes back
-            // eclipseProject.setBenchmarkCasePreferences(preferencesDataWorkingCopy);
+        EclipseTggProject associatedProject = preferencesDataWorkingCopy.getEclipseProject();
+        if (preferencesData == null) {
+            associatedProject.getBenchmarkCasePreferences().add(preferencesDataWorkingCopy);
+        } else if (preferencesData.getEclipseProject() != preferencesDataWorkingCopy.getEclipseProject()) {
+            preferencesData.getEclipseProject().getBenchmarkCasePreferences().remove(preferencesData);
+            try {
+                preferencesData.getEclipseProject().savePreferences();
+            } catch (IOException e) {
+            }
+        }
 
-            // eclipseProject.savePreferences();
+        try {
+            associatedProject.savePreferences();
+        } catch (IOException e) {
+            Alert alert = new Alert(AlertType.ERROR);
 
-            // TODO: remove
-            // try {
-            // eclipseProject.savePreferences();
-            // } catch (IOException e) {
-            // Alert alert = new Alert(AlertType.ERROR);
-            // alert.setTitle("Error saving benchmark case preferences");
-            // alert.setHeaderText("Could not save benchmark case preferences");
-            // alert.setContentText(e.getMessage());
-            // alert.showAndWait();
-            //
-            // return false;
-            // }
+            alert.setTitle("Save Benchmark Case Preferences");
+            alert.setHeaderText("Failed to save the benchmark case preferences.");
+            alert.setContentText(e.getMessage());
+
+            alert.showAndWait();
+            return false;
         }
 
         return true;

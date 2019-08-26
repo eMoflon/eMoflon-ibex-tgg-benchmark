@@ -56,14 +56,14 @@ public class CategoryDefaultsPart extends CategoryPart<PluginPreferences> {
 
         defaultModelSizes.bindListProperty(preferencesData.defaultModelSizesProperty());
 
-        defaultModelgenIncludeReport.selectedProperty().bind(preferencesData.defaultModelgenIncludeReportProperty());
-        defaultInitialFwdActive.selectedProperty().bind(preferencesData.defaultInitialFwdActiveProperty());
-        defaultInitialBwdActive.selectedProperty().bind(preferencesData.defaultInitialBwdActiveProperty());
-        defaultFwdActive.selectedProperty().bind(preferencesData.defaultFwdActiveProperty());
-        defaultBwdActive.selectedProperty().bind(preferencesData.defaultBwdActiveProperty());
-        defaultFwdOptActive.selectedProperty().bind(preferencesData.defaultFwdOptActiveProperty());
-        defaultBwdOptActive.selectedProperty().bind(preferencesData.defaultBwdOptActiveProperty());
-        defaultCcActive.selectedProperty().bind(preferencesData.defaultCcActiveProperty());
-        defaultCoActive.selectedProperty().bind(preferencesData.defaultCcActiveProperty());
+        defaultModelgenIncludeReport.selectedProperty().bindBidirectional(preferencesData.defaultModelgenIncludeReportProperty());
+        defaultInitialFwdActive.selectedProperty().bindBidirectional(preferencesData.defaultInitialFwdActiveProperty());
+        defaultInitialBwdActive.selectedProperty().bindBidirectional(preferencesData.defaultInitialBwdActiveProperty());
+        defaultFwdActive.selectedProperty().bindBidirectional(preferencesData.defaultFwdActiveProperty());
+        defaultBwdActive.selectedProperty().bindBidirectional(preferencesData.defaultBwdActiveProperty());
+        defaultFwdOptActive.selectedProperty().bindBidirectional(preferencesData.defaultFwdOptActiveProperty());
+        defaultBwdOptActive.selectedProperty().bindBidirectional(preferencesData.defaultBwdOptActiveProperty());
+        defaultCcActive.selectedProperty().bindBidirectional(preferencesData.defaultCcActiveProperty());
+        defaultCoActive.selectedProperty().bindBidirectional(preferencesData.defaultCcActiveProperty());
     }
 }

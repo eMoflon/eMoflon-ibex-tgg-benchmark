@@ -50,7 +50,7 @@ public class Activator implements BundleActivator {
         pluginCore = Core.getInstance();
         EclipseWorkspace eclipseWorkspace = new EclipseWorkspace();
         pluginCore.setWorkspace(eclipseWorkspace);
-        PluginPreferences pluginPreferences = new PluginPreferences();
+        PluginPreferences pluginPreferences = new PluginPreferences(eclipseWorkspace.getPluginPreferencesFilePath());
         pluginCore.setPluginPreferences(pluginPreferences);
 
         // set correct log level

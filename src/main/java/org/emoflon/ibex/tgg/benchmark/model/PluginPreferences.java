@@ -117,9 +117,21 @@ public class PluginPreferences {
      * @throws JsonException       if JSON is invalid
      * @throws IOException         if loading the file failed for some reason
      */
-    public PluginPreferences(Path filePath) throws NoSuchFileException, JsonException, IOException {
+    public PluginPreferences(Path filePath) {
         this();
-        loadFromFile(filePath);
+        try {
+            System.out.println(filePath.toString());
+            loadFromFile(filePath);
+        } catch (NoSuchFileException e) {
+            // file doesn't exist -> create a new one
+            LOG.info("Create default preferences for plugin");
+            try {
+                saveToFile(filePath);
+            } catch (IOException e1) {
+            }
+        } catch (JsonException | IOException e) {
+            // file failed to load -> use default
+        }
     }
 
     /**
@@ -194,7 +206,7 @@ public class PluginPreferences {
         fromJson(prefsJsonObject);
     }
 
-    public void saveToFile(Path filePath) {
+    public void saveToFile(Path filePath) throws IOException {
         LOG.debug("Save plugin preferences to file '{}'", filePath.toString());
 
         JsonObject prefsJsonObject = toJson();
@@ -204,6 +216,7 @@ public class PluginPreferences {
             JsonUtils.saveJsonToFile(prefsJsonObject, filePath);
         } catch (IOException e) {
             LOG.error("Couldn't save plugin preferences to file '{}'. Reason: {}", filePath.toString(), e.getMessage());
+            throw e;
         }
     }
 
@@ -300,7 +313,7 @@ public class PluginPreferences {
                         Json.createObjectBuilder().add("filePath", getReportFilePath())
                                 .add("fileType", getReportFileType().toString()).add("includeErrors", isIncludeErrors())
                                 .build())
-                .add("defaults", Json.createObjectBuilder().add("timeout", getBenchmarkPreferencesFileName())
+                .add("defaults", Json.createObjectBuilder().add("timeout", getDefaultTimeout())
                         .add("modelSizes", modelSizesBuilder.build())
                         .add("modelgenIncludeReport", isDefaultModelgenIncludeReport())
                         .add("initialFwdActive", isDefaultInitialFwdActive())

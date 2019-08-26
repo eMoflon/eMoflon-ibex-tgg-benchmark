@@ -7,9 +7,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.EPackage;
-import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
-import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
 import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea;
 import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField;

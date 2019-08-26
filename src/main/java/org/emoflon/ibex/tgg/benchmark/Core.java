@@ -1,27 +1,15 @@
 package org.emoflon.ibex.tgg.benchmark;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
-import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
-import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
+import org.emoflon.ibex.tgg.benchmark.utils.AggregateObservableList;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
@@ -37,10 +25,10 @@ public class Core {
     private static Core instance;
     private PluginPreferences pluginPreferences;
     private IEclipseWorkspace workspace;
-    private ObservableList<BenchmarkCasePreferences> benchmarkCasePreferences;
+    private AggregateObservableList<BenchmarkCasePreferences> benchmarkCasePreferences;
 
     private Core() {
-        super();
+        super();    
     }
 
     /**
@@ -170,11 +158,12 @@ public class Core {
     /**
      * @return the benchmarkCasePreferences
      */
-    public ObservableList<BenchmarkCasePreferences> getBenchmarkCasePreferences() {
+    public ObservableList<BenchmarkCasePreferences> getBenchmarkCases() {
         if (benchmarkCasePreferences == null) {
-            benchmarkCasePreferences = FXCollections.observableArrayList();
+            benchmarkCasePreferences = new AggregateObservableList<>();
             for (EclipseTggProject project : workspace.getTggProjects()) {
-                benchmarkCasePreferences.addAll(project.getBenchmarkCasePreferences());
+                ObservableList<BenchmarkCasePreferences> bcpl = project.getBenchmarkCasePreferences();
+                benchmarkCasePreferences.addList(bcpl);
             }
         }
         
