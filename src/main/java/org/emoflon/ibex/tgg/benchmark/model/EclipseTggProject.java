@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -81,7 +82,7 @@ public class EclipseTggProject extends EclipseJavaProject {
         if (preferencesSaveThread == null || !preferencesSaveThread.isAlive()) {
             Runnable saveAction = () -> {
                 try {
-                    Thread.sleep(5000L);
+                    TimeUnit.SECONDS.sleep(5L);
                 } catch (InterruptedException e) {
                 }
                 try {
