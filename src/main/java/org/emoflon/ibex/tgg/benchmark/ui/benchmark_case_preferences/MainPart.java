@@ -112,19 +112,16 @@ public class MainPart extends GenericPreferencesPart {
      * @return true if saving was successfull
      */
     private boolean savePreferences() {
-        EclipseTggProject associatedProject = preferencesDataWorkingCopy.getEclipseProject();
-        if (preferencesData == null) {
-            associatedProject.getBenchmarkCasePreferences().add(preferencesDataWorkingCopy);
-        } else if (preferencesData.getEclipseProject() != preferencesDataWorkingCopy.getEclipseProject()) {
+        if (preferencesData != null) {
             preferencesData.getEclipseProject().getBenchmarkCasePreferences().remove(preferencesData);
-            try {
-                preferencesData.getEclipseProject().savePreferences();
-            } catch (IOException e) {
+            if (preferencesData.getEclipseProject() != preferencesDataWorkingCopy.getEclipseProject()) {
+                preferencesData.getEclipseProject().delayedSavePreferences();
             }
         }
-
+        preferencesDataWorkingCopy.getEclipseProject().getBenchmarkCasePreferences().add(preferencesDataWorkingCopy);
+        
         try {
-            associatedProject.savePreferences();
+            preferencesDataWorkingCopy.getEclipseProject().savePreferences();
         } catch (IOException e) {
             Alert alert = new Alert(AlertType.ERROR);
 

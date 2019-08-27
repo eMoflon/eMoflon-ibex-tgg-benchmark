@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class BenchmarkCasePreferencesWindow {
 
@@ -17,8 +18,9 @@ public class BenchmarkCasePreferencesWindow {
     public BenchmarkCasePreferencesWindow(BenchmarkCasePreferences bcp) throws IOException {
         // prepare stage
         stage = new Stage();
-        stage.titleProperty().bind(Bindings.concat("Benchmark Case Preferences: ", bcp.benchmarkCaseNameProperty()));
+        stage.setTitle("Edit Benchmark Case");
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UNIFIED);
 
         // load main part
         mainPart = new MainPart();

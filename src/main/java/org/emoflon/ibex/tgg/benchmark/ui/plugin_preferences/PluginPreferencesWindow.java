@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class PluginPreferencesWindow {
 
@@ -14,8 +15,9 @@ public class PluginPreferencesWindow {
     public PluginPreferencesWindow() throws IOException {
         // prepare stage
         stage = new Stage();
-        stage.setTitle("TGG Benchmark Plugin Preferences");
+        stage.setTitle("Edit TGG Benchmark Plugin Preferences");
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initStyle(StageStyle.UNIFIED);
 
         // load main part
         mainPart = new MainPart();

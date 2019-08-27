@@ -9,7 +9,6 @@ import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
-import org.emoflon.ibex.tgg.benchmark.utils.AsyncActions;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -60,7 +59,6 @@ public class Activator implements BundleActivator {
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
         appContext.dispose();
-        AsyncActions.stopAll();
     }
 
     /**

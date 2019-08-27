@@ -23,7 +23,8 @@ public class AddBenchmarkCaseHandler {
     @Execute
     public void execute() {
         try {
-            new BenchmarkCasePreferencesWindow(null);
+            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(null);
+            bcpw.show();
         } catch (IOException e) {
             LOG.error("Failed to open benchmark case preferences. Reason: " + e.getMessage());
         }

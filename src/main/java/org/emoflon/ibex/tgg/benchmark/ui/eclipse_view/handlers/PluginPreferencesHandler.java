@@ -20,7 +20,8 @@ public class PluginPreferencesHandler {
     public void execute() {
         System.out.println("Logger object: " + LOG);
         try {
-            new PluginPreferencesWindow();
+            PluginPreferencesWindow ppw = new PluginPreferencesWindow();
+            ppw.show();
         } catch (IOException e) {
             LOG.error("Failed to open plugin preferences. Reason: " + e.getMessage());
         }

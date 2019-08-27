@@ -23,7 +23,7 @@ public class RunBenchmarkCaseHandler {
 
     @Execute
     public void execute(@Optional @Named("benchmarkCases") ObservableList<BenchmarkCasePreferences> benchmarkCases) {
-        if (benchmarkCases != null) {
+        if (benchmarkCases != null && benchmarkCases.size() > 0) {
             List<BenchmarkCasePreferences> bcpsToExecute = benchmarkCases.stream().filter(BenchmarkCasePreferences::isMarkedForExecution).collect(Collectors.toList()); 
             if (bcpsToExecute.size() > 0) {
                 // TODO: implement                

@@ -1,12 +1,17 @@
 package org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts;
 
+import java.io.IOException;
 import java.util.function.Function;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
+import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
 import org.emoflon.ibex.tgg.benchmark.ui.components.CheckBoxTableCell;
 import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
 import org.emoflon.ibex.tgg.benchmark.ui.components.SelectAllCheckBox;
+import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.handlers.EditBenchmarkCaseHandler;
+import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.handlers.RunBenchmarkCaseHandler;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -76,28 +81,25 @@ public class TGGBenchmarkViewPart extends Part {
                 // row menu
                 MenuItem runSelectedBenchmarkCases = new MenuItem("Run selected case");
                 runSelectedBenchmarkCases.setOnAction(e -> {
-                    // TODO: implement
+                    new RunBenchmarkCaseHandler().execute(getItems());
                 });
 
                 final ContextMenu rowMenu = new ContextMenu();
                 MenuItem editSelectedBenchmarkCases = new MenuItem("Edit selected case");
                 editSelectedBenchmarkCases.setOnAction(e -> {
-                    pluginCore.editBenchmarkCase(getSelectionModel().getSelectedItem());
+                    new EditBenchmarkCaseHandler().execute(this);
                 });
 
                 MenuItem duplicateSelected = new MenuItem("Duplicate selected case");
                 duplicateSelected.setOnAction(e -> {
-                    // TODO: implement
+                    BenchmarkCasePreferences selectedBcp = getSelectionModel().getSelectedItem();
+                    if (selectedBcp != null) {
+                        BenchmarkCasePreferences newBcp = new BenchmarkCasePreferences(selectedBcp);
+                        newBcp.setBenchmarkCaseName(newBcp.getBenchmarkCaseName() + " Copy");
+                        newBcp.getEclipseProject().addBenchmarkCase(newBcp);
+                    }
                 });
 
-                // MenuItem addBenchmarkCase = new MenuItem("Add Benchmark Case");
-                // addBenchmarkCase.setOnAction(e -> {
-                // createBenchmarkCase();
-                // });
-                // MenuItem deleteBenchmarkCase = new MenuItem("Delete Benchmark Case");
-                // deleteBenchmarkCase.setOnAction(e -> {
-                // pluginCore.deleteBenchmarkCase(getSelectionModel().getSelectedItem());
-                // });
                 rowMenu.getItems().addAll(runSelectedBenchmarkCases, editSelectedBenchmarkCases, duplicateSelected);
                 row.contextMenuProperty().bind(Bindings.when(Bindings.isNotNull(row.itemProperty())).then(rowMenu)
                         .otherwise((ContextMenu) null));
@@ -106,7 +108,7 @@ public class TGGBenchmarkViewPart extends Part {
                 row.setOnMouseClicked(event -> {
                     if (!row.isEmpty()) {
                         if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                            pluginCore.editBenchmarkCase(row.getItem());
+                            new EditBenchmarkCaseHandler().execute(this);
                         }
                     }
                 });
@@ -159,11 +161,11 @@ public class TGGBenchmarkViewPart extends Part {
             getColumns().add(initialBwdActiveColumn);
 
             fwdActiveColumn = createCheckboxColumn("F", "Enable the operationalization FWD",
-                    bcp -> (bcp.fwdOptActiveProperty()));
+                    bcp -> (bcp.fwdActiveProperty()));
             getColumns().add(fwdActiveColumn);
 
             bwdActiveColumn = createCheckboxColumn("B", "Enable the operationalization BWD",
-                    bcp -> (bcp.bwdOptActiveProperty()));
+                    bcp -> (bcp.bwdActiveProperty()));
             getColumns().add(bwdActiveColumn);
 
             fwdOptActiveColumn = createCheckboxColumn("FO", "Enable the operationalization FWD_OPT",
@@ -204,27 +206,6 @@ public class TGGBenchmarkViewPart extends Part {
                 Function<BenchmarkCasePreferences, BooleanProperty> property) {
             TableColumn<BenchmarkCasePreferences, Boolean> column = new TableColumn<>();
             column.setCellValueFactory(cellData -> property.apply(cellData.getValue()));
-            // column.setCellValueFactory(cellData -> {
-            // BooleanProperty bp = property.apply(cellData.getValue());
-            // bp.addListener((o, old, value) -> {
-            // System.out.println("dddd");
-            // });
-            // System.out.println(cellData.getValue().getName());
-            // return bp;
-            // });
-            // column.setCellFactory(CheckBoxTableCell.forTableColumn(column));
-
-            // column.setCellFactory(CheckBoxTableCell.forTableColumn(new Callback<Integer,
-            // ObservableValue<Boolean>>() {
-            // @Override
-            // public ObservableValue<Boolean> call(Integer param) {
-            // getItems()
-            // System.out.println("Cours "+items.get(param).getCours()+" changed value to "
-            // +items.get(param).isChecked());
-            // return items.get(param).checkedProperty();
-            // }
-            // }));
-
             column.setCellFactory(
                     new Callback<TableColumn<BenchmarkCasePreferences, Boolean>, TableCell<BenchmarkCasePreferences, Boolean>>() {
                         @Override
@@ -233,29 +214,13 @@ public class TGGBenchmarkViewPart extends Part {
                             CheckBoxTableCell<BenchmarkCasePreferences> cell = new CheckBoxTableCell<BenchmarkCasePreferences>();
 
                             cell.getCheckBox().setOnAction(e -> {
-                                System.out.println("action");
+                                if (cell.getIndex() >= 0) {
+                                    getItems().get(cell.getIndex()).getEclipseProject().delayedSavePreferences();
+                                }
                             });
                             return cell;
                         }
                     });
-
-            // column.setCellFactory(
-            // new Callback<TableColumn<EclipseProject, Boolean>, TableCell<EclipseProject,
-            // Boolean>>() {
-            // @Override
-            // public TableCell<EclipseProject, Boolean> call(TableColumn<EclipseProject,
-            // Boolean> column) {
-            // CheckBoxTableCell<EclipseProject, Boolean> cell = new
-            // CheckBoxTableCell<EclipseProject, Boolean>();
-            // cell.getItem().
-            //// .addListener((o, old, value) -> {
-            //// System.out.println("dddd");
-            //// System.out.println(cell.getTableRow().getItem());
-            //// });
-            // return cell;
-            // }
-            // });
-
             column.setMinWidth(60.0);
 
             Label columnLabel = new Label(title);
@@ -263,6 +228,13 @@ public class TGGBenchmarkViewPart extends Part {
             columnLabel.getStyleClass().add("column-header-label");
             SelectAllCheckBox<BenchmarkCasePreferences> columnChkBox = new SelectAllCheckBox<BenchmarkCasePreferences>(
                     getItems(), property);
+            columnChkBox.setOnAction(e ->{
+                // save all
+                for (EclipseTggProject project : Core.getInstance().getWorkspace().getTggProjects()) {
+                    project.delayedSavePreferences();
+                }
+            });
+
             HBox columnLayout = new HBox(columnChkBox, columnLabel);
             columnLayout.setSpacing(2);
             columnLayout.setAlignment(Pos.CENTER);
@@ -275,33 +247,8 @@ public class TGGBenchmarkViewPart extends Part {
 
             return column;
         }
-
-        // private void createBenchmarkCase() {
-        // BenchmarkCasePreferences newBenchmarkCase = new BenchmarkCasePreferences();
-
-        // try {
-        // BenchmarkCasePreferencesWindow bcpWindow = new
-        // BenchmarkCasePreferencesWindow(newBenchmarkCase);
-        // bcpWindow.show();
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-
-        // // if (save) {
-        // //
-        // // }
-        // }
-
-        private void editBenchmarkCase(BenchmarkCasePreferences benchmarkCase) {
-            BenchmarkCasePreferences tmpBenchmarkCaseCopy = new BenchmarkCasePreferences(benchmarkCase);
-
-            // if (save) {
-            //
-            // }
-        }
     }
-    
+
     public BenchmarkCaseTableView getTable() {
         return table;
     }

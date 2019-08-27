@@ -37,14 +37,20 @@ public class AggregateObservableList<E> implements ObservableList<E> {
         }
     }
 
-    public boolean addList(ObservableList<E> list) {
+    public void addList(ObservableList<E> list) {
         for (ListChangeListener listener : listChangeListenerList) {
             list.addListener(listener);
         }
         for (InvalidationListener listener : invalidationListenerList) {
             list.addListener(listener);
         }
-        return lists.add(list);
+        
+        list.addListener((ListChangeListener) e -> {
+            updateSize();
+        });
+        
+        lists.add(list);
+        updateSize();
     }
 
     public boolean removeList(ObservableList<E> list) {
@@ -63,7 +69,7 @@ public class AggregateObservableList<E> implements ObservableList<E> {
         if (index < 0) {
             throw new ArrayIndexOutOfBoundsException();
         } else {
-            // it's not efficient but it dosn't have to be anyway
+            // it's not efficient but it doesn't have to be anyway
             int aggregatedSize = 0;
             for (ObservableList<E> list : lists) {
                 if (aggregatedSize + list.size() > index) {
@@ -158,17 +164,42 @@ public class AggregateObservableList<E> implements ObservableList<E> {
 
     @Override
     public int indexOf(Object o) {
-        throw new UnsupportedOperationException();
+        int aggregatedSize = 0;
+        for (ObservableList<E> list : lists) {
+            int indexOf = list.indexOf(o);
+            if (indexOf >= 0) {
+                return aggregatedSize + indexOf;
+            } 
+            aggregatedSize += list.size();
+        }
+        return -1;
     }
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException();
+        return size <= 0;
     }
 
     @Override
-    public Iterator iterator() {
-        throw new UnsupportedOperationException();
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return currentIndex < lists.size();
+            }
+
+            @Override
+            public E next() {
+                return get(currentIndex++);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
     @Override

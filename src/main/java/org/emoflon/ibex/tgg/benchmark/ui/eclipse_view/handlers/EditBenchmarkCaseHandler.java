@@ -25,7 +25,8 @@ public class EditBenchmarkCaseHandler {
             BenchmarkCasePreferences selectedBenchmarkCase = benchmarkCaseTable.getSelectionModel().getSelectedItem();
             if (selectedBenchmarkCase != null) {
                 try {
-                    new BenchmarkCasePreferencesWindow(selectedBenchmarkCase);
+                    BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(selectedBenchmarkCase);
+                    bcpw.show();
                 } catch (IOException e) {
                     LOG.error("Failed to open benchmark case preferences. Reason: " + e.getMessage());
                 }
