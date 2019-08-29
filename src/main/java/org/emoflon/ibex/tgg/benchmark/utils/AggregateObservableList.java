@@ -14,7 +14,10 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
- * AggregateObservableList
+ * This class aggregates multiple {@link ObservableList}s and adds the ability
+ * to listen to changes to any of the lists.
+ * 
+ * @author Andre Lehmann
  */
 public class AggregateObservableList<E> implements ObservableList<E> {
 

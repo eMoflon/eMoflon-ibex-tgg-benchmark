@@ -14,7 +14,7 @@ import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
  */
 public abstract class CategoryPart<T> extends Part {
 
-    protected ValidationSupport validationSupport;
+    protected ValidationSupport validation;
     protected T preferencesData;
 
     /**
@@ -27,7 +27,7 @@ public abstract class CategoryPart<T> extends Part {
         super(resourcePath);
 
         // enable validation support
-        this.validationSupport = new ValidationSupport();
+        this.validation = new ValidationSupport();
     }
 
     /**
@@ -37,5 +37,12 @@ public abstract class CategoryPart<T> extends Part {
      */
     public void initData(T preferencesData) {
         this.preferencesData = preferencesData;
+    }
+
+    /**
+     * @return the validation
+     */
+    public ValidationSupport getValidation() {
+        return validation;
     }
 }

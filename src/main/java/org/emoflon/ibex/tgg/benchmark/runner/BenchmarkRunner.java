@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
@@ -157,7 +157,7 @@ public class BenchmarkRunner implements Runnable {
                             if (!benchmarkCase.getFwdIncrementalEditMethod().isEmpty()) {
                                 try {
                                     ReflectionUtils.getMethodByName(classLoader,
-                                            benchmarkCase.getFwdIncrementalEditMethod(), EPackage.class);
+                                            benchmarkCase.getFwdIncrementalEditMethod(), EObject.class);
                                 } catch (NoSuchMethodException e) {
                                     foundErrors.add(String.format(
                                             "Benchmark case '%s': Incremental edit method for FWD operationalization doesn't exist",
@@ -170,7 +170,7 @@ public class BenchmarkRunner implements Runnable {
                             if (!benchmarkCase.getFwdIncrementalEditMethod().isEmpty()) {
                                 try {
                                     ReflectionUtils.getMethodByName(classLoader,
-                                            benchmarkCase.getBwdIncrementalEditMethod(), EPackage.class);
+                                            benchmarkCase.getBwdIncrementalEditMethod(), EObject.class);
                                 } catch (NoSuchMethodException e) {
                                     foundErrors.add(String.format(
                                             "Benchmark case '%s': Incremental edit method for BWD operationalization doesn't exist",

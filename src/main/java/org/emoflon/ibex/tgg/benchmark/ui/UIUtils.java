@@ -115,8 +115,6 @@ public abstract class UIUtils {
         comboBox.setItems(items);
         // select the item that matches the property value
         for (Method item : items) {
-            System.out.println(
-                    "Property val: " + property.getValue() + " Method: " + ReflectionUtils.methodToString(item));
             if (ReflectionUtils.methodToString(item).equals(property.getValue())) {
                 comboBox.getSelectionModel().select(item);
                 break;

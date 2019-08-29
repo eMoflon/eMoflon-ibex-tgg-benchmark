@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.controlsfx.validation.Validator;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
@@ -66,6 +67,7 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
                         "When set to '0' the default value of '%s' will be used."),
                 Core.getInstance().getPluginPreferences().getDefaultTimeout()));
 
+        // bindings
         UIUtils.bindChoiceBox(eclipseProject, Core.getInstance().getWorkspace().getTggProjects(),
                 preferencesData.eclipseProjectProperty());
         eclipseProject.setTooltip(eclipseProjectTooltip);
@@ -89,6 +91,7 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
 
         benchmarkCaseName.textProperty().bindBidirectional(preferencesData.benchmarkCaseNameProperty());
         benchmarkCaseName.setTooltip(benchmarkCaseNameTooltip);
+        validation.registerValidator(benchmarkCaseName, true, Validator.createEmptyValidator("A name for benchmark case must be specified"));
 
         Set<Method> registrationMethods = new HashSet<>();
         if (preferencesData.getEclipseProject() != null) {
@@ -101,6 +104,7 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
             metamodelsRegistrationMethod.getSelectionModel().selectFirst();
         }
         metamodelsRegistrationMethod.setTooltip(metamodelsRegistrationMethodTooltip);
+        validation.registerValidator(metamodelsRegistrationMethod, true, Validator.createEmptyValidator("A metamodel registration method must be selected"));
 
         UIUtils.bindEnumChoiceBox(patternMatchingEngine,
                 FXCollections.observableArrayList(PatternMatchingEngine.values()),

@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.benchmark.ui.plugin_preferences;
 
 import java.io.IOException;
 
+import org.controlsfx.validation.Validator;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
@@ -48,6 +49,7 @@ public class CategoryReportPart extends CategoryPart<PluginPreferences> {
         // bindings
         reportFilePath.textProperty().bindBidirectional(preferencesData.reportFilePathProperty());
         reportFilePath.setTooltip(reportFilePathTooltip);
+        validation.registerValidator(reportFilePath, Validator.createEmptyValidator("A path for the report file must be specified"));
 
         UIUtils.bindEnumChoiceBox(reportFileType, FXCollections.observableArrayList(ReportFileType.values()),
                 preferencesData.reportFileTypeProperty());

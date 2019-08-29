@@ -61,6 +61,15 @@ public class TimeTextField extends TextField {
     }
 
     /**
+     * Returns the seconds entered in this field.
+     * 
+     * @return the seconds
+     */
+    public Integer getValue() {
+        return formatter.getValue();
+    }
+
+    /**
      * <p>
      * Converter for time values. Time hereby is represented in seconds.
      * </p>

@@ -2,6 +2,8 @@ package org.emoflon.ibex.tgg.benchmark.ui.plugin_preferences;
 
 import java.io.IOException;
 
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.Validator;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea;
 import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField;
@@ -9,6 +11,7 @@ import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.Tooltip;
 
 public class CategoryDefaultsPart extends CategoryPart<PluginPreferences> {
@@ -53,8 +56,17 @@ public class CategoryDefaultsPart extends CategoryPart<PluginPreferences> {
         // bindings
         defaultTimeout.bindIntegerProperty(preferencesData.defaultTimeoutProperty());
         defaultTimeout.setTooltip(defaultTimeoutTooltip);
+        validation.registerValidator(defaultTimeout, (Control c, String newValue) -> ValidationResult.fromErrorIf(
+                defaultTimeout, "The default timeout must be greater than 0",
+                newValue.isEmpty() || newValue.equals("0") || newValue.equals("0s") || newValue.equals("0m") || newValue
+                        .equals("0h"))); /*
+                                          * unfortunately the new formatted value is avaible only after the listener
+                                          * event has finished, therefore I cannot access the formatted value
+                                          */
 
         defaultModelSizes.bindListProperty(preferencesData.defaultModelSizesProperty());
+        validation.registerValidator(defaultModelSizes,
+                Validator.createEmptyValidator("At least one model size need to be specified"));
 
         defaultModelgenIncludeReport.selectedProperty()
                 .bindBidirectional(preferencesData.defaultModelgenIncludeReportProperty());

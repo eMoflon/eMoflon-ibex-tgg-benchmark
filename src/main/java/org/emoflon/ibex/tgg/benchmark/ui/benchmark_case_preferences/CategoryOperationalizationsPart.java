@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.emf.ecore.EPackage;
+import org.controlsfx.validation.Validator;
+import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
 import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea;
@@ -183,6 +185,9 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         modelgenModelSizes.bindListProperty(bcp.modelgenModelSizesProperty());
         modelgenModelSizesChangeListener.changed(null, null, null);
         bcp.modelgenModelSizesProperty().addListener(modelgenModelSizesChangeListener);
+        validation.registerValidator(modelgenModelSizes, Validator.createEmptyValidator("At least one model size need to be specified"));
+        modelgenTggRule.textProperty().bindBidirectional(bcp.modelgenTggRuleProperty());
+        validation.registerValidator(modelgenTggRule, Validator.createEmptyValidator("A TGG rule for model generation must be specified"));
 
         // INITIAL FWD
         bindCheckbox(initialFwdActive, bcp.initialFwdActiveProperty());
@@ -201,14 +206,20 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         bindTimeTextField(fwdTimeout, bcp.fwdTimeoutProperty());
         fwdTimeout.setTooltip(timeoutTooltip);
         bindMaxModelSizeComboBox(fwdMaxModelSize, maxModelSizeChoiceList, bcp.fwdMaxModelSizeProperty());
-        UIUtils.bindMethodComboBox(fwdIncrementalEditMethod, FXCollections.observableArrayList(),
-                preferencesData.metamodelsRegistrationMethodProperty());
+        Set<Method> incrementalEditMethods = new HashSet<>();
+        if (preferencesData.getEclipseProject() != null) {
+            incrementalEditMethods = getIncrementalEditMethods(preferencesData.getEclipseProject().getOutputPath());
+        }
+        UIUtils.bindMethodComboBox(fwdIncrementalEditMethod, FXCollections.observableArrayList(incrementalEditMethods),
+                preferencesData.fwdIncrementalEditMethodProperty());
 
         // BWD
         bindCheckbox(bwdActive, bcp.bwdActiveProperty());
         bindTimeTextField(bwdTimeout, bcp.bwdTimeoutProperty());
         bwdTimeout.setTooltip(timeoutTooltip);
         bindMaxModelSizeComboBox(bwdMaxModelSize, maxModelSizeChoiceList, bcp.bwdMaxModelSizeProperty());
+        UIUtils.bindMethodComboBox(bwdIncrementalEditMethod, FXCollections.observableArrayList(incrementalEditMethods),
+                preferencesData.bwdIncrementalEditMethodProperty());
 
         // FWD OPT
         bindCheckbox(fwdOptActive, bcp.fwdOptActiveProperty());
@@ -234,11 +245,16 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         coTimeout.setTooltip(timeoutTooltip);
         bindMaxModelSizeComboBox(coMaxModelSize, maxModelSizeChoiceList, bcp.coMaxModelSizeProperty());
 
-        updateIncrementalEditMethodComboBoxes();
-
         // trigger when changing the associated project
         bcp.eclipseProjectProperty().addListener(e -> {
-            updateIncrementalEditMethodComboBoxes();
+            if (preferencesData.getEclipseProject() != null) {
+                Set<Method> items = getIncrementalEditMethods(preferencesData.getEclipseProject().getOutputPath());
+
+                ObservableList<Method> fwdItems = fwdIncrementalEditMethod.getItems();
+                ObservableList<Method> bwdItems = bwdIncrementalEditMethod.getItems();
+                fwdItems.setAll(items);
+                bwdItems.setAll(items);
+            }
         });
     }
 
@@ -293,25 +309,14 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         field.bindIntegerProperty(property);
     }
 
-    private void updateIncrementalEditMethodComboBoxes() {
-        if (preferencesData.getEclipseProject() == null) {
-            return;
-        }
-
-        ObservableList<Method> fwdItems = fwdIncrementalEditMethod.getItems();
-        ObservableList<Method> bwdItems = bwdIncrementalEditMethod.getItems();
-        fwdItems.clear();
-        bwdItems.clear();
-
-        Path classPath = preferencesData.getEclipseProject().getOutputPath();
+    private Set<Method> getIncrementalEditMethods(Path classPath) {
         try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
-            Set<Method> methods = ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath,
-                    EPackage.class);
-            fwdItems.setAll(methods);
-            bwdItems.setAll(methods);
+            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath,
+            EObject.class);
         } catch (Exception e) {
-            LOG.debug("Failed to fetch meta model registration helper methods from '{}'. Reason: {}",
+            LOG.error("Failed to fetch incremental edit methods from '{}'. Reason: {}",
                     classPath.toString(), e.getMessage());
         }
+        return new HashSet<Method>();
     }
 }

@@ -9,6 +9,7 @@ import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
@@ -74,6 +75,19 @@ public class MainPart extends GenericPreferencesPart {
         cancelButton.setOnAction((event) -> {
             closeWindow();
         });
+
+        ChangeListener<Boolean> validationChange = (obs, wasInvalid, isNowInvalid) -> {
+            if (isNowInvalid) {
+                saveAndCloseButton.setDisable(true);
+                runButton.setDisable(true);
+            } else {
+                saveAndCloseButton.setDisable(false);
+                runButton.setDisable(false);
+            }
+        };
+
+        categoryBenchmarkController.getValidation().invalidProperty().addListener(validationChange);
+        categoryOperationalizationsController.getValidation().invalidProperty().addListener(validationChange);
 
         populateButtonPane(Arrays.asList(cancelButton), Arrays.asList(saveAndCloseButton, runButton));
     }

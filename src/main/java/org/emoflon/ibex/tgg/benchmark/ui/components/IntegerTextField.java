@@ -41,7 +41,7 @@ public class IntegerTextField extends TextField {
             return null;
         };
 
-        formatter = new TextFormatter<Integer>(new IntegerStringConverter2(), 99, integerFormatFilter);
+        formatter = new TextFormatter<Integer>(new IntegerStringConverter2(), 0, integerFormatFilter);
         this.setTextFormatter(formatter);
 
         setText(text);
@@ -53,6 +53,7 @@ public class IntegerTextField extends TextField {
 
     public int getIntValue() {
         Integer integerValue = formatter.getValue();
+        System.out.println("intvalue: " + (integerValue == null ? 0 : integerValue.intValue()));
         return integerValue == null ? 0 : integerValue.intValue();
     }
 

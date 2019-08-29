@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.ui.plugin_preferences;
 import java.io.IOException;
 
 import org.apache.logging.log4j.spi.StandardLevel;
+import org.controlsfx.validation.Validator;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryPart;
@@ -41,6 +42,7 @@ public class CategoryGeneralPart extends CategoryPart<PluginPreferences> {
         benchmarkPreferencesFileName.textProperty()
                 .bindBidirectional(preferencesData.benchmarkPreferencesFileNameProperty());
         benchmarkPreferencesFileName.setTooltip(benchmarkPreferencesFileNameTooltip);
+        validation.registerValidator(benchmarkPreferencesFileName, Validator.createEmptyValidator("A name for the benchmark preferences file must be specified"));
 
         UIUtils.bindEnumChoiceBox(logLevel, FXCollections.observableArrayList(StandardLevel.values()),
                 preferencesData.logLevelProperty());
