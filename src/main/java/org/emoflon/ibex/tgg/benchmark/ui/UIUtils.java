@@ -27,12 +27,13 @@ public abstract class UIUtils {
     /**
      * Bind a {@link ChoiceBox} to a enum property.
      * 
-     * @param <E> Enum type
-     * @param chbx The ChoiceBox
-     * @param items The items of the ChoiceBox
+     * @param <E>      Enum type
+     * @param chbx     The ChoiceBox
+     * @param items    The items of the ChoiceBox
      * @param property The property to bind to
      */
-    public static <E extends Enum<?>> void bindEnumChoiceBox(ChoiceBox<E> chbx, ObservableList<E> items, ObjectProperty<E> property) {
+    public static <E extends Enum<?>> void bindEnumChoiceBox(ChoiceBox<E> chbx, ObservableList<E> items,
+            ObjectProperty<E> property) {
         chbx.setItems(items);
         chbx.getSelectionModel().select(property.getValue());
         chbx.getSelectionModel().selectedIndexProperty().addListener((observable, old_value, new_value) -> {
@@ -57,7 +58,7 @@ public abstract class UIUtils {
             }
         });
     }
-    
+
     public static <T> void bindChoiceBox(ChoiceBox<T> chbx, ObservableList<T> items, WritableObjectValue<T> property) {
         chbx.setItems(items);
         // select the property if it is contained in the items list
@@ -114,6 +115,8 @@ public abstract class UIUtils {
         comboBox.setItems(items);
         // select the item that matches the property value
         for (Method item : items) {
+            System.out.println(
+                    "Property val: " + property.getValue() + " Method: " + ReflectionUtils.methodToString(item));
             if (ReflectionUtils.methodToString(item).equals(property.getValue())) {
                 comboBox.getSelectionModel().select(item);
                 break;

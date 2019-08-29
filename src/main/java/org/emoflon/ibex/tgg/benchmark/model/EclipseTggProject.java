@@ -69,7 +69,7 @@ public class EclipseTggProject extends EclipseJavaProject {
         } catch (IOException e) {
             LOG.error("Couldn't save benchmark cases of project '{}' to file '{}'. Reason: {}", getName(),
                     preferencesFilePath, e.getMessage());
-                    throw e;
+            throw e;
         }
     }
 
@@ -90,7 +90,7 @@ public class EclipseTggProject extends EclipseJavaProject {
                 } catch (IOException e) {
                 }
             };
-    
+
             preferencesSaveThread = new Thread(saveAction);
             preferencesSaveThread.start();
         }
@@ -151,12 +151,12 @@ public class EclipseTggProject extends EclipseJavaProject {
     public boolean hasPreferencesFile() {
         return Files.exists(getPreferencesPath());
     }
-    
+
     public void addBenchmarkCase(BenchmarkCasePreferences bcp) {
         getBenchmarkCasePreferences().add(bcp);
         delayedSavePreferences();
     }
-    
+
     public void removeBenchmarkCase(BenchmarkCasePreferences bcp) {
         getBenchmarkCasePreferences().remove(bcp);
         delayedSavePreferences();

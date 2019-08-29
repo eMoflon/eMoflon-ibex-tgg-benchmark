@@ -31,11 +31,13 @@ public class EclipseJavaProject {
     /**
      * Constructor for {@link EclipseJavaProject}.
      */
-    public EclipseJavaProject(String name, Path projectPath, Path outputPath, Set<EclipseJavaProject> referencedProjects) {
+    public EclipseJavaProject(String name, Path projectPath, Path outputPath,
+            Set<EclipseJavaProject> referencedProjects) {
         this.name = new SimpleStringProperty(name);
         this.projectPath = new SimpleObjectProperty<>(projectPath);
         this.outputPath = new SimpleObjectProperty<>(outputPath);
-        this.referencedProjects = new SimpleListProperty<EclipseJavaProject>(FXCollections.observableArrayList(referencedProjects));
+        this.referencedProjects = new SimpleListProperty<EclipseJavaProject>(
+                FXCollections.observableArrayList(referencedProjects));
     }
 
     @Override
@@ -49,14 +51,14 @@ public class EclipseJavaProject {
     public final StringProperty nameProperty() {
         return this.name;
     }
-    
+
     /**
      * @return the project name
      */
     public final String getName() {
         return this.nameProperty().get();
     }
-    
+
     /**
      * @param name the project name to set
      */
@@ -75,7 +77,7 @@ public class EclipseJavaProject {
         }
         return classPaths;
     }
-    
+
     /**
      * @return the class paths for this project as URLs
      */
@@ -95,42 +97,34 @@ public class EclipseJavaProject {
     public final ObjectProperty<Path> projectPathProperty() {
         return this.projectPath;
     }
-    
 
     public final Path getProjectPath() {
         return this.projectPathProperty().get();
     }
-    
 
     public final void setProjectPath(final Path projectPath) {
         this.projectPathProperty().set(projectPath);
     }
-    
 
     public final ObjectProperty<Path> outputPathProperty() {
         return this.outputPath;
     }
-    
 
     public final Path getOutputPath() {
         return this.outputPathProperty().get();
     }
-    
 
     public final void setOutputPath(final Path outputPath) {
         this.outputPathProperty().set(outputPath);
     }
-    
 
     public final ListProperty<EclipseJavaProject> referencedProjectsProperty() {
         return this.referencedProjects;
     }
-    
 
     public final ObservableList<EclipseJavaProject> getReferencedProjects() {
         return this.referencedProjectsProperty().get();
     }
-    
 
     public final void setReferencedProjects(final ObservableList<EclipseJavaProject> referencedProjects) {
         this.referencedProjectsProperty().set(referencedProjects);

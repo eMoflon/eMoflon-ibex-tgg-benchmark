@@ -17,7 +17,7 @@ import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts.TGGBenchmarkViewPart
 public class AddBenchmarkCaseHandler {
 
     @Inject
-    @Named("logger") 
+    @Named("logger")
     Logger LOG;
 
     @Execute
@@ -29,7 +29,7 @@ public class AddBenchmarkCaseHandler {
             LOG.error("Failed to open benchmark case preferences. Reason: " + e.getMessage());
         }
     }
-    
+
     @CanExecute
     public boolean canExecute(@Optional @Named("benchmarkCasesTable") BenchmarkCaseTableView benchmarkCaseTable) {
         return true;

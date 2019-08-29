@@ -28,10 +28,11 @@ public class IntegerTextFieldListCell extends ListCell<Integer> {
         this.getStyleClass().add("text-field-list-cell");
         this.setPrefWidth(0);
     }
-    
+
     /** {@inheritDoc} */
-    @Override public void startEdit() {
-        if (! isEditable() || ! getListView().isEditable()) {
+    @Override
+    public void startEdit() {
+        if (!isEditable() || !getListView().isEditable()) {
             return;
         }
         super.startEdit();
@@ -41,26 +42,27 @@ public class IntegerTextFieldListCell extends ListCell<Integer> {
                 textField = new IntegerTextField();
                 textField.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
                     if (event.getCode() == KeyCode.ENTER) {
-                    commitEdit(textField.getValue());
-                    event.consume();
-                    } if (event.getCode() == KeyCode.ESCAPE) {
+                        commitEdit(textField.getValue());
+                        event.consume();
+                    }
+                    if (event.getCode() == KeyCode.ESCAPE) {
                         cancelEdit();
                         event.consume();
                     } else if (event.getCode() == KeyCode.UP) {
-                    getListView().getSelectionModel().selectPrevious();
+                        getListView().getSelectionModel().selectPrevious();
                         event.consume();
                     } else if (event.getCode() == KeyCode.DOWN) {
-                    getListView().getSelectionModel().selectNext();
+                        getListView().getSelectionModel().selectNext();
                         event.consume();
                     }
                 });
                 textField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-                    if (! isNowFocused) {
-                    commitEdit(textField.getValue());
+                    if (!isNowFocused) {
+                        commitEdit(textField.getValue());
                     }
                 });
             }
-            
+
             textField.setText(getItem() == null ? null : getItem().toString());
             setText(null);
             setGraphic(textField);
@@ -70,14 +72,16 @@ public class IntegerTextFieldListCell extends ListCell<Integer> {
     }
 
     /** {@inheritDoc} */
-    @Override public void cancelEdit() {
+    @Override
+    public void cancelEdit() {
         super.cancelEdit();
         setText(getItem() == null ? null : getItem().toString());
         setGraphic(null);
     }
-    
+
     /** {@inheritDoc} */
-    @Override public void updateItem(Integer item, boolean empty) {
+    @Override
+    public void updateItem(Integer item, boolean empty) {
         super.updateItem(item, empty);
         if (isEmpty()) {
             setText(null);
@@ -91,7 +95,7 @@ public class IntegerTextFieldListCell extends ListCell<Integer> {
                 setText(null);
                 setGraphic(textField);
             } else {
-            setText(fieldItem == null ? null : fieldItem.toString());
+                setText(fieldItem == null ? null : fieldItem.toString());
                 setGraphic(null);
             }
         }

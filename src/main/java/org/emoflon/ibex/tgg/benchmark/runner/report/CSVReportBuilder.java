@@ -47,12 +47,12 @@ public class CSVReportBuilder extends ReportBuilder {
         String[] resultsHeaders = { "Project Name", "Operationalization", "Model Size", "Average Initalization Time",
                 "Median Initalization Time", "Average Execution Time", "Median Execution Time",
                 "Average Created Elements", "Median Created Elements", "Average Deleted Elements",
-                "Median Deleted Elements", "Average Found Matches",
-                "Median Found Matches", "Average Applied Matches",
+                "Median Deleted Elements", "Average Found Matches", "Median Found Matches", "Average Applied Matches",
                 "Median Applied Matches", "Error" };
 
         String[] rawResultsHeaders = { "Project Name", "Pattern Matching Engine", "Operationalization", "Model Size",
-                "Run", "Initalization Time", "Execution Time", "Created Elements", "Deleted Elements", "Found Matches", "Applied Matches", "Error" };
+                "Run", "Initalization Time", "Execution Time", "Created Elements", "Deleted Elements", "Found Matches",
+                "Applied Matches", "Error" };
 
         reportFileWriter = new FileWriter(reportFilePath.toFile(), false);
         resultsSheet = new CSVPrinter(reportFileWriter, CSVFormat.EXCEL.withHeader(resultsHeaders));

@@ -52,12 +52,13 @@ public class IntegerTextField extends TextField {
     }
 
     public int getIntValue() {
-    Integer integerValue = formatter.getValue();
-        return integerValue == null ? 0 : integerValue.intValue();        
+        Integer integerValue = formatter.getValue();
+        return integerValue == null ? 0 : integerValue.intValue();
     }
 
     /**
      * Bind a IntegerProperty to the value of this text field.
+     * 
      * @param property to bind to the textfield
      */
     public final void bindIntegerProperty(IntegerProperty property) {
@@ -76,8 +77,7 @@ public class IntegerTextField extends TextField {
             if (value.matches("\\d+")) {
                 // prevent integer overflow
                 BigInteger num = new BigInteger(value);
-                return num.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) < 0 ? num.intValue()
-                        : Integer.MAX_VALUE;
+                return num.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) < 0 ? num.intValue() : Integer.MAX_VALUE;
             }
 
             return 0;

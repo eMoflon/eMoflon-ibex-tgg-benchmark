@@ -230,8 +230,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         foundMatches.put("name", "Found Matches");
         foundMatches.put("columnWidth", 4000);
         foundMatches.put("valueType", CellType.NUMERIC);
-        foundMatches.put("valueSelector",
-                (Function<SingleRunResult, Double>) sr -> (double) sr.getFoundMatches());
+        foundMatches.put("valueSelector", (Function<SingleRunResult, Double>) sr -> (double) sr.getFoundMatches());
         foundMatches.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(foundMatches);
 
@@ -239,8 +238,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         appliedMatches.put("name", "Applied Matches");
         appliedMatches.put("columnWidth", 4000);
         appliedMatches.put("valueType", CellType.NUMERIC);
-        appliedMatches.put("valueSelector",
-                (Function<SingleRunResult, Double>) sr -> (double) sr.getAppliedMatches());
+        appliedMatches.put("valueSelector", (Function<SingleRunResult, Double>) sr -> (double) sr.getAppliedMatches());
         appliedMatches.put("valueSelectorClass", SingleRunResult.class);
         rawResultsSheetDefinition.add(appliedMatches);
 
@@ -323,7 +321,7 @@ public class ExcelReportBuilder extends ReportBuilder {
         error.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getError);
         error.put("valueSelectorClass", BenchmarkResult.class);
         resultsSheetDefinition.add(error);
-        
+
         Map<String, Object> rawError = new HashMap<>();
         rawError.put("name", "Error");
         rawError.put("columnWidth", 20000);
@@ -407,6 +405,10 @@ public class ExcelReportBuilder extends ReportBuilder {
     public void close() throws IOException {
         reportWorkbook.close();
         reportOutputStream.close();
+        // delete report file if it is empty
+        if (benchmarkResults.isEmpty()) {
+            Files.deleteIfExists(reportFilePath);
+        }
     }
 
     @Override

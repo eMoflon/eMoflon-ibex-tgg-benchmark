@@ -13,19 +13,17 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-
-
 public class Activator implements BundleActivator {
-    
+
     private static Logger LOG;
-    
+
     private static Activator plugin = null;
     private static Core pluginCore = null;
     private IEclipseContext appContext;
     private IEclipseContext serviceContext;
-    
+
     private Bundle bundle;
-    
+
     public static Activator getInstance() {
         return plugin;
     }
@@ -44,7 +42,7 @@ public class Activator implements BundleActivator {
         bundle = bundleContext.getBundle();
         serviceContext = EclipseContextFactory.getServiceContext(bundleContext);
         appContext = serviceContext.createChild();
-        
+
         // create instance of Core class
         pluginCore = Core.getInstance();
         EclipseWorkspace eclipseWorkspace = new EclipseWorkspace();

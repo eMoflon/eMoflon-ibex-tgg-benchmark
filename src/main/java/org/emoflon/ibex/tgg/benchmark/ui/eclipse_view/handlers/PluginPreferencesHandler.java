@@ -11,9 +11,9 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.emoflon.ibex.tgg.benchmark.ui.plugin_preferences.PluginPreferencesWindow;
 
 public class PluginPreferencesHandler {
-    
+
     @Inject
-    @Named("logger") 
+    @Named("logger")
     Logger LOG;
 
     @Execute
@@ -26,7 +26,7 @@ public class PluginPreferencesHandler {
             LOG.error("Failed to open plugin preferences. Reason: " + e.getMessage());
         }
     }
-    
+
     @CanExecute
     public boolean canExecute() {
         return true;

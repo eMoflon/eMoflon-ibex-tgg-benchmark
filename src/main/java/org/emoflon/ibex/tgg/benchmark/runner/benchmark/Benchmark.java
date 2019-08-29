@@ -23,7 +23,7 @@ import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
  * @author Andre Lehmann
  */
 class BenchmarkFaildException extends Exception {
-	private static final long serialVersionUID = 4354487099044087640L;
+    private static final long serialVersionUID = 4354487099044087640L;
 }
 
 /**
@@ -33,108 +33,111 @@ class BenchmarkFaildException extends Exception {
  */
 public abstract class Benchmark<O extends OperationalStrategy> {
 
-	protected static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
+    protected static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
-	protected final BenchmarkRunParameters runParameters;
-	protected O op;
-	protected SingleRunResult runResult;
+    protected final BenchmarkRunParameters runParameters;
+    protected O op;
+    protected SingleRunResult runResult;
+    protected boolean patternEngineInitialized;
 
-	public Benchmark(BenchmarkRunParameters runParameters) {
-		this.runParameters = runParameters;
-		this.runResult = null;
-		this.op = null;
-	}
+    public Benchmark(BenchmarkRunParameters runParameters) {
+        this.runParameters = runParameters;
+        this.runResult = null;
+        this.op = null;
+        this.patternEngineInitialized = false;
+    }
 
-	public SingleRunResult run() {
-		LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Run benchmark", runParameters.getProjectName(),
-				runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-				runParameters.getRepetition());
-
-		runResult = new SingleRunResult();
-		runResult.setRepetition(runParameters.getRepetition());
-
-		try {
-			createOperationalizationInstance();
-			measureTimes();
-		} catch (BenchmarkFaildException e) {
-		}
-
-		terminateOperationalization();
-
-		return runResult;
-	}
-
-	protected abstract void createOperationalizationInstance() throws BenchmarkFaildException;
-
-	protected void measureTimes() throws BenchmarkFaildException {
-		ExecutorService es = Executors.newSingleThreadExecutor();
-
-		try {
-			Future<Long> initializationResult = es.submit(() -> {
-				long tic = System.nanoTime();
-				if (runParameters.getPatternMatchingEngine() == PatternMatchingEngine.Democles) {
-					op.registerBlackInterpreter(new DemoclesTGGEngine());
-				}
-				long toc = System.nanoTime();
-				return (toc - tic)/1000000L;
-			});
-			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure initialization time", runParameters.getProjectName(),
-	                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-	                runParameters.getRepetition());
-			runResult.setInitializationTime(initializationResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
-
-			Future<Long> executionResult = es.submit(() -> {
-				long tic = System.nanoTime();
-				op.run();
-				long toc = System.nanoTime();
-				return (toc - tic)/1000000L;
-			});
-			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure execution time", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                    runParameters.getRepetition());
-			runResult.setExecutionTime(executionResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
-			
-			BenchmarkLogger benchmarkLogger = op.getOptions().getBenchmarkLogger();
-			runResult.setCreatedElements(benchmarkLogger.getTotalElementsCreated());
-			runResult.setDeletedElements(benchmarkLogger.getTotalElementsDeleted());
-			runResult.setFoundMatches(benchmarkLogger.getTotalMatchesFound());
-			runResult.setAppliedMatches(benchmarkLogger.getTotalMatchesApplied());
-
-		} catch (TimeoutException e) {
-			runResult.setError("Execution timed out");
-			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution timed out", runParameters.getProjectName(),
-					runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-					runParameters.getRepetition());
-			throw new BenchmarkFaildException();
-		} catch (Exception e) {
-			runResult.setError("Execution failed. Reason: " + e.getMessage());
-			LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}", runParameters.getProjectName(),
-					runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-					runParameters.getRepetition(), e.getMessage());
-			throw new BenchmarkFaildException();
-		}
-
-		es.shutdownNow();
-	}
-
-	protected void terminateOperationalization() {
-	    LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Terminate operationalization", runParameters.getProjectName(),
+    public SingleRunResult run() {
+        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Run benchmark", runParameters.getProjectName(),
                 runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                 runParameters.getRepetition());
-		if (op != null) {
-			try {
-				op.terminate();
-				op = null;
-			} catch (IOException e) {
-				// actually never thrown...
-			}
-		}
-	}
 
-	/**
-	 * @return the runResult
-	 */
-	public SingleRunResult getRunResult() {
-		return runResult;
-	}
+        runResult = new SingleRunResult();
+        runResult.setRepetition(runParameters.getRepetition());
+
+        try {
+            createOperationalizationInstance();
+            measureTimes();
+        } catch (BenchmarkFaildException e) {
+        }
+
+        terminate();
+
+        return runResult;
+    }
+
+    protected abstract void createOperationalizationInstance() throws BenchmarkFaildException;
+
+    protected void measureTimes() throws BenchmarkFaildException {
+        ExecutorService es = Executors.newSingleThreadExecutor();
+
+        try {
+            Future<Long> initializationResult = es.submit(() -> {
+                long tic = System.nanoTime();
+                if (runParameters.getPatternMatchingEngine() == PatternMatchingEngine.Democles) {
+                    op.registerBlackInterpreter(new DemoclesTGGEngine());
+                    patternEngineInitialized = true;
+                }
+                long toc = System.nanoTime();
+                return (toc - tic) / 1000000L;
+            });
+            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure initialization time", runParameters.getProjectName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition());
+            runResult.setInitializationTime(initializationResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
+
+            Future<Long> executionResult = es.submit(() -> {
+                long tic = System.nanoTime();
+                op.run();
+                long toc = System.nanoTime();
+                return (toc - tic) / 1000000L;
+            });
+            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure execution time", runParameters.getProjectName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition());
+            runResult.setExecutionTime(executionResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
+
+            BenchmarkLogger benchmarkLogger = op.getOptions().getBenchmarkLogger();
+            runResult.setCreatedElements(benchmarkLogger.getTotalElementsCreated());
+            runResult.setDeletedElements(benchmarkLogger.getTotalElementsDeleted());
+            runResult.setFoundMatches(benchmarkLogger.getTotalMatchesFound());
+            runResult.setAppliedMatches(benchmarkLogger.getTotalMatchesApplied());
+
+        } catch (TimeoutException e) {
+            runResult.setError("Execution timed out");
+            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution timed out", runParameters.getProjectName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition());
+            throw new BenchmarkFaildException();
+        } catch (Exception e) {
+            runResult.setError("Execution failed. Reason: " + e.getMessage());
+            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}", runParameters.getProjectName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition(), e.getMessage());
+            throw new BenchmarkFaildException();
+        }
+
+        es.shutdownNow();
+    }
+
+    protected void terminate() {
+        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Terminate operationalization", runParameters.getProjectName(),
+                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getRepetition());
+        if (op != null && patternEngineInitialized) {
+            try {
+                op.terminate();
+                op = null;
+            } catch (IOException e) {
+                // actually never thrown...
+            }
+        }
+    }
+
+    /**
+     * @return the runResult
+     */
+    public SingleRunResult getRunResult() {
+        return runResult;
+    }
 }

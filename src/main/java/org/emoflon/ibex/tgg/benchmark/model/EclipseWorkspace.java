@@ -100,7 +100,7 @@ public class EclipseWorkspace implements IEclipseWorkspace {
     public Path getPluginStateLocation() {
         return Paths.get(Platform.getStateLocation(Activator.getInstance().getBundle()).toOSString());
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Path getPluginPreferencesFilePath() {

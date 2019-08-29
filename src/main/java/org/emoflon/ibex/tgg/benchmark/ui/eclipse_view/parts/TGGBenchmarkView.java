@@ -15,7 +15,7 @@ import javafx.scene.Scene;
 public class TGGBenchmarkView {
 
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
-    
+
     private FXCanvas fxCanvas;
     private TGGBenchmarkViewPart tggBenchmarkViewPart;
 
@@ -26,13 +26,13 @@ public class TGGBenchmarkView {
 
         // create GUI part
         tggBenchmarkViewPart = new TGGBenchmarkViewPart();
-        
+
         // add objects to the eclipse context
         context.set("logger", LOG);
         context.set("pluginCore", Core.getInstance());
         context.set("benchmarkCases", Core.getInstance().getBenchmarkCases());
         context.set("benchmarkCasesTable", tggBenchmarkViewPart.getTable());
-    
+
         // set scene
         Scene view_scene = new Scene(tggBenchmarkViewPart.getContent());
         fxCanvas.setScene(view_scene);

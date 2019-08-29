@@ -36,7 +36,6 @@ import javafx.scene.control.TableCell;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
-
 /**
  * This is a reimplemented version of the
  * {@link javafx.scene.control.cell.CheckBoxTableCell}. The only difference is,
@@ -46,27 +45,27 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
 
     // this custom class is just because of this little piece of shit
     private final CheckBox checkBox;
-    
+
     private boolean showLabel;
-    
+
     private ObservableValue<Boolean> booleanProperty;
-    
-    /** 
+
+    /**
      * Creates a default CheckBoxTableCell.
      */
     public CheckBoxTableCell() {
         this.getStyleClass().add("check-box-table-cell");
-        
+
         this.checkBox = new CheckBox();
 
         // by default the graphic is null until the cell stops being empty
         setGraphic(null);
         setSelectedStateCallback(null);
     }
-        
+
     // --- converter
-    private ObjectProperty<StringConverter<Boolean>> converter = 
-            new SimpleObjectProperty<StringConverter<Boolean>>(this, "converter") {
+    private ObjectProperty<StringConverter<Boolean>> converter = new SimpleObjectProperty<StringConverter<Boolean>>(
+            this, "converter") {
         @Override
         protected void invalidated() {
             updateShowLabel();
@@ -76,50 +75,49 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
     /**
      * The {@link StringConverter} property.
      */
-    public final ObjectProperty<StringConverter<Boolean>> converterProperty() { 
-        return converter; 
+    public final ObjectProperty<StringConverter<Boolean>> converterProperty() {
+        return converter;
     }
-    
-    /** 
+
+    /**
      * Sets the {@link StringConverter} to be used in this cell.
      */
-    public final void setConverter(StringConverter<Boolean> value) { 
-        converterProperty().set(value); 
+    public final void setConverter(StringConverter<Boolean> value) {
+        converterProperty().set(value);
     }
-    
+
     /**
      * Returns the {@link StringConverter} used in this cell.
      */
-    public final StringConverter<Boolean> getConverter() { 
-        return converterProperty().get(); 
+    public final StringConverter<Boolean> getConverter() {
+        return converterProperty().get();
     }
-    
+
     // --- selected state callback property
-    private ObjectProperty<Callback<Integer, ObservableValue<Boolean>>> 
-            selectedStateCallback = 
-            new SimpleObjectProperty<Callback<Integer, ObservableValue<Boolean>>>(
+    private ObjectProperty<Callback<Integer, ObservableValue<Boolean>>> selectedStateCallback = new SimpleObjectProperty<Callback<Integer, ObservableValue<Boolean>>>(
             this, "selectedStateCallback");
 
     /**
-     * Property representing the {@link Callback} that is bound to by the 
-     * CheckBox shown on screen.
+     * Property representing the {@link Callback} that is bound to by the CheckBox
+     * shown on screen.
      */
-    public final ObjectProperty<Callback<Integer, ObservableValue<Boolean>>> selectedStateCallbackProperty() { 
-        return selectedStateCallback; 
+    public final ObjectProperty<Callback<Integer, ObservableValue<Boolean>>> selectedStateCallbackProperty() {
+        return selectedStateCallback;
     }
-    
-    /** 
+
+    /**
      * Sets the {@link Callback} that is bound to by the CheckBox shown on screen.
      */
-    public final void setSelectedStateCallback(Callback<Integer, ObservableValue<Boolean>> value) { 
-        selectedStateCallbackProperty().set(value); 
+    public final void setSelectedStateCallback(Callback<Integer, ObservableValue<Boolean>> value) {
+        selectedStateCallbackProperty().set(value);
     }
-    
+
     /**
-     * Returns the {@link Callback} that is bound to by the CheckBox shown on screen.
+     * Returns the {@link Callback} that is bound to by the CheckBox shown on
+     * screen.
      */
-    public final Callback<Integer, ObservableValue<Boolean>> getSelectedStateCallback() { 
-        return selectedStateCallbackProperty().get(); 
+    public final Callback<Integer, ObservableValue<Boolean>> getSelectedStateCallback() {
+        return selectedStateCallbackProperty().get();
     }
 
     /**
@@ -130,45 +128,42 @@ public class CheckBoxTableCell<S> extends TableCell<S, Boolean> {
     }
 
     /** {@inheritDoc} */
-    @Override public void updateItem(Boolean item, boolean empty) {
+    @Override
+    public void updateItem(Boolean item, boolean empty) {
         super.updateItem(item, empty);
-        
+
         if (empty) {
             setText(null);
             setGraphic(null);
         } else {
             StringConverter<Boolean> c = getConverter();
-            
+
             if (showLabel) {
                 setText(c.toString(item));
             }
             setGraphic(checkBox);
-            
+
             if (booleanProperty instanceof BooleanProperty) {
-                checkBox.selectedProperty().unbindBidirectional((BooleanProperty)booleanProperty);
+                checkBox.selectedProperty().unbindBidirectional((BooleanProperty) booleanProperty);
             }
             ObservableValue<Boolean> obsValue = getSelectedProperty();
             if (obsValue instanceof BooleanProperty) {
                 booleanProperty = obsValue;
-                checkBox.selectedProperty().bindBidirectional((BooleanProperty)booleanProperty);
+                checkBox.selectedProperty().bindBidirectional((BooleanProperty) booleanProperty);
             }
-            
-            checkBox.disableProperty().bind(Bindings.not(
-                    getTableView().editableProperty().and(
-                    getTableColumn().editableProperty()).and(
-                    editableProperty())
-                ));
+
+            checkBox.disableProperty().bind(Bindings.not(getTableView().editableProperty()
+                    .and(getTableColumn().editableProperty()).and(editableProperty())));
         }
     }
-    
+
     private void updateShowLabel() {
         this.showLabel = converter != null;
         this.checkBox.setAlignment(showLabel ? Pos.CENTER_LEFT : Pos.CENTER);
     }
-    
+
     private ObservableValue<Boolean> getSelectedProperty() {
-        return getSelectedStateCallback() != null ?
-                getSelectedStateCallback().call(getIndex()) :
-                getTableColumn().getCellObservableValue(getIndex());
+        return getSelectedStateCallback() != null ? getSelectedStateCallback().call(getIndex())
+                : getTableColumn().getCellObservableValue(getIndex());
     }
 }

@@ -56,7 +56,8 @@ public class CategoryDefaultsPart extends CategoryPart<PluginPreferences> {
 
         defaultModelSizes.bindListProperty(preferencesData.defaultModelSizesProperty());
 
-        defaultModelgenIncludeReport.selectedProperty().bindBidirectional(preferencesData.defaultModelgenIncludeReportProperty());
+        defaultModelgenIncludeReport.selectedProperty()
+                .bindBidirectional(preferencesData.defaultModelgenIncludeReportProperty());
         defaultInitialFwdActive.selectedProperty().bindBidirectional(preferencesData.defaultInitialFwdActiveProperty());
         defaultInitialBwdActive.selectedProperty().bindBidirectional(preferencesData.defaultInitialBwdActiveProperty());
         defaultFwdActive.selectedProperty().bindBidirectional(preferencesData.defaultFwdActiveProperty());

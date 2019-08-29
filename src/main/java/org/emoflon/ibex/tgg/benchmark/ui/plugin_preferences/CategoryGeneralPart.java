@@ -38,7 +38,8 @@ public class CategoryGeneralPart extends CategoryPart<PluginPreferences> {
         logLevelTooltip = new Tooltip("Log level used in this plugin");
 
         // bindings
-        benchmarkPreferencesFileName.textProperty().bindBidirectional(preferencesData.benchmarkPreferencesFileNameProperty());
+        benchmarkPreferencesFileName.textProperty()
+                .bindBidirectional(preferencesData.benchmarkPreferencesFileNameProperty());
         benchmarkPreferencesFileName.setTooltip(benchmarkPreferencesFileNameTooltip);
 
         UIUtils.bindEnumChoiceBox(logLevel, FXCollections.observableArrayList(StandardLevel.values()),

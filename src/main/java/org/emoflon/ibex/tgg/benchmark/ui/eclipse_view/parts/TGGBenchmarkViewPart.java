@@ -1,12 +1,10 @@
 package org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts;
 
-import java.io.IOException;
 import java.util.function.Function;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
-import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
 import org.emoflon.ibex.tgg.benchmark.ui.components.CheckBoxTableCell;
 import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
 import org.emoflon.ibex.tgg.benchmark.ui.components.SelectAllCheckBox;
@@ -228,7 +226,7 @@ public class TGGBenchmarkViewPart extends Part {
             columnLabel.getStyleClass().add("column-header-label");
             SelectAllCheckBox<BenchmarkCasePreferences> columnChkBox = new SelectAllCheckBox<BenchmarkCasePreferences>(
                     getItems(), property);
-            columnChkBox.setOnAction(e ->{
+            columnChkBox.setOnAction(e -> {
                 // save all
                 for (EclipseTggProject project : Core.getInstance().getWorkspace().getTggProjects()) {
                     project.delayedSavePreferences();

@@ -89,7 +89,7 @@ public class BenchmarkClientProcess {
         Configurator.initialize(new DefaultConfiguration());
         Configurator.setRootLevel(logLevel);
         LOG = LogManager.getLogger(Core.PLUGIN_NAME);
-        
+
         LOG.debug("Benchmark client process started");
 
         // handle process termination

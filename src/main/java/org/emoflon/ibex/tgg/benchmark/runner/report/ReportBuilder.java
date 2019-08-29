@@ -46,24 +46,24 @@ public abstract class ReportBuilder {
     protected abstract void createReportFile() throws IOException;
 
     public abstract void save() throws IOException;
-    
+
     public abstract void close() throws IOException;
 
     protected Double toSeconds(long milliseconds) {
         if (milliseconds > 0L) {
-            return roundDouble(milliseconds/1000.0);
+            return roundDouble(milliseconds / 1000.0);
         }
         return -1.0;
     }
 
     protected Double toSeconds(double milliseconds) {
         if (milliseconds > 0.0) {
-            return roundDouble(milliseconds/1000.0);
+            return roundDouble(milliseconds / 1000.0);
         }
         return -1.0;
     }
 
     protected Double roundDouble(Double d) {
-        return Math.round(d.doubleValue()*1000.0)/1000.0;
+        return Math.round(d.doubleValue() * 1000.0) / 1000.0;
     }
 }

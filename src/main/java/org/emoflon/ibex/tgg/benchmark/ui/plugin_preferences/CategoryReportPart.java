@@ -37,15 +37,11 @@ public class CategoryReportPart extends CategoryPart<PluginPreferences> {
         super.initData(preferencesData);
 
         // tooltips
-        reportFilePathTooltip = new Tooltip(String.join("\n", 
-                "File path of the report. The path can contain",
+        reportFilePathTooltip = new Tooltip(String.join("\n", "File path of the report. The path can contain",
                 "variables like '{var}'. Following variables are defined:",
-                "  Y, year, M, month, D, day: The current date", 
-                "  date: Current date in Y-M-D format",
-                "  workspace_path: The workspace path", 
-                "  project_path: Path of TGG project",
-                "  project_name: Name of the TGG project", 
-                "  operationalization: The executing operationalization"));
+                "  Y, year, M, month, D, day: The current date", "  date: Current date in Y-M-D format",
+                "  workspace_path: The workspace path", "  project_path: Path of TGG project",
+                "  project_name: Name of the TGG project", "  operationalization: The executing operationalization"));
         reportFileTypeTooltip = new Tooltip("The file type used for the report");
         includeErrorsTooltip = new Tooltip("Include benchmark runs that failed with an error");
 
@@ -53,7 +49,8 @@ public class CategoryReportPart extends CategoryPart<PluginPreferences> {
         reportFilePath.textProperty().bindBidirectional(preferencesData.reportFilePathProperty());
         reportFilePath.setTooltip(reportFilePathTooltip);
 
-        UIUtils.bindEnumChoiceBox(reportFileType, FXCollections.observableArrayList(ReportFileType.values()), preferencesData.reportFileTypeProperty());
+        UIUtils.bindEnumChoiceBox(reportFileType, FXCollections.observableArrayList(ReportFileType.values()),
+                preferencesData.reportFileTypeProperty());
         reportFileType.setTooltip(reportFileTypeTooltip);
 
         includeErrors.selectedProperty().bindBidirectional(preferencesData.includeErrorsProperty());

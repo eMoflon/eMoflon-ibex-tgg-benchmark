@@ -12,10 +12,14 @@ import javafx.scene.control.TextFormatter.Change;
 import javafx.util.StringConverter;
 
 /**
- * <p>Text input component that allows a user to enter a time value. Time is hereby
- * represented as seconds.</p>
+ * <p>
+ * Text input component that allows a user to enter a time value. Time is hereby
+ * represented as seconds.
+ * </p>
  *
- * <p>Format examples:</p>
+ * <p>
+ * Format examples:
+ * </p>
  * <ul>
  * <li>30</li>
  * <li>30s</li>
@@ -49,6 +53,7 @@ public class TimeTextField extends TextField {
 
     /**
      * Bind a IntegerProperty to the value of this text field.
+     * 
      * @param property to bind to the textfield
      */
     public final void bindIntegerProperty(IntegerProperty property) {
@@ -97,8 +102,7 @@ public class TimeTextField extends TextField {
                     break;
                 }
                 // prevent integer overflow
-                return num.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) < 0 ? num.intValue()
-                        : Integer.MAX_VALUE;
+                return num.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) < 0 ? num.intValue() : Integer.MAX_VALUE;
             }
 
             return 0;

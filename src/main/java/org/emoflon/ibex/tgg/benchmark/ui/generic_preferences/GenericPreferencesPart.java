@@ -45,8 +45,7 @@ public class GenericPreferencesPart extends Part {
     }
 
     /**
-     * Sets the preference content of a category so it will be visible to the
-     * user.
+     * Sets the preference content of a category so it will be visible to the user.
      *
      * @param pane The selected Node in the 'categories' ListView
      */
@@ -67,10 +66,9 @@ public class GenericPreferencesPart extends Part {
     }
 
     /**
-     * Initializes the parts elements by binding them to a data model. This
-     * needs to be done after an instance of this class has been created,
-     * because only then will the @FXML elements be populated from the FXML
-     * resource.
+     * Initializes the parts elements by binding them to a data model. This needs to
+     * be done after an instance of this class has been created, because only then
+     * will the @FXML elements be populated from the FXML resource.
      *
      * @param categoriesViewData The data that represents the categories
      */

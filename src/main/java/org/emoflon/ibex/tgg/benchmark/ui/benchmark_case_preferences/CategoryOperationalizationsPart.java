@@ -305,11 +305,13 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
 
         Path classPath = preferencesData.getEclipseProject().getOutputPath();
         try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
-            Set<Method> methods = ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath, EPackage.class);
+            Set<Method> methods = ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath,
+                    EPackage.class);
             fwdItems.setAll(methods);
             bwdItems.setAll(methods);
         } catch (Exception e) {
-            LOG.debug("Failed to fetch meta model registration helper methods from '{}'. Reason: {}", classPath.toString(), e.getMessage());
+            LOG.debug("Failed to fetch meta model registration helper methods from '{}'. Reason: {}",
+                    classPath.toString(), e.getMessage());
         }
     }
 }

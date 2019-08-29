@@ -28,17 +28,17 @@ public class Core {
 
     public static final String VERSION = "0.1.0";
     public static final String PLUGIN_NAME = "TGG-Benchmark";
-    
+
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     private static Core instance;
-    
+
     private PluginPreferences pluginPreferences;
     private IEclipseWorkspace workspace;
     private AggregateObservableList<BenchmarkCasePreferences> benchmarkCasePreferences;
     private Job benchmarkJob;
 
     private Core() {
-        super();    
+        super();
     }
 
     /**
@@ -50,7 +50,7 @@ public class Core {
         }
         return Core.instance;
     }
-    
+
     /**
      * Runs the given benchmark cases.
      * 
@@ -151,7 +151,7 @@ public class Core {
                 benchmarkCasePreferences.addList(bcpl);
             }
         }
-        
+
         return benchmarkCasePreferences;
     }
 }

@@ -34,14 +34,14 @@ public abstract class StringUtils {
         return result;
     }
 
-    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp, OperationalizationType operationalization) throws InvalidPathException {
-        return createPathFromString(pathTemplate, workspacePath, bcp, operationalization,
-                LocalDateTime.now());
+    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp,
+            OperationalizationType operationalization) throws InvalidPathException {
+        return createPathFromString(pathTemplate, workspacePath, bcp, operationalization, LocalDateTime.now());
     }
 
-    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp, OperationalizationType operationalization, LocalDateTime dateTime)
-            throws InvalidPathException {
-        
+    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp,
+            OperationalizationType operationalization, LocalDateTime dateTime) throws InvalidPathException {
+
         Map<String, String> vars = new HashMap<>();
         vars.put("Y", String.valueOf(dateTime.getYear()));
         vars.put("year", String.valueOf(dateTime.getYear()));

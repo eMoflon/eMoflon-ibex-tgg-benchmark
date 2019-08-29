@@ -51,10 +51,8 @@ public class SelectAllCheckBox<S> extends CheckBox {
     private void updateSelectedState() {
         if (selectAllStateChangeProcessor == null) {
             List<BooleanProperty> allProperties = getAllProperties();
-            boolean allSelected = allProperties.stream().map(BooleanProperty::get).reduce(true,
-                    (a, b) -> a && b);
-            boolean anySelected = allProperties.stream().map(BooleanProperty::get).reduce(false,
-                    (a, b) -> a || b);
+            boolean allSelected = allProperties.stream().map(BooleanProperty::get).reduce(true, (a, b) -> a && b);
+            boolean anySelected = allProperties.stream().map(BooleanProperty::get).reduce(false, (a, b) -> a || b);
 
             if (allSelected) {
                 this.setSelected(true);

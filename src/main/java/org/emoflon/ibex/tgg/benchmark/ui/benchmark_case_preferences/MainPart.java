@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
+import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
-import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
@@ -119,7 +119,7 @@ public class MainPart extends GenericPreferencesPart {
             }
         }
         preferencesDataWorkingCopy.getEclipseProject().getBenchmarkCasePreferences().add(preferencesDataWorkingCopy);
-        
+
         try {
             preferencesDataWorkingCopy.getEclipseProject().savePreferences();
         } catch (IOException e) {

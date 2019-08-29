@@ -16,7 +16,7 @@ import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
 public class BenchmarkRunParameters implements Serializable {
 
     private static final long serialVersionUID = 8107641259806223277L;
-    
+
     // general
     private String projectName;
     private OperationalizationType operationalization;

@@ -14,9 +14,9 @@ import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCas
 import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts.TGGBenchmarkViewPart.BenchmarkCaseTableView;
 
 public class EditBenchmarkCaseHandler {
-    
+
     @Inject
-    @Named("logger") 
+    @Named("logger")
     Logger LOG;
 
     @Execute
@@ -33,7 +33,7 @@ public class EditBenchmarkCaseHandler {
             }
         }
     }
-    
+
     @CanExecute
     public boolean canExecute(@Optional @Named("benchmarkCasesTable") BenchmarkCaseTableView benchmarkCaseTable) {
         return benchmarkCaseTable != null && benchmarkCaseTable.getSelectionModel().getSelectedIndex() != -1;

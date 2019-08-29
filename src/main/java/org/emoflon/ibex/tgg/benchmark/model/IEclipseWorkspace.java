@@ -26,7 +26,7 @@ public interface IEclipseWorkspace {
      * @return the plugin state location where preferences might be safed
      */
     public Path getPluginStateLocation();
-    
+
     /**
      * @return the path of the plugin prefernces file
      */

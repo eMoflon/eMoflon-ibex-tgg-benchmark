@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;

@@ -44,11 +44,11 @@ public class AggregateObservableList<E> implements ObservableList<E> {
         for (InvalidationListener listener : invalidationListenerList) {
             list.addListener(listener);
         }
-        
+
         list.addListener((ListChangeListener) e -> {
             updateSize();
         });
-        
+
         lists.add(list);
         updateSize();
     }
@@ -169,7 +169,7 @@ public class AggregateObservableList<E> implements ObservableList<E> {
             int indexOf = list.indexOf(o);
             if (indexOf >= 0) {
                 return aggregatedSize + indexOf;
-            } 
+            }
             aggregatedSize += list.size();
         }
         return -1;
