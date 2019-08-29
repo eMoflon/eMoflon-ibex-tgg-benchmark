@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.benchmark.runner;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,17 +10,24 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseJavaProject;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
@@ -28,7 +36,9 @@ import org.emoflon.ibex.tgg.benchmark.runner.report.CSVReportBuilder;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ExcelReportBuilder;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportBuilder;
 import org.emoflon.ibex.tgg.benchmark.runner.report.ReportFileType;
+import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
 import org.emoflon.ibex.tgg.benchmark.utils.StringUtils;
+import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.terracotta.ipceventbus.event.EventBusException;
 import org.terracotta.ipceventbus.event.EventBusServer;
 import org.terracotta.ipceventbus.proc.JavaProcess;
@@ -44,8 +54,9 @@ public class BenchmarkRunner implements Runnable {
     private static final int EVENT_BUS_PORT = 24842;
     private static final LinkedList<File> CLASS_PATHS;
 
+    private final SubMonitor progressMonitor;
     private final PluginPreferences pluginPreferences;
-    private final List<BenchmarkCasePreferences> benchmarkCasePreferencesList;
+    private final List<BenchmarkCasePreferences> benchmarkCases;
     private final IEclipseWorkspace eclipseWorkspace;
     private final LocalDateTime startTime;
     private final Path modelInstancesBasePath;
@@ -64,33 +75,122 @@ public class BenchmarkRunner implements Runnable {
     /**
      * Constructor for {@link BenchmarkRunner}.
      * 
-     * @param eclipseWorkspace         the eclipse workspace
      * @param benchmarkCasePreferences a single benchmark case
      * @throws IOException if the report file couldn't be created
      */
-    public BenchmarkRunner(IEclipseWorkspace eclipseWorkspace, BenchmarkCasePreferences benchmarkCasePreferences)
-            throws IOException {
-        this(eclipseWorkspace, Arrays.asList(benchmarkCasePreferences));
+    public BenchmarkRunner(BenchmarkCasePreferences benchmarkCasePreferences, IProgressMonitor progressMonitor) {
+        this(Arrays.asList(benchmarkCasePreferences), progressMonitor);
     }
 
     /**
      * Constructor for {@link BenchmarkRunner}.
      * 
-     * @param eclipseWorkspace             the eclipse workspace
-     * @param benchmarkCasePreferencesList a list of benchmark cases
+     * @param benchmarkCases a list of benchmark cases
      * @throws IOException if the report file couldn't be created
      */
-    public BenchmarkRunner(IEclipseWorkspace eclipseWorkspace,
-            List<BenchmarkCasePreferences> benchmarkCasePreferencesList) throws IOException {
-        this.eclipseWorkspace = eclipseWorkspace;
-        this.benchmarkCasePreferencesList = benchmarkCasePreferencesList;
+    public BenchmarkRunner(List<BenchmarkCasePreferences> benchmarkCases, IProgressMonitor progressMonitor) {
+        this.benchmarkCases = benchmarkCases;
+        this.progressMonitor = SubMonitor.convert(progressMonitor, benchmarkCases.size());
+        this.eclipseWorkspace = Core.getInstance().getWorkspace();
         this.pluginPreferences = Core.getInstance().getPluginPreferences();
         this.startTime = LocalDateTime.now();
         this.modelInstancesBasePath = eclipseWorkspace.getPluginStateLocation().resolve("model_instances");
-
-        // try to create report file(s). If an error occours the user will know right
-        // away instead of learning of it
         this.reportBuilders = new HashMap<>();
+    }
+
+    public List<String> checkForErrors() {
+        LinkedList<String> foundErrors = new LinkedList<>();
+
+        // check Eclipse projects
+        Set<EclipseJavaProject> checkedProjects = new HashSet<>();
+        Stack<EclipseJavaProject> projectsToCheck = new Stack<>();
+        while (!projectsToCheck.isEmpty()) {
+            EclipseJavaProject project = projectsToCheck.pop();
+            if (!checkedProjects.contains(project)) {
+                try {
+                    if (!Files.exists(project.getOutputPath()) || Files.list(project.getOutputPath()).count() == 0) {
+                        foundErrors.add(String.format(
+                                "Eclipse project '%s': Output folder '%s' doesn't exist or is empty. Recompile your project",
+                                project.getName(), project.getOutputPath()));
+                    }
+                } catch (IOException e) {
+                    foundErrors.add(String.format("Eclipse project '%s': %s", project.getName(), e.getMessage()));
+                }
+                checkedProjects.add(project);
+                projectsToCheck.addAll(project.getReferencedProjects());
+            }
+        }
+
+        // check run parameters (most of them are covered by input validation already)
+        for (BenchmarkCasePreferences benchmarkCase : benchmarkCases) {
+
+            if (benchmarkCase.getBenchmarkCaseName().isEmpty()) {
+                foundErrors.add(String.format("Benchmark case '%s': The benchmark case needs to be named",
+                        benchmarkCase.getEclipseProject().getName()));
+            }
+            if (benchmarkCase.getModelgenTggRule().isEmpty()) {
+                foundErrors
+                        .add(String.format("Benchmark case '%s': TGG rule for model generation needs to be specified",
+                                benchmarkCase.getEclipseProject().getName()));
+            }
+
+            Path projectOutputPath = benchmarkCase.getEclipseProject().getOutputPath();
+            try {
+                if (Files.exists(projectOutputPath) && Files.list(projectOutputPath).count() > 0) {
+                    try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(projectOutputPath);) {
+                        if (benchmarkCase.getMetamodelsRegistrationMethod().isEmpty()) {
+                            foundErrors.add(
+                                    String.format("Benchmark case '%s': Meta model registration method needs to be set",
+                                            benchmarkCase.getBenchmarkCaseName()));
+                        } else {
+                            try {
+                                ReflectionUtils.getMethodByName(classLoader,
+                                        benchmarkCase.getMetamodelsRegistrationMethod(), ResourceSet.class,
+                                        OperationalStrategy.class);
+                            } catch (NoSuchMethodException e) {
+                                foundErrors.add(String.format(
+                                        "Benchmark case '%s': Meta model registration method doesn't exist",
+                                        benchmarkCase.getBenchmarkCaseName()));
+                            }
+                        }
+                        if (benchmarkCase.isFwdActive()) {
+                            if (!benchmarkCase.getFwdIncrementalEditMethod().isEmpty()) {
+                                try {
+                                    ReflectionUtils.getMethodByName(classLoader,
+                                            benchmarkCase.getFwdIncrementalEditMethod(), EPackage.class);
+                                } catch (NoSuchMethodException e) {
+                                    foundErrors.add(String.format(
+                                            "Benchmark case '%s': Incremental edit method for FWD operationalization doesn't exist",
+                                            benchmarkCase.getBenchmarkCaseName()));
+                                }
+
+                            }
+                        }
+                        if (benchmarkCase.isBwdActive()) {
+                            if (!benchmarkCase.getFwdIncrementalEditMethod().isEmpty()) {
+                                try {
+                                    ReflectionUtils.getMethodByName(classLoader,
+                                            benchmarkCase.getBwdIncrementalEditMethod(), EPackage.class);
+                                } catch (NoSuchMethodException e) {
+                                    foundErrors.add(String.format(
+                                            "Benchmark case '%s': Incremental edit method for BWD operationalization doesn't exist",
+                                            benchmarkCase.getBenchmarkCaseName()));
+                                }
+
+                            }
+                        }
+                    } catch (Exception e) {
+                        foundErrors.add(String.format("Benchmark case '%s': %s", benchmarkCase.getBenchmarkCaseName(),
+                                e.getMessage()));
+                    }
+                }
+            } catch (IOException e) {
+                foundErrors.add(
+                        String.format("Benchmark case '%s': %s", benchmarkCase.getBenchmarkCaseName(), e.getMessage()));
+            }
+        }
+
+        // check report files (try to open them and notify the user for errors if any)
         Map<OperationalizationType, Function<BenchmarkCasePreferences, Boolean>> includeOps = new HashMap<>();
         includeOps.put(OperationalizationType.MODELGEN, BenchmarkCasePreferences::isModelgenIncludeReport);
         includeOps.put(OperationalizationType.INITIAL_FWD, BenchmarkCasePreferences::isInitialFwdActive);
@@ -107,20 +207,28 @@ public class BenchmarkRunner implements Runnable {
         includeOps.put(OperationalizationType.BWD_OPT, BenchmarkCasePreferences::isBwdOptActive);
         includeOps.put(OperationalizationType.CO, BenchmarkCasePreferences::isCoActive);
         includeOps.put(OperationalizationType.CC, BenchmarkCasePreferences::isCoActive);
-        for (BenchmarkCasePreferences bcp : benchmarkCasePreferencesList) {
+        boolean anyReportFileErrors = false;
+        for (BenchmarkCasePreferences benchmarkCase : benchmarkCases) {
             for (Map.Entry<OperationalizationType, Function<BenchmarkCasePreferences, Boolean>> includeOp : includeOps
                     .entrySet()) {
-                if (includeOp.getValue().apply(bcp)) {
+                if (includeOp.getValue().apply(benchmarkCase)) {
+                    Path reportFilePath = StringUtils.createPathFromString(pluginPreferences.getReportFilePath(),
+                            eclipseWorkspace.getLocation(), benchmarkCase, includeOp.getKey(), startTime);
                     try {
-                        getReportBuilderByPath(StringUtils.createPathFromString(pluginPreferences.getReportFilePath(),
-                                eclipseWorkspace.getLocation(), bcp, includeOp.getKey(), startTime));
+                        getReportBuilderByPath(reportFilePath);
                     } catch (IOException e) {
-                        closeAllReportBuilders();
-                        throw e;
+                        foundErrors
+                                .add(String.format("Report file '%s': %s", reportFilePath.toString(), e.getMessage()));
+                        anyReportFileErrors = true;
                     }
                 }
             }
         }
+        if (anyReportFileErrors) {
+            closeAllReportBuilders();
+        }
+
+        return foundErrors;
     }
 
     /** {@inheritDoc} */
@@ -129,8 +237,11 @@ public class BenchmarkRunner implements Runnable {
         try {
             LOG.info("Benchmark started");
             try {
-                for (BenchmarkCasePreferences bcp : benchmarkCasePreferencesList) {
+                for (BenchmarkCasePreferences bcp : benchmarkCases) {
+                    progressMonitor.setTaskName("Benchmarking '" + bcp.getBenchmarkCaseName() + "'");
+                    ;
                     benchmarkCase(bcp);
+                    progressMonitor.split(1);
                 }
                 LOG.info("Benchmark finished");
             } catch (IOException e1) {

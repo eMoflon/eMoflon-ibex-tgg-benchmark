@@ -19,19 +19,20 @@ import javafx.collections.ObservableList;
 public class RunBenchmarkCaseHandler {
 
     @Inject
-    @Named("logger") 
+    @Named("logger")
     Logger LOG;
 
     @Execute
     public void execute(@Optional @Named("benchmarkCases") ObservableList<BenchmarkCasePreferences> benchmarkCases) {
         if (benchmarkCases != null && benchmarkCases.size() > 0) {
-            List<BenchmarkCasePreferences> bcpsToExecute = benchmarkCases.stream().filter(BenchmarkCasePreferences::isMarkedForExecution).collect(Collectors.toList()); 
+            List<BenchmarkCasePreferences> bcpsToExecute = benchmarkCases.stream()
+                    .filter(BenchmarkCasePreferences::isMarkedForExecution).collect(Collectors.toList());
             if (bcpsToExecute.size() > 0) {
-                Core.getInstance().runBenchmark(benchmarkCases);
+                Core.getInstance().runBenchmark(bcpsToExecute);
             }
         }
     }
-    
+
     @CanExecute
     public boolean canExecute(@Optional @Named("benchmarkCasesTable") BenchmarkCaseTableView benchmarkCaseTable) {
         return true;
