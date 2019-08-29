@@ -103,7 +103,7 @@ public class MainPart extends GenericPreferencesPart {
      * Run the current open benchmark case(s).
      */
     private void runBenchmarkCase() {
-        // pluginCore.scheduleJobs(Arrays.asList(eclipseProject));
+        Core.getInstance().runBenchmark(Arrays.asList(preferencesDataWorkingCopy));
     }
 
     /**
