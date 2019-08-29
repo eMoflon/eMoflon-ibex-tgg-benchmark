@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -72,19 +73,34 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
             String oldCaseName = preferencesData.getBenchmarkCaseName();
             if (oldCaseName.isEmpty()) {
                 preferencesData.setBenchmarkCaseName(newValue.getName());
-            } if (oldValue != null) {
+            }
+            if (oldValue != null) {
                 preferencesData.setBenchmarkCaseName(oldCaseName.replaceFirst(oldValue.getName(), newValue.getName()));
             }
-            updateMetamodelsRegistrationMethodComboBox();
+
+            if (newValue != null) {
+                ObservableList<Method> items = metamodelsRegistrationMethod.getItems();
+                items.setAll(getRegistrationMethods(newValue.getOutputPath()));
+                if (!metamodelsRegistrationMethod.getItems().isEmpty()) {
+                    metamodelsRegistrationMethod.getSelectionModel().selectFirst();
+                }
+            }
         });
 
         benchmarkCaseName.textProperty().bindBidirectional(preferencesData.benchmarkCaseNameProperty());
         benchmarkCaseName.setTooltip(benchmarkCaseNameTooltip);
 
-        UIUtils.bindMethodComboBox(metamodelsRegistrationMethod, FXCollections.observableArrayList(),
+        Set<Method> registrationMethods = new HashSet<>();
+        if (preferencesData.getEclipseProject() != null) {
+            registrationMethods = getRegistrationMethods(preferencesData.getEclipseProject().getOutputPath());
+        }
+        UIUtils.bindMethodComboBox(metamodelsRegistrationMethod, FXCollections.observableArrayList(registrationMethods),
                 preferencesData.metamodelsRegistrationMethodProperty());
+        if (metamodelsRegistrationMethod.getSelectionModel().getSelectedIndex() == -1
+                && !metamodelsRegistrationMethod.getItems().isEmpty()) {
+            metamodelsRegistrationMethod.getSelectionModel().selectFirst();
+        }
         metamodelsRegistrationMethod.setTooltip(metamodelsRegistrationMethodTooltip);
-        updateMetamodelsRegistrationMethodComboBox();
 
         UIUtils.bindEnumChoiceBox(patternMatchingEngine,
                 FXCollections.observableArrayList(PatternMatchingEngine.values()),
@@ -94,20 +110,14 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
         defaultTimeout.setTooltip(defaultTimeoutTooltip);
     }
 
-    private void updateMetamodelsRegistrationMethodComboBox() {
-        EclipseTggProject selectedProject = eclipseProject.getSelectionModel().getSelectedItem();
-        if (selectedProject != null) {
-            ObservableList<Method> items = metamodelsRegistrationMethod.getItems();
-            items.clear();
-            
-
-            Path classPath = selectedProject.getOutputPath();
-            try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
-                Set<Method> methods = ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath, ResourceSet.class, OperationalStrategy.class);
-                items.setAll(methods);
-            } catch (Exception e) {
-                LOG.error("Failed to fetch meta model registration helper methods from '{}'. Reason: {}", classPath.toString(), e.getMessage());
-            }
+    private Set<Method> getRegistrationMethods(Path classPath) {
+        try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
+            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath, ResourceSet.class,
+                    OperationalStrategy.class);
+        } catch (Exception e) {
+            LOG.error("Failed to fetch meta model registration helper methods from '{}'. Reason: {}",
+                    classPath.toString(), e.getMessage());
         }
+        return new HashSet<Method>();
     }
 }
