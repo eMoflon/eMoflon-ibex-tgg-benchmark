@@ -2,6 +2,7 @@ package org.emoflon.ibex.tgg.benchmark.model;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
@@ -22,7 +23,7 @@ import javafx.collections.ObservableList;
 public class EclipseWorkspaceDebug implements IEclipseWorkspace {
 
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
-    
+
     private final ObjectProperty<Path> location;
     private final ListProperty<EclipseTggProject> tggProjects;
 
@@ -59,13 +60,12 @@ public class EclipseWorkspaceDebug implements IEclipseWorkspace {
     public final ObjectProperty<Path> locationProperty() {
         return this.location;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public final Path getLocation() {
         return this.locationProperty().get();
     }
-    
 
     public final void setLocation(final Path location) {
         this.locationProperty().set(location);
@@ -74,17 +74,14 @@ public class EclipseWorkspaceDebug implements IEclipseWorkspace {
     public final ListProperty<EclipseTggProject> tggProjectsProperty() {
         return this.tggProjects;
     }
-    
 
     @Override
     public final ObservableList<EclipseTggProject> getTggProjects() {
         return this.tggProjectsProperty().get();
     }
-    
 
     public final void setTggProjects(final ObservableList<EclipseTggProject> tggProjects) {
         this.tggProjectsProperty().set(tggProjects);
     }
-    
-    
+
 }
