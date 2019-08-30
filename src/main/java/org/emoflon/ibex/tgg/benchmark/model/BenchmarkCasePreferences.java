@@ -166,8 +166,7 @@ public class BenchmarkCasePreferences {
                         try {
                             modelSizes.add(modelSizesArray.getInt(i));
                         } catch (ClassCastException e) {
-                            System.err.println(String.format("Invalid model size! '%s' is not an integer number",
-                                    modelSizesArray.getString(i)));
+                            // ignore value
                         }
                     }
                     setModelgenModelSizes(modelSizes);

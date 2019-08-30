@@ -37,10 +37,6 @@ public class CategoryBenchmarkPart extends CategoryPart<PluginPreferences> {
         // bindings
         maxMemorySize.bindIntegerProperty(preferencesData.maxMemorySizeProperty());
         maxMemorySize.setTooltip(maxMemorySizeTooltip);
-        maxMemorySize.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("string val: " + newValue);
-            System.out.println("Integer val: " + maxMemorySize.getIntValue());
-        });
         validation.registerValidator(maxMemorySize, (Control c, String newValue) -> ValidationResult
                 .fromErrorIf(maxMemorySize, "Max memory must be greater 0MiB", newValue.isEmpty() || newValue.equals("0")));
             

@@ -103,39 +103,36 @@ public class EclipseTggProject extends EclipseJavaProject {
      * @throws JsonException if the file contains invalid json
      * @throws IOException   if an error ocurred while loading the file
      */
-    public void loadPreferences() throws JsonException, IOException {
+    public void loadPreferences() {
+        LinkedList<BenchmarkCasePreferences> benchmarkCasePreferences = new LinkedList<>();
+        
         if (hasPreferencesFile()) {
             Path preferencesFilePath = getPreferencesPath();
 
             LOG.debug("Load preferences of project '{}' from '{}'", getName(), preferencesFilePath);
 
-            JsonObject prefsJsonObject = JsonUtils.loadJsonFile(preferencesFilePath);
-            // used in case of different versions of the file format
-            String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
+            try {
+                JsonObject prefsJsonObject = JsonUtils.loadJsonFile(preferencesFilePath);
+             
+                // used in case of different versions of the file format
+                String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
 
-            LinkedList<BenchmarkCasePreferences> benchmarkCasePreferences = new LinkedList<>();
-            JsonObject benchmarkCases = prefsJsonObject.getJsonObject("benchmarkCases");
-            if (benchmarkCases != null && benchmarkCases instanceof JsonArray) {
-                JsonArray benchmarkCasesArray = (JsonArray) benchmarkCases;
-                for (int i = 0; i < benchmarkCasesArray.size(); i++) {
-                    JsonValue benchmarkCase = benchmarkCasesArray.get(i);
-                    if (benchmarkCase instanceof JsonObject) {
-                        BenchmarkCasePreferences bcp = new BenchmarkCasePreferences((JsonObject) benchmarkCase);
-                        bcp.setEclipseProject(this);
-                        benchmarkCasePreferences.add(bcp);
+                JsonArray benchmarkCases = prefsJsonObject.getJsonArray("benchmarkCases");
+                if (benchmarkCases != null) {
+                    for (int i = 0; i < benchmarkCases.size(); i++) {
+                        JsonValue benchmarkCase = benchmarkCases.get(i);
+                        if (benchmarkCase instanceof JsonObject) {
+                            BenchmarkCasePreferences bcp = new BenchmarkCasePreferences((JsonObject) benchmarkCase);
+                            bcp.setEclipseProject(this);
+                            benchmarkCasePreferences.add(bcp);
+                        }
                     }
                 }
-            } else {
-                LOG.info("Project '{}' has an empty configuration, use default parameters", getName());
-                savePreferences();
+            } catch (JsonException | IOException e) {
+                LOG.error("Failed to load preferences of project '{}' from '{}'. Reason: {}", getName(), preferencesFilePath, e.getMessage());
             }
-
-            setBenchmarkCasePreferences(FXCollections.observableArrayList(benchmarkCasePreferences));
-        } else {
-            LOG.info("Create default preferences for project '{}'", getName());
-            setBenchmarkCasePreferences(FXCollections.observableArrayList());
-            savePreferences();
-        }
+        } 
+        setBenchmarkCasePreferences(FXCollections.observableArrayList(benchmarkCasePreferences));
     }
 
     /**

@@ -50,14 +50,14 @@ public class EclipseWorkspace implements IEclipseWorkspace {
 
     private EclipseJavaProject getJavaProject(IJavaProject javaProject) {
         IProject project = javaProject.getProject();
-        Path projectPath = Paths.get(project.getFullPath().toString());
+        Path projectPath = Paths.get(project.getLocation().toOSString());
         Path outputPath = getJavaProjectOutputPath(javaProject);
 
         Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
         try {
             for (IProject referencedProject : project.getReferencedProjects()) {
                 if (referencedProject.hasNature(JavaCore.NATURE_ID)) {
-                    referencedProjects.add(getJavaProject((IJavaProject) referencedProject));
+                    referencedProjects.add(getJavaProject(JavaCore.create(referencedProject)));
                 }
             }
         } catch (CoreException e) {
@@ -68,18 +68,19 @@ public class EclipseWorkspace implements IEclipseWorkspace {
 
     public void addTggProject(IJavaProject tggProject) {
         IProject project = tggProject.getProject();
-        Path projectPath = Paths.get(project.getFullPath().toString());
+        Path projectPath = Paths.get(project.getLocation().toOSString());
         Path outputPath = getJavaProjectOutputPath(tggProject);
-
+        
         Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
         try {
             for (IProject referencedProject : project.getReferencedProjects()) {
                 if (referencedProject.hasNature(JavaCore.NATURE_ID)) {
-                    referencedProjects.add(getJavaProject((IJavaProject) referencedProject));
+                    referencedProjects.add(getJavaProject(JavaCore.create(referencedProject)));
                 }
             }
-            this.tggProjectsProperty().get()
-                    .add(new EclipseTggProject(project.getName(), projectPath, outputPath, referencedProjects));
+            EclipseTggProject newTggProject = new EclipseTggProject(project.getName(), projectPath, outputPath, referencedProjects);
+            newTggProject.loadPreferences();
+            this.tggProjectsProperty().get().add(newTggProject);
         } catch (CoreException e) {
             // ignore, can't do anything about it
         }
@@ -116,11 +117,12 @@ public class EclipseWorkspace implements IEclipseWorkspace {
         ObservableList<EclipseTggProject> tggProjects = this.tggProjectsProperty().get();
         if (tggProjects == null) {
             tggProjects = FXCollections.observableArrayList();
+            tggProjectsProperty().set(tggProjects);
             for (IProject project : workspaceRoot.getProjects()) {
                 try {
                     if (project.isOpen() && project.hasNature("org.emoflon.ibex.tgg.ide.nature")
                             && project.hasNature(JavaCore.NATURE_ID)) {
-                        addTggProject((IJavaProject) project);
+                        addTggProject(JavaCore.create(project));
                     }
                 } catch (CoreException e) {
                     // ignore, can't do anything about it

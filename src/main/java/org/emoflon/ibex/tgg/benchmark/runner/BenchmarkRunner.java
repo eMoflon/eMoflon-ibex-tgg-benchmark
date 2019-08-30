@@ -76,7 +76,7 @@ public class BenchmarkRunner implements Runnable {
      * Constructor for {@link BenchmarkRunner}.
      * 
      * @param benchmarkCasePreferences a single benchmark case
-     * @throws IOException if the report file couldn't be created
+     * @param progressMonitor the progress monitor for progress updates
      */
     public BenchmarkRunner(BenchmarkCasePreferences benchmarkCasePreferences, IProgressMonitor progressMonitor) {
         this(Arrays.asList(benchmarkCasePreferences), progressMonitor);
@@ -86,7 +86,7 @@ public class BenchmarkRunner implements Runnable {
      * Constructor for {@link BenchmarkRunner}.
      * 
      * @param benchmarkCases a list of benchmark cases
-     * @throws IOException if the report file couldn't be created
+     * @param progressMonitor the progress monitor for progress updates
      */
     public BenchmarkRunner(List<BenchmarkCasePreferences> benchmarkCases, IProgressMonitor progressMonitor) {
         this.benchmarkCases = benchmarkCases;

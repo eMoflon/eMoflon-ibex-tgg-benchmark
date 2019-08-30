@@ -190,7 +190,7 @@ public class AggregateObservableList<E> implements ObservableList<E> {
 
             @Override
             public boolean hasNext() {
-                return currentIndex < lists.size();
+                return currentIndex < size;
             }
 
             @Override

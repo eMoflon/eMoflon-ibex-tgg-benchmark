@@ -53,7 +53,6 @@ public class IntegerTextField extends TextField {
 
     public int getIntValue() {
         Integer integerValue = formatter.getValue();
-        System.out.println("intvalue: " + (integerValue == null ? 0 : integerValue.intValue()));
         return integerValue == null ? 0 : integerValue.intValue();
     }
 

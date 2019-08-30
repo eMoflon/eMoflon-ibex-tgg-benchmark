@@ -120,7 +120,6 @@ public class PluginPreferences {
     public PluginPreferences(Path filePath) {
         this();
         try {
-            System.out.println(filePath.toString());
             loadFromFile(filePath);
         } catch (NoSuchFileException e) {
             // file doesn't exist -> create a new one
@@ -394,6 +393,11 @@ public class PluginPreferences {
         return this.defaultTimeoutProperty().get();
     }
 
+    /**
+     * Set the default timeout in seconds.
+     * 
+     * @param defaultTimeout the timeout in seconds
+     */
     public final void setDefaultTimeout(final int defaultTimeout) {
         this.defaultTimeoutProperty().set(defaultTimeout);
     }

@@ -18,7 +18,6 @@ public class PluginPreferencesHandler {
 
     @Execute
     public void execute() {
-        System.out.println("Logger object: " + LOG);
         try {
             PluginPreferencesWindow ppw = new PluginPreferencesWindow();
             ppw.show();
