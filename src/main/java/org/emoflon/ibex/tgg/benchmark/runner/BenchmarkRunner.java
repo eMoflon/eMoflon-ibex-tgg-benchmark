@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,6 @@ public class BenchmarkRunner implements Runnable {
 
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     private static final int EVENT_BUS_PORT = 24842;
-    private static final LinkedList<File> CLASS_PATHS;
 
     private final SubMonitor progressMonitor;
     private final PluginPreferences pluginPreferences;
@@ -63,20 +63,11 @@ public class BenchmarkRunner implements Runnable {
 
     private final Map<Path, ReportBuilder> reportBuilders;
 
-    static {
-        String[] classPaths = System.getProperty("java.class.path").split(":");
-
-        CLASS_PATHS = new LinkedList<>();
-        for (String path : classPaths) {
-            CLASS_PATHS.add(new File(path));
-        }
-    }
-
     /**
      * Constructor for {@link BenchmarkRunner}.
      * 
      * @param benchmarkCasePreferences a single benchmark case
-     * @param progressMonitor the progress monitor for progress updates
+     * @param progressMonitor          the progress monitor for progress updates
      */
     public BenchmarkRunner(BenchmarkCasePreferences benchmarkCasePreferences, IProgressMonitor progressMonitor) {
         this(Arrays.asList(benchmarkCasePreferences), progressMonitor);
@@ -85,7 +76,7 @@ public class BenchmarkRunner implements Runnable {
     /**
      * Constructor for {@link BenchmarkRunner}.
      * 
-     * @param benchmarkCases a list of benchmark cases
+     * @param benchmarkCases  a list of benchmark cases
      * @param progressMonitor the progress monitor for progress updates
      */
     public BenchmarkRunner(List<BenchmarkCasePreferences> benchmarkCases, IProgressMonitor progressMonitor) {
@@ -518,8 +509,10 @@ public class BenchmarkRunner implements Runnable {
             });
 
             LOG.debug("Starting benchmark in child process");
+            List<File> classPaths = ReflectionUtils.CLASS_PATHS.stream().map(url -> new File(url.getFile()))
+                    .collect(Collectors.toList());
             JavaProcess javaProcess = JavaProcess.newBuilder().mainClass(BenchmarkClientProcess.class.getName())
-                    .classpath(CLASS_PATHS).addJvmArg("-Xmx" + pluginPreferences.getMaxMemorySize() + "m")
+                    .classpath(classPaths).addJvmArg("-Xmx" + pluginPreferences.getMaxMemorySize() + "m")
                     .addJvmArg("-Xms" + pluginPreferences.getMaxMemorySize() + "m")
                     .arguments(LOG.getLevel().getStandardLevel().toString()).pipeStdout().pipeStderr().build();
             try {

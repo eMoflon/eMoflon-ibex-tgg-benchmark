@@ -7,6 +7,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.reflections.Reflections;
@@ -20,6 +22,22 @@ import org.reflections.util.FilterBuilder;
  * @author Andre Lehmann
  */
 public abstract class ReflectionUtils {
+
+    public static final List<URL> CLASS_PATHS;
+
+    static {
+        String[] classPaths = System.getProperty("java.class.path").split(":");
+
+        CLASS_PATHS = new LinkedList<>();
+        for (String path : classPaths) {
+            try {
+                CLASS_PATHS.add(new URL("file://" + path));
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Turns a method into a String with format: CLASS#METHOD
@@ -120,7 +138,9 @@ public abstract class ReflectionUtils {
      * @throws MalformedURLException if the path is invalid
      */
     public static URLClassLoader createClassLoader(Path classPath) throws MalformedURLException {
-        Collection<URL> urls = Arrays.asList(classPath.toUri().toURL());
-        return new URLClassLoader(urls.toArray(new URL[urls.size()]));
+        URL[] urls = CLASS_PATHS.toArray(new URL[CLASS_PATHS.size() + 1]);
+        urls[urls.length - 1] = classPath.toUri().toURL();
+
+        return new URLClassLoader(urls);
     }
 }
