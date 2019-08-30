@@ -32,8 +32,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
         // configure log4j2
         Configurator.initialize(new DefaultConfiguration());
-        // set loglevel until the user preferences has been loaded
-        Configurator.setRootLevel(Level.INFO);
+
         LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
         LOG.debug("Start plugin 'TGG Benchmark'");
@@ -51,7 +50,7 @@ public class Activator implements BundleActivator {
         pluginCore.setPluginPreferences(pluginPreferences);
 
         // set correct log level
-        Configurator.setRootLevel(Level.getLevel(pluginPreferences.getLogLevel().toString()));
+        Core.setLogLevel(Level.getLevel(pluginPreferences.getLogLevel().toString()));
     }
 
     @Override

@@ -3,8 +3,12 @@ package org.emoflon.ibex.tgg.benchmark;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
@@ -153,5 +157,18 @@ public class Core {
         }
 
         return benchmarkCasePreferences;
+    }
+    
+    /**
+     * Set the Log4J logging level and update loggers.
+     * 
+     * @param logLevel the logging level
+     */
+    public static void setLogLevel(Level logLevel) {
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(Core.PLUGIN_NAME); 
+        loggerConfig.setLevel(logLevel);
+        ctx.updateLoggers(); 
     }
 }

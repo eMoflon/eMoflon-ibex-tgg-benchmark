@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.ui.plugin_preferences;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.Level;
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
@@ -115,6 +116,7 @@ public class MainPart extends GenericPreferencesPart {
      */
     private boolean savePreferences() {
         this.preferencesData.copyValues(preferencesDataWorkingCopy);
+        Core.setLogLevel(Level.getLevel(preferencesData.getLogLevel().toString()));
         try {
             preferencesData.saveToFile(Core.getInstance().getWorkspace().getPluginPreferencesFilePath());
         } catch (IOException e) {
