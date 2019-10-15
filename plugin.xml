@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="org.emoflon.ibex.tgg.benchmark" name="TGG Benchmark" schema="schema/org.emoflon.ibex.tgg.benchmark.exsd"/>
 
    <extension
          id="tggbenchmark.fragment"
@@ -12,6 +13,18 @@
    </extension>
    <extension
          id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="TGGBenchmark">
+         <property
+               name="appName"
+               value="TGGBenchmark">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="product1"
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"

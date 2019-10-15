@@ -32,13 +32,14 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
         // configure log4j2
         Configurator.initialize(new DefaultConfiguration());
-
         LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
         LOG.debug("Start plugin 'TGG Benchmark'");
 
         plugin = this;
         bundle = bundleContext.getBundle();
+        System.out.println("Bundle Loc: " + bundle.getLocation());
+
         serviceContext = EclipseContextFactory.getServiceContext(bundleContext);
         appContext = serviceContext.createChild();
 

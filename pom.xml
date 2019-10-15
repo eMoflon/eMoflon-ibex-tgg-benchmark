@@ -9,9 +9,8 @@
   <properties>
     <tycho-version>1.4.0</tycho-version>
     <junit-version>5.5.1</junit-version>
-    <controlsfx-version>11.0.0</controlsfx-version>
+    <controlsfx-version>8.40.15</controlsfx-version>
     <json-version>1.1.4</json-version>
-    <reflections-version>0.9.11</reflections-version>
     <poi-ooxml-version>1.2.3</poi-ooxml-version>
     <apache-poi-version>4.1.0</apache-poi-version>
     <apache-commons-csv-version>1.7</apache-commons-csv-version>
@@ -107,18 +106,6 @@
       <version>${json-version}</version>
     </dependency>
 
-    <!-- Advanced Java reflections -->
-    <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>javax.json</artifactId>
-      <version>${json-version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-      <version>${reflections-version}</version>
-    </dependency>
-
     <!-- Log4J2 Logger -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -156,6 +143,12 @@
       <artifactId>ipc-eventbus</artifactId>
       <version>${terracotta-version}</version>
     </dependency>
+    
+    <dependency>
+    <groupId>io.github.classgraph</groupId>
+    <artifactId>classgraph</artifactId>
+    <version>4.8.47</version>
+</dependency>
 
   </dependencies>
 </project>

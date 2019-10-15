@@ -10,6 +10,7 @@ import java.util.Set;
 import org.controlsfx.validation.Validator;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseJavaProject;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
 import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea;
 import org.emoflon.ibex.tgg.benchmark.ui.components.TimeTextField;
@@ -185,9 +186,11 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         modelgenModelSizes.bindListProperty(bcp.modelgenModelSizesProperty());
         modelgenModelSizesChangeListener.changed(null, null, null);
         bcp.modelgenModelSizesProperty().addListener(modelgenModelSizesChangeListener);
-        validation.registerValidator(modelgenModelSizes, Validator.createEmptyValidator("At least one model size need to be specified"));
+        validation.registerValidator(modelgenModelSizes,
+                Validator.createEmptyValidator("At least one model size need to be specified"));
         modelgenTggRule.textProperty().bindBidirectional(bcp.modelgenTggRuleProperty());
-        validation.registerValidator(modelgenTggRule, Validator.createEmptyValidator("A TGG rule for model generation must be specified"));
+        validation.registerValidator(modelgenTggRule,
+                Validator.createEmptyValidator("A TGG rule for model generation must be specified"));
 
         // INITIAL FWD
         bindCheckbox(initialFwdActive, bcp.initialFwdActiveProperty());
@@ -208,7 +211,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         bindMaxModelSizeComboBox(fwdMaxModelSize, maxModelSizeChoiceList, bcp.fwdMaxModelSizeProperty());
         Set<Method> incrementalEditMethods = new HashSet<>();
         if (preferencesData.getEclipseProject() != null) {
-            incrementalEditMethods = getIncrementalEditMethods(preferencesData.getEclipseProject().getOutputPath());
+            incrementalEditMethods = getIncrementalEditMethods(preferencesData.getEclipseProject());
         }
         UIUtils.bindMethodComboBox(fwdIncrementalEditMethod, FXCollections.observableArrayList(incrementalEditMethods),
                 preferencesData.fwdIncrementalEditMethodProperty());
@@ -248,7 +251,7 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         // trigger when changing the associated project
         bcp.eclipseProjectProperty().addListener(e -> {
             if (preferencesData.getEclipseProject() != null) {
-                Set<Method> items = getIncrementalEditMethods(preferencesData.getEclipseProject().getOutputPath());
+                Set<Method> items = getIncrementalEditMethods(preferencesData.getEclipseProject());
 
                 ObservableList<Method> fwdItems = fwdIncrementalEditMethod.getItems();
                 ObservableList<Method> bwdItems = bwdIncrementalEditMethod.getItems();
@@ -309,13 +312,12 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
         field.bindIntegerProperty(property);
     }
 
-    private Set<Method> getIncrementalEditMethods(Path classPath) {
-        try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
-            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath,
-            EObject.class);
+    private Set<Method> getIncrementalEditMethods(EclipseJavaProject javaProject) {
+        try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(javaProject)) {
+            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, javaProject.getOutputPath(), EObject.class);
         } catch (Exception e) {
-            LOG.error("Failed to fetch incremental edit methods from '{}'. Reason: {}",
-                    classPath.toString(), e.getMessage());
+            LOG.error("Failed to fetch incremental edit methods from '{}'. Reason: {}", javaProject.toString(),
+                    e.getMessage());
         }
         return new HashSet<Method>();
     }
