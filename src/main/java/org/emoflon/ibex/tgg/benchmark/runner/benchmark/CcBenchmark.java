@@ -13,18 +13,14 @@ public class CcBenchmark extends Benchmark<CC> {
     }
 
     @Override
-    protected void createOperationalizationInstance() throws BenchmarkFaildException {
-        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Create an instance of CC_App", runParameters.getProjectName(),
+    protected void createOperationalizationInstance() throws BenchmarkFailedException {
+        LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of CC_App", runParameters.getBenchmarkCaseName(),
                 runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                 runParameters.getRepetition());
         try {
             op = new CC_App(runParameters);
         } catch (IOException e) {
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                    runParameters.getRepetition(), e.getMessage());
-            runResult.setError(e.getMessage());
-            throw new BenchmarkFaildException();
+            throw new BenchmarkFailedException("Failed to create operationalization. Reason: " + e.getMessage());
         }
     }
 }

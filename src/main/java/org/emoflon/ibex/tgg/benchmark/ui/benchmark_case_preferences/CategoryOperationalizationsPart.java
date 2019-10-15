@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.controlsfx.validation.Validator;
 import org.eclipse.emf.ecore.EObject;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseJavaProject;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
 import org.emoflon.ibex.tgg.benchmark.ui.components.ModelSizesTextArea;
@@ -30,9 +30,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 
-public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCasePreferences> {
+public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCase> {
 
-    private ObservableList<Integer> modelSizes;
     private ObservableList<ModelSizeValueWrapper> maxModelSizeChoiceList;
 
     // elements from the FXML resource
@@ -42,8 +41,6 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
     private TimeTextField modelgenTimeout;
     @FXML
     private ModelSizesTextArea modelgenModelSizes;
-    @FXML
-    private TextField modelgenTggRule;
 
     @FXML
     private CheckBox initialFwdActive;
@@ -145,34 +142,36 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
     }
 
     @Override
-    public void initData(BenchmarkCasePreferences bcp) {
-        super.initData(bcp);
+    public void initData(BenchmarkCase bc) {
+        super.initData(bc);
 
         // tooltips
         timeoutTooltip = new Tooltip() {
             {
                 textProperty().bind(Bindings.concat("When set to '0' the timeout will default to '",
-                        bcp.defaultTimeoutProperty(), "'.\nThe following formats are allowed: 30, 30s, 5m, 1h"));
+                        bc.defaultTimeoutProperty(), "'.\nThe following formats are allowed: 30, 30s, 5m, 1h"));
             }
         };
         modelSizesTooltip = new Tooltip("Integer values are seperated with a space");
         operationalizationActiveTooltip = new Tooltip("Benchmark operationalization\nand include in report.");
         incrementalEditMethodTooltip = new Tooltip(String.join("\n", "The method for incremental editing.",
-                "Only methods with the correct signature will be listed", "Signature: method(EObject o)"));
+                "Only static methods with the correct signature will be listed",
+                "Signature: static method(EObject o)"));
         timeoutTooltip = new Tooltip(String.join("\n", "Timeout for the operationalization.",
                 "The time can be specified as follows: 30, 30s, 5m, 1h",
                 "When set to '0' the default value will be used."));
 
         // MODELGEN
-        bindCheckbox(modelgenIncludeReport, bcp.modelgenIncludeReportProperty());
+        bindCheckbox(modelgenIncludeReport, bc.modelgenIncludeReportProperty());
+        modelgenIncludeReport.setTooltip(operationalizationActiveTooltip);
 
-        bindTimeTextField(modelgenTimeout, bcp.modelgenTimeoutProperty());
+        bindTimeTextField(modelgenTimeout, bc.modelgenTimeoutProperty());
         modelgenTimeout.setTooltip(timeoutTooltip);
 
         ChangeListener<ObservableList<Integer>> modelgenModelSizesChangeListener = (observable, oldValue, newValue) -> {
             maxModelSizeChoiceList.clear();
             maxModelSizeChoiceList.add(new ModelSizeValueWrapper(-1));
-            bcp.getModelgenModelSizes().forEach((e) -> maxModelSizeChoiceList.add(new ModelSizeValueWrapper(e)));
+            bc.getModelgenModelSizes().forEach((e) -> maxModelSizeChoiceList.add(new ModelSizeValueWrapper(e)));
 
             initialFwdMaxModelSize.getSelectionModel().selectFirst();
             initialBwdMaxModelSize.getSelectionModel().selectFirst();
@@ -183,73 +182,86 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
             ccMaxModelSize.getSelectionModel().selectFirst();
             coMaxModelSize.getSelectionModel().selectFirst();
         };
-        modelgenModelSizes.bindListProperty(bcp.modelgenModelSizesProperty());
+        modelgenModelSizes.bindListProperty(bc.modelgenModelSizesProperty());
+        modelgenModelSizes.setTooltip(modelSizesTooltip);
         modelgenModelSizesChangeListener.changed(null, null, null);
-        bcp.modelgenModelSizesProperty().addListener(modelgenModelSizesChangeListener);
+        bc.modelgenModelSizesProperty().addListener(modelgenModelSizesChangeListener);
         validation.registerValidator(modelgenModelSizes,
                 Validator.createEmptyValidator("At least one model size need to be specified"));
-        modelgenTggRule.textProperty().bindBidirectional(bcp.modelgenTggRuleProperty());
-        validation.registerValidator(modelgenTggRule,
-                Validator.createEmptyValidator("A TGG rule for model generation must be specified"));
+        // TODO: change to RuleCount
+        // modelgenTggRule.textProperty().bindBidirectional(bc.modelgenTggRuleProperty());
+        // validation.registerValidator(modelgenTggRule,
+        // Validator.createEmptyValidator("A TGG rule for model generation must be
+        // specified"));
 
         // INITIAL FWD
-        bindCheckbox(initialFwdActive, bcp.initialFwdActiveProperty());
-        bindTimeTextField(initialFwdTimeout, bcp.initialFwdTimeoutProperty());
+        bindCheckbox(initialFwdActive, bc.initialFwdActiveProperty());
+        initialFwdActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(initialFwdTimeout, bc.initialFwdTimeoutProperty());
         initialFwdTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(initialFwdMaxModelSize, maxModelSizeChoiceList, bcp.initialFwdMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(initialFwdMaxModelSize, maxModelSizeChoiceList, bc.initialFwdMaxModelSizeProperty());
 
         // INITIAL BWD
-        bindCheckbox(initialBwdActive, bcp.initialBwdActiveProperty());
-        bindTimeTextField(initialBwdTimeout, bcp.initialBwdTimeoutProperty());
+        bindCheckbox(initialBwdActive, bc.initialBwdActiveProperty());
+        initialBwdActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(initialBwdTimeout, bc.initialBwdTimeoutProperty());
         initialBwdTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(initialBwdMaxModelSize, maxModelSizeChoiceList, bcp.initialBwdMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(initialBwdMaxModelSize, maxModelSizeChoiceList, bc.initialBwdMaxModelSizeProperty());
 
         // FWD
-        bindCheckbox(fwdActive, bcp.fwdActiveProperty());
-        bindTimeTextField(fwdTimeout, bcp.fwdTimeoutProperty());
+        bindCheckbox(fwdActive, bc.fwdActiveProperty());
+        fwdActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(fwdTimeout, bc.fwdTimeoutProperty());
         fwdTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(fwdMaxModelSize, maxModelSizeChoiceList, bcp.fwdMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(fwdMaxModelSize, maxModelSizeChoiceList, bc.fwdMaxModelSizeProperty());
         Set<Method> incrementalEditMethods = new HashSet<>();
         if (preferencesData.getEclipseProject() != null) {
             incrementalEditMethods = getIncrementalEditMethods(preferencesData.getEclipseProject());
         }
         UIUtils.bindMethodComboBox(fwdIncrementalEditMethod, FXCollections.observableArrayList(incrementalEditMethods),
                 preferencesData.fwdIncrementalEditMethodProperty());
+        fwdIncrementalEditMethod.setTooltip(incrementalEditMethodTooltip);
 
         // BWD
-        bindCheckbox(bwdActive, bcp.bwdActiveProperty());
-        bindTimeTextField(bwdTimeout, bcp.bwdTimeoutProperty());
+        bindCheckbox(bwdActive, bc.bwdActiveProperty());
+        bwdActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(bwdTimeout, bc.bwdTimeoutProperty());
         bwdTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(bwdMaxModelSize, maxModelSizeChoiceList, bcp.bwdMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(bwdMaxModelSize, maxModelSizeChoiceList, bc.bwdMaxModelSizeProperty());
         UIUtils.bindMethodComboBox(bwdIncrementalEditMethod, FXCollections.observableArrayList(incrementalEditMethods),
                 preferencesData.bwdIncrementalEditMethodProperty());
+        bwdIncrementalEditMethod.setTooltip(incrementalEditMethodTooltip);
 
         // FWD OPT
-        bindCheckbox(fwdOptActive, bcp.fwdOptActiveProperty());
-        bindTimeTextField(fwdOptTimeout, bcp.fwdOptTimeoutProperty());
+        bindCheckbox(fwdOptActive, bc.fwdOptActiveProperty());
+        fwdOptActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(fwdOptTimeout, bc.fwdOptTimeoutProperty());
         fwdOptTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(fwdOptMaxModelSize, maxModelSizeChoiceList, bcp.fwdOptMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(fwdOptMaxModelSize, maxModelSizeChoiceList, bc.fwdOptMaxModelSizeProperty());
 
         // BWD OPT
-        bindCheckbox(bwdOptActive, bcp.bwdOptActiveProperty());
-        bindTimeTextField(bwdOptTimeout, bcp.bwdOptTimeoutProperty());
+        bindCheckbox(bwdOptActive, bc.bwdOptActiveProperty());
+        bwdOptActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(bwdOptTimeout, bc.bwdOptTimeoutProperty());
         bwdOptTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(bwdOptMaxModelSize, maxModelSizeChoiceList, bcp.bwdOptMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(bwdOptMaxModelSize, maxModelSizeChoiceList, bc.bwdOptMaxModelSizeProperty());
 
         // CC
-        bindCheckbox(ccActive, bcp.ccActiveProperty());
-        bindTimeTextField(ccTimeout, bcp.ccTimeoutProperty());
+        bindCheckbox(ccActive, bc.ccActiveProperty());
+        ccActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(ccTimeout, bc.ccTimeoutProperty());
         ccTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(ccMaxModelSize, maxModelSizeChoiceList, bcp.ccMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(ccMaxModelSize, maxModelSizeChoiceList, bc.ccMaxModelSizeProperty());
 
         // CO
-        bindCheckbox(coActive, bcp.coActiveProperty());
-        bindTimeTextField(coTimeout, bcp.coTimeoutProperty());
+        bindCheckbox(coActive, bc.coActiveProperty());
+        coActive.setTooltip(operationalizationActiveTooltip);
+        bindTimeTextField(coTimeout, bc.coTimeoutProperty());
         coTimeout.setTooltip(timeoutTooltip);
-        bindMaxModelSizeComboBox(coMaxModelSize, maxModelSizeChoiceList, bcp.coMaxModelSizeProperty());
+        bindMaxModelSizeComboBox(coMaxModelSize, maxModelSizeChoiceList, bc.coMaxModelSizeProperty());
 
         // trigger when changing the associated project
-        bcp.eclipseProjectProperty().addListener(e -> {
+        bc.eclipseProjectProperty().addListener(e -> {
             if (preferencesData.getEclipseProject() != null) {
                 Set<Method> items = getIncrementalEditMethods(preferencesData.getEclipseProject());
 
@@ -314,7 +326,8 @@ public class CategoryOperationalizationsPart extends CategoryPart<BenchmarkCaseP
 
     private Set<Method> getIncrementalEditMethods(EclipseJavaProject javaProject) {
         try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(javaProject)) {
-            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, javaProject.getOutputPath(), EObject.class);
+            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, javaProject.getOutputPath(),
+                    EObject.class);
         } catch (Exception e) {
             LOG.error("Failed to fetch incremental edit methods from '{}'. Reason: {}", javaProject.toString(),
                     e.getMessage());

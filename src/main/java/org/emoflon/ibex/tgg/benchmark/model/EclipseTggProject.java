@@ -1,6 +1,7 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
@@ -18,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.utils.JsonUtils;
-
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -33,17 +33,17 @@ public class EclipseTggProject extends EclipseJavaProject {
 
     private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
-    private final ListProperty<BenchmarkCasePreferences> benchmarkCasePreferences;
+    private final ListProperty<BenchmarkCase> benchmarkCase;
 
     private Thread preferencesSaveThread;
 
     /**
      * Constructor for {@link EclipseTggProject}.
      */
-    public EclipseTggProject(String name, Path projectPath, Path outputPath,
+    public EclipseTggProject(String name, Path projectPath, Path outputPath, Set<URL> classPaths,
             Set<EclipseJavaProject> referencedProjects) {
-        super(name, projectPath, outputPath, referencedProjects);
-        this.benchmarkCasePreferences = new SimpleListProperty<BenchmarkCasePreferences>();
+        super(name, projectPath, outputPath, classPaths, referencedProjects);
+        this.benchmarkCase = new SimpleListProperty<BenchmarkCase>();
     }
 
     /**
@@ -57,8 +57,8 @@ public class EclipseTggProject extends EclipseJavaProject {
         LOG.debug("Save benchmark cases of project '{}' to file '{}'", getName(), preferencesFilePath);
 
         JsonArrayBuilder benchmarkCasesArray = Json.createArrayBuilder();
-        for (BenchmarkCasePreferences bcp : getBenchmarkCasePreferences()) {
-            benchmarkCasesArray.add(bcp.toJson());
+        for (BenchmarkCase bc : getBenchmarkCasePreferences()) {
+            benchmarkCasesArray.add(bc.toJson());
         }
 
         JsonObject prefsJsonObject = Json.createObjectBuilder().add("version", Core.VERSION)
@@ -104,8 +104,8 @@ public class EclipseTggProject extends EclipseJavaProject {
      * @throws IOException   if an error ocurred while loading the file
      */
     public void loadPreferences() {
-        LinkedList<BenchmarkCasePreferences> benchmarkCasePreferences = new LinkedList<>();
-        
+        LinkedList<BenchmarkCase> benchmarkCase = new LinkedList<>();
+
         if (hasPreferencesFile()) {
             Path preferencesFilePath = getPreferencesPath();
 
@@ -113,26 +113,27 @@ public class EclipseTggProject extends EclipseJavaProject {
 
             try {
                 JsonObject prefsJsonObject = JsonUtils.loadJsonFile(preferencesFilePath);
-             
+
                 // used in case of different versions of the file format
                 String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
 
                 JsonArray benchmarkCases = prefsJsonObject.getJsonArray("benchmarkCases");
                 if (benchmarkCases != null) {
                     for (int i = 0; i < benchmarkCases.size(); i++) {
-                        JsonValue benchmarkCase = benchmarkCases.get(i);
-                        if (benchmarkCase instanceof JsonObject) {
-                            BenchmarkCasePreferences bcp = new BenchmarkCasePreferences((JsonObject) benchmarkCase);
-                            bcp.setEclipseProject(this);
-                            benchmarkCasePreferences.add(bcp);
+                        JsonValue benchmarkCaseValue = benchmarkCases.get(i);
+                        if (benchmarkCaseValue instanceof JsonObject) {
+                            BenchmarkCase bc = new BenchmarkCase((JsonObject) benchmarkCaseValue);
+                            bc.setEclipseProject(this);
+                            benchmarkCase.add(bc);
                         }
                     }
                 }
             } catch (JsonException | IOException e) {
-                LOG.error("Failed to load preferences of project '{}' from '{}'. Reason: {}", getName(), preferencesFilePath, e.getMessage());
+                LOG.error("Failed to load preferences of project '{}' from '{}'. Reason: {}", getName(),
+                        preferencesFilePath, e.getMessage());
             }
-        } 
-        setBenchmarkCasePreferences(FXCollections.observableArrayList(benchmarkCasePreferences));
+        }
+        setBenchmarkCasePreferences(FXCollections.observableArrayList(benchmarkCase));
     }
 
     /**
@@ -149,26 +150,25 @@ public class EclipseTggProject extends EclipseJavaProject {
         return Files.exists(getPreferencesPath());
     }
 
-    public void addBenchmarkCase(BenchmarkCasePreferences bcp) {
-        getBenchmarkCasePreferences().add(bcp);
+    public void addBenchmarkCase(BenchmarkCase bc) {
+        getBenchmarkCasePreferences().add(bc);
         delayedSavePreferences();
     }
 
-    public void removeBenchmarkCase(BenchmarkCasePreferences bcp) {
-        getBenchmarkCasePreferences().remove(bcp);
+    public void removeBenchmarkCase(BenchmarkCase bc) {
+        getBenchmarkCasePreferences().remove(bc);
         delayedSavePreferences();
     }
 
-    public final ListProperty<BenchmarkCasePreferences> benchmarkCasePreferencesProperty() {
-        return this.benchmarkCasePreferences;
+    public final ListProperty<BenchmarkCase> benchmarkCaseProperty() {
+        return this.benchmarkCase;
     }
 
-    public final ObservableList<BenchmarkCasePreferences> getBenchmarkCasePreferences() {
-        return this.benchmarkCasePreferencesProperty().get();
+    public final ObservableList<BenchmarkCase> getBenchmarkCasePreferences() {
+        return this.benchmarkCaseProperty().get();
     }
 
-    public final void setBenchmarkCasePreferences(
-            final ObservableList<BenchmarkCasePreferences> benchmarkCasePreferences) {
-        this.benchmarkCasePreferencesProperty().set(benchmarkCasePreferences);
+    public final void setBenchmarkCasePreferences(final ObservableList<BenchmarkCase> benchmarkCase) {
+        this.benchmarkCaseProperty().set(benchmarkCase);
     }
 }

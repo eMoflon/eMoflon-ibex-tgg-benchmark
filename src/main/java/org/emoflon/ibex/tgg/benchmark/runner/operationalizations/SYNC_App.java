@@ -15,17 +15,15 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 public class SYNC_App extends SYNC {
 
 	protected final BenchmarkRunParameters runParameters;
-	protected final URLClassLoader classLoader;
 	protected final boolean isForward;
 	protected final boolean isIncremental;
 
 	public SYNC_App(BenchmarkRunParameters runParameters) throws IOException {
-		super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
+		super(new IbexOptions().projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
 				.workspacePath(runParameters.getWorkspacePath().toString())
 				.setBenchmarkLogger(new FullBenchmarkLogger()));
 
 		this.runParameters = runParameters;
-		this.classLoader = new URLClassLoader(runParameters.getClassPaths());
 		this.isForward = runParameters.getOperationalization() == OperationalizationType.FWD
 				|| runParameters.getOperationalization() == OperationalizationType.INITIAL_FWD
 				|| runParameters.getOperationalization() == OperationalizationType.INCREMENTAL_FWD;
@@ -37,7 +35,7 @@ public class SYNC_App extends SYNC {
 
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
+		OperationalizationUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
 				runParameters.getMetamodelsRegistrationClassName(),
 				runParameters.getMetamodelsRegistrationMethodName());
 
@@ -71,14 +69,6 @@ public class SYNC_App extends SYNC {
 	@Override
 	public void saveModels() {
 		// only models created with MODELGEN need to be saved
-	}
-
-	@Override
-	public void terminate() throws IOException {
-		super.terminate();
-		if (classLoader != null) {
-			classLoader.close();
-		}
 	}
 
 	/**

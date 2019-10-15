@@ -9,52 +9,53 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.SYNC_App;
+import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 
 public class SyncBenchmark extends Benchmark<SYNC> {
 
-    protected final URLClassLoader classLoader;
-
     public SyncBenchmark(BenchmarkRunParameters runParameters) {
         super(runParameters);
-        this.classLoader = new URLClassLoader(runParameters.getClassPaths());
     }
 
     @Override
-    protected void createOperationalizationInstance() throws BenchmarkFaildException {
-        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Create an instance of SYNC_App", runParameters.getProjectName(),
-                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                runParameters.getRepetition());
+    protected void createOperationalizationInstance() throws BenchmarkFailedException {
+        LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of SYNC_App",
+                runParameters.getBenchmarkCaseName(), runParameters.getOperationalization(),
+                new Integer(runParameters.getModelSize()), runParameters.getRepetition());
         try {
-            SYNC_App sync = new SYNC_App(runParameters);
-            op = sync;
-
-            // apply incremental edit method
-            if (sync.isIncremental()) {
-                Resource model = sync.isForward() ? sync.getSourceResource() : sync.getTargetResource();
-                Method incrementalEditMethod = org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils.getMethodByName(
-                        classLoader, runParameters.getIncrementalEditClassName(),
-                        runParameters.getIncrementalEditMethodName(), EObject.class);
-                incrementalEditMethod.invoke(null, new Object[] { model.getContents().get(0) });
-            }
-        } catch (NoSuchMethodException | IOException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                    runParameters.getRepetition(), e.getMessage());
-            runResult.setError(e.getMessage());
-            throw new BenchmarkFaildException();
+            op = new SYNC_App(runParameters);
+        } catch (IOException e) {
+            throw new BenchmarkFailedException("Failed to create SYNC_APP. Reason: " + e.getMessage());
         }
     }
 
     @Override
-    protected void terminate() {
-        super.terminate();
-        if (classLoader != null) {
+    protected void postInitialization() throws BenchmarkFailedException {
+        SYNC_App sync = (SYNC_App) op;
+
+        // apply incremental edit method
+        if (sync.isIncremental()) {
             try {
-                classLoader.close();
-            } catch (IOException e) {
-                // ignore
+                Resource model = sync.isForward() ? sync.getSourceResource() : sync.getTargetResource();
+
+                Method incrementalEditMethod = ReflectionUtils.getStaticMethodByName(getClass().getClassLoader(),
+                        runParameters.getIncrementalEditClassName(), runParameters.getIncrementalEditMethodName(),
+                        EObject.class);
+                for (EObject o : model.getContents()) {
+                    System.out.println(o);
+                }
+
+                incrementalEditMethod.invoke(null, new Object[] { model.getContents().get(0) });
+            } catch (NullPointerException e) {
+                // TODO: remove this
+                e.printStackTrace();
+                throw new BenchmarkFailedException();
+            } catch (InvocationTargetException e) {
+                throw new BenchmarkFailedException("Error in incremental edit method: " + e.getCause().getMessage());
+            } catch (Exception e) {
+                throw new BenchmarkFailedException(
+                        "Failed to invoke incremental edit method. Reason: " + e.getMessage());
             }
         }
     }

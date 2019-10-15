@@ -13,7 +13,7 @@ public abstract class OperationalizationUtils {
     public static void registerUserMetamodels(ResourceSet rs, OperationalStrategy op, ClassLoader classLoader,
             String className, String methodName) throws IOException {
         try {
-            Method registerMetamodelsMethod = ReflectionUtils.getMethodByName(classLoader, className, methodName,
+            Method registerMetamodelsMethod = ReflectionUtils.getStaticMethodByName(classLoader, className, methodName,
                     ResourceSet.class, OperationalStrategy.class);
             registerMetamodelsMethod.invoke(null, new Object[] { rs, op });
         } catch (InvocationTargetException e) {

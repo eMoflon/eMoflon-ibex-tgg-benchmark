@@ -22,7 +22,16 @@ import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
  *
  * @author Andre Lehmann
  */
-class BenchmarkFaildException extends Exception {
+class BenchmarkFailedException extends Exception {
+    
+    public BenchmarkFailedException() {
+        
+    }
+    
+    public BenchmarkFailedException(String message) {
+        super(message);
+    }
+
     private static final long serialVersionUID = 4354487099044087640L;
 }
 
@@ -48,7 +57,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
     }
 
     public SingleRunResult run() {
-        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Run benchmark", runParameters.getProjectName(),
+        LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Run benchmark", runParameters.getBenchmarkCaseName(),
                 runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                 runParameters.getRepetition());
 
@@ -58,7 +67,11 @@ public abstract class Benchmark<O extends OperationalStrategy> {
         try {
             createOperationalizationInstance();
             measureTimes();
-        } catch (BenchmarkFaildException e) {
+        } catch (BenchmarkFailedException e) {
+            runResult.setError(e.getMessage());
+            LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}", runParameters.getBenchmarkCaseName(),
+                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getRepetition(), e.getMessage());
         }
 
         terminate();
@@ -66,9 +79,9 @@ public abstract class Benchmark<O extends OperationalStrategy> {
         return runResult;
     }
 
-    protected abstract void createOperationalizationInstance() throws BenchmarkFaildException;
+    protected abstract void createOperationalizationInstance() throws BenchmarkFailedException;
 
-    protected void measureTimes() throws BenchmarkFaildException {
+    protected void measureTimes() throws BenchmarkFailedException {
         ExecutorService es = Executors.newSingleThreadExecutor();
 
         try {
@@ -81,18 +94,20 @@ public abstract class Benchmark<O extends OperationalStrategy> {
                 long toc = System.nanoTime();
                 return (toc - tic) / 1000000L;
             });
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure initialization time", runParameters.getProjectName(),
+            LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Measure initialization time", runParameters.getBenchmarkCaseName(),
                     runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                     runParameters.getRepetition());
             runResult.setInitializationTime(initializationResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
 
+            postInitialization();
+            
             Future<Long> executionResult = es.submit(() -> {
                 long tic = System.nanoTime();
                 op.run();
                 long toc = System.nanoTime();
                 return (toc - tic) / 1000000L;
             });
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Measure execution time", runParameters.getProjectName(),
+            LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Measure execution time", runParameters.getBenchmarkCaseName(),
                     runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                     runParameters.getRepetition());
             runResult.setExecutionTime(executionResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
@@ -104,24 +119,16 @@ public abstract class Benchmark<O extends OperationalStrategy> {
             runResult.setAppliedMatches(benchmarkLogger.getTotalMatchesApplied());
 
         } catch (TimeoutException e) {
-            runResult.setError("Execution timed out");
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution timed out", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                    runParameters.getRepetition());
-            throw new BenchmarkFaildException();
+            throw new BenchmarkFailedException("Reached Timeout");
         } catch (Exception e) {
-            runResult.setError("Execution failed. Reason: " + e.getMessage());
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                    runParameters.getRepetition(), e.getMessage());
-            throw new BenchmarkFaildException();
+            throw new BenchmarkFailedException(e.getMessage());
         }
 
         es.shutdownNow();
     }
 
     protected void terminate() {
-        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Terminate operationalization", runParameters.getProjectName(),
+        LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Terminate operationalization", runParameters.getBenchmarkCaseName(),
                 runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                 runParameters.getRepetition());
         if (op != null && patternEngineInitialized) {
@@ -133,6 +140,8 @@ public abstract class Benchmark<O extends OperationalStrategy> {
             }
         }
     }
+    
+    protected void postInitialization() throws BenchmarkFailedException { }
 
     /**
      * @return the runResult

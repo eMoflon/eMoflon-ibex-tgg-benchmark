@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 import javafx.beans.property.ListProperty;
@@ -26,16 +25,23 @@ public class EclipseJavaProject {
     protected final StringProperty name;
     protected final ObjectProperty<Path> projectPath;
     protected final ObjectProperty<Path> outputPath;
+    protected final Set<URL> classpaths;
     protected final ListProperty<EclipseJavaProject> referencedProjects;
 
     /**
      * Constructor for {@link EclipseJavaProject}.
      */
-    public EclipseJavaProject(String name, Path projectPath, Path outputPath,
+    public EclipseJavaProject(String name, Path projectPath, Path outputPath, Set<URL> classpaths,
             Set<EclipseJavaProject> referencedProjects) {
         this.name = new SimpleStringProperty(name);
         this.projectPath = new SimpleObjectProperty<>(projectPath);
         this.outputPath = new SimpleObjectProperty<>(outputPath);
+        this.classpaths = classpaths;
+        try {
+            this.classpaths.add(outputPath.toUri().toURL());
+        } catch (MalformedURLException e) {
+            // ignore
+        }
         this.referencedProjects = new SimpleListProperty<EclipseJavaProject>(
                 FXCollections.observableArrayList(referencedProjects));
     }
@@ -67,31 +73,19 @@ public class EclipseJavaProject {
     }
 
     /**
-     * @return the class paths for this project
-     */
-    public Set<Path> getClassPaths() {
-        HashSet<Path> classPaths = new HashSet<>();
-        classPaths.add(getOutputPath());
-        for (EclipseJavaProject refProject : referencedProjects) {
-            classPaths.addAll(refProject.getClassPaths());
-        }
-        return classPaths;
-    }
-
-    /**
      * @return the class paths for this project as URLs
      */
-    public URL[] getClassPathURLs() {
-        Set<Path> classPaths = getClassPaths();
-        LinkedList<URL> urls = new LinkedList<URL>();
-        for (Path path : classPaths) {
-            try {
-                urls.add(path.toUri().toURL());
-            } catch (MalformedURLException e) {
-                // ignore
-            }
+    public Set<URL> getClasspaths() {
+        return classpaths;
+    }
+    
+    public Set<URL> getAllClasspaths() {
+        Set<URL> urls = new HashSet<>();
+        for (EclipseJavaProject referencedProject : referencedProjects) {
+            urls.addAll(referencedProject.getAllClasspaths());
         }
-        return urls.toArray(new URL[urls.size()]);
+        urls.addAll(classpaths);
+        return urls;
     }
 
     public final ObjectProperty<Path> projectPathProperty() {

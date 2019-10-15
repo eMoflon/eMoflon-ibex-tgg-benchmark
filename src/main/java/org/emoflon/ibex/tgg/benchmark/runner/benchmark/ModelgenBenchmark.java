@@ -13,30 +13,24 @@ public class ModelgenBenchmark extends Benchmark<MODELGEN> {
     }
 
     @Override
-    protected void createOperationalizationInstance() throws BenchmarkFaildException {
-        LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: Create an instance of MODELGEN_App", runParameters.getProjectName(),
+    protected void createOperationalizationInstance() throws BenchmarkFailedException {
+        LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of MODELGEN_App", runParameters.getBenchmarkCaseName(),
                 runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
                 runParameters.getRepetition());
         try {
             op = new MODELGEN_App(runParameters);
         } catch (IOException e) {
-            LOG.debug("TGG={}, OP={}, SIZE={}, RUN={}: {}", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
-                    runParameters.getRepetition(), e.getMessage());
-            runResult.setError(e.getMessage());
-            throw new BenchmarkFaildException();
+            throw new BenchmarkFailedException("Failed to create operationalization. Reason: " + e.getMessage());
         }
     }
 
     @Override
-    protected void measureTimes() throws BenchmarkFaildException {
+    protected void measureTimes() throws BenchmarkFailedException {
         super.measureTimes();
         try {
             op.saveModels();
         } catch (IOException e) {
-            LOG.debug("TGG={}, OP={}, SIZE={}: Failed to save model. Reason: {}", runParameters.getProjectName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()), e.getMessage());
-            runResult.setError("Failed to save model. Reason: " + e.getMessage());
+            throw new BenchmarkFailedException("Failed to save models. Reason: " + e.getMessage());
         }
     }
 }

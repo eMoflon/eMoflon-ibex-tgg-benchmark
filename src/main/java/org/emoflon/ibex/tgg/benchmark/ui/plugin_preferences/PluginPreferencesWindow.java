@@ -25,9 +25,9 @@ public class PluginPreferencesWindow {
     }
 
     public void show() {
-        stage.setMinWidth(600.0);
+        stage.setMinWidth(700.0);
         stage.setMinHeight(300.0);
-        stage.setWidth(870.0);
+        stage.setWidth(1070.0);
         stage.setHeight(600.0);
         stage.show();
     }

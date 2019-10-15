@@ -9,9 +9,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.model.IEclipseWorkspace;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
@@ -38,7 +37,7 @@ public class Core {
 
     private PluginPreferences pluginPreferences;
     private IEclipseWorkspace workspace;
-    private AggregateObservableList<BenchmarkCasePreferences> benchmarkCasePreferences;
+    private AggregateObservableList<BenchmarkCase> benchmarkCase;
     private Job benchmarkJob;
 
     private Core() {
@@ -60,7 +59,7 @@ public class Core {
      * 
      * @param benchmarkCases the benchmark cases that shall be executed
      */
-    public void runBenchmark(List<BenchmarkCasePreferences> benchmarkCases) {
+    public void runBenchmark(List<BenchmarkCase> benchmarkCases) {
         if (benchmarkJob != null && benchmarkJob.getState() == Job.RUNNING) {
             Alert alert = new Alert(AlertType.CONFIRMATION, "", ButtonType.NO, ButtonType.YES);
 
@@ -84,8 +83,7 @@ public class Core {
         }
 
         benchmarkJob = Job.create("TGG Benchmark", monitor -> {
-            SubMonitor subMonitor = SubMonitor.convert(monitor, 1);
-            subMonitor.setTaskName("Preparing Benchmark");
+            monitor.setTaskName("Preparing Benchmark");
 
             BenchmarkRunner benchmarkRunner = new BenchmarkRunner(benchmarkCases, monitor);
             List<String> foundErrors = benchmarkRunner.checkForErrors();
@@ -145,20 +143,20 @@ public class Core {
     }
 
     /**
-     * @return the benchmarkCasePreferences
+     * @return the benchmarkCase
      */
-    public ObservableList<BenchmarkCasePreferences> getBenchmarkCases() {
-        if (benchmarkCasePreferences == null) {
-            benchmarkCasePreferences = new AggregateObservableList<>();
+    public ObservableList<BenchmarkCase> getBenchmarkCases() {
+        if (benchmarkCase == null) {
+            benchmarkCase = new AggregateObservableList<>();
             for (EclipseTggProject project : workspace.getTggProjects()) {
-                ObservableList<BenchmarkCasePreferences> bcpl = project.getBenchmarkCasePreferences();
-                benchmarkCasePreferences.addList(bcpl);
+                ObservableList<BenchmarkCase> bcl = project.getBenchmarkCasePreferences();
+                benchmarkCase.addList(bcl);
             }
         }
 
-        return benchmarkCasePreferences;
+        return benchmarkCase;
     }
-    
+
     /**
      * Set the Log4J logging level and update loggers.
      * 
@@ -167,8 +165,8 @@ public class Core {
     public static void setLogLevel(Level logLevel) {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration config = ctx.getConfiguration();
-        LoggerConfig loggerConfig = config.getLoggerConfig(Core.PLUGIN_NAME); 
+        LoggerConfig loggerConfig = config.getLoggerConfig(Core.PLUGIN_NAME);
         loggerConfig.setLevel(logLevel);
-        ctx.updateLoggers(); 
+        ctx.updateLoggers();
     }
 }

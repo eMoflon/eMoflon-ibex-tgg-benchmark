@@ -13,20 +13,17 @@ import org.emoflon.ibex.tgg.operational.strategies.opt.FWD_OPT;
 public class FWD_OPT_App extends FWD_OPT {
 
 	private final BenchmarkRunParameters runParameters;
-	private final URLClassLoader classLoader;
 
 	public FWD_OPT_App(BenchmarkRunParameters runParameters) throws IOException {
-		super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
-				.workspacePath(runParameters.getWorkspacePath().toString())
-				.setBenchmarkLogger(new FullBenchmarkLogger()));
+		super(new IbexOptions().projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
+				.workspacePath(runParameters.getWorkspacePath().toString()).setBenchmarkLogger(new FullBenchmarkLogger()));
 
 		this.runParameters = runParameters;
-		this.classLoader = new URLClassLoader(runParameters.getClassPaths());
 	}
 
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
+		OperationalizationUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
 				runParameters.getMetamodelsRegistrationClassName(),
 				runParameters.getMetamodelsRegistrationMethodName());
 
@@ -47,13 +44,5 @@ public class FWD_OPT_App extends FWD_OPT {
 	@Override
 	public void saveModels() {
 		// only models created with MODELGEN need to be saved
-	}
-
-	@Override
-	public void terminate() throws IOException {
-		super.terminate();
-		if (classLoader != null) {
-			classLoader.close();
-		}
 	}
 }

@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import org.controlsfx.glyphfont.FontAwesome.Glyph;
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.CategoryDataModel;
 import org.emoflon.ibex.tgg.benchmark.ui.generic_preferences.GenericPreferencesPart;
 
@@ -19,7 +19,7 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 /**
- * MainPart is the main GUI part of the {@link BenchmarkCasePreferencesWindow}.
+ * MainPart is the main GUI part of the {@link BenchmarkCaseWindow}.
  *
  * @author Andre Lehmann
  */
@@ -34,8 +34,8 @@ public class MainPart extends GenericPreferencesPart {
 
     private ObservableList<CategoryDataModel> categoriesViewData;
 
-    private BenchmarkCasePreferences preferencesData;
-    private BenchmarkCasePreferences preferencesDataWorkingCopy;
+    private BenchmarkCase preferencesData;
+    private BenchmarkCase preferencesDataWorkingCopy;
 
     /**
      * Constructor for {@link MainPart}.
@@ -99,12 +99,12 @@ public class MainPart extends GenericPreferencesPart {
      * 
      * @param preferencesData The data model
      */
-    public void initData(BenchmarkCasePreferences bcp) {
-        this.preferencesData = bcp;
+    public void initData(BenchmarkCase bc) {
+        this.preferencesData = bc;
         if (preferencesData != null) {
-            this.preferencesDataWorkingCopy = new BenchmarkCasePreferences(preferencesData);
+            this.preferencesDataWorkingCopy = new BenchmarkCase(preferencesData);
         } else {
-            this.preferencesDataWorkingCopy = new BenchmarkCasePreferences();
+            this.preferencesDataWorkingCopy = new BenchmarkCase();
         }
 
         initCategoriesView(categoriesViewData);

@@ -1,5 +1,8 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -12,6 +15,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
@@ -52,24 +56,7 @@ public class EclipseWorkspace implements IEclipseWorkspace {
         IProject project = javaProject.getProject();
         Path projectPath = Paths.get(project.getLocation().toOSString());
         Path outputPath = getJavaProjectOutputPath(javaProject);
-
-        Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
-        try {
-            for (IProject referencedProject : project.getReferencedProjects()) {
-                if (referencedProject.hasNature(JavaCore.NATURE_ID)) {
-                    referencedProjects.add(getJavaProject(JavaCore.create(referencedProject)));
-                }
-            }
-        } catch (CoreException e) {
-            // ignore, can't do anything about it
-        }
-        return new EclipseJavaProject(project.getName(), projectPath, outputPath, referencedProjects);
-    }
-
-    public void addTggProject(IJavaProject tggProject) {
-        IProject project = tggProject.getProject();
-        Path projectPath = Paths.get(project.getLocation().toOSString());
-        Path outputPath = getJavaProjectOutputPath(tggProject);
+        Set<URL> classPaths = getJavaProjectClasspaths(javaProject);
         
         Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
         try {
@@ -78,12 +65,54 @@ public class EclipseWorkspace implements IEclipseWorkspace {
                     referencedProjects.add(getJavaProject(JavaCore.create(referencedProject)));
                 }
             }
-            EclipseTggProject newTggProject = new EclipseTggProject(project.getName(), projectPath, outputPath, referencedProjects);
+        } catch (CoreException e) {
+            // ignore, can't do anything about it
+        }
+        return new EclipseJavaProject(project.getName(), projectPath, outputPath, classPaths, referencedProjects);
+    }
+
+    public void addTggProject(IJavaProject tggProject) {
+        IProject project = tggProject.getProject();
+        Path projectPath = Paths.get(project.getLocation().toOSString());
+        Path outputPath = getJavaProjectOutputPath(tggProject);
+        Set<URL> classPaths = getJavaProjectClasspaths(tggProject);
+
+        Set<EclipseJavaProject> referencedProjects = new HashSet<EclipseJavaProject>();
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                if (referencedProject.hasNature(JavaCore.NATURE_ID)) {
+                    referencedProjects.add(getJavaProject(JavaCore.create(referencedProject)));
+                }
+            }
+            EclipseTggProject newTggProject = new EclipseTggProject(project.getName(), projectPath, outputPath, classPaths,
+                    referencedProjects);
             newTggProject.loadPreferences();
             this.tggProjectsProperty().get().add(newTggProject);
         } catch (CoreException e) {
             // ignore, can't do anything about it
         }
+    }
+    
+    private Set<URL> getJavaProjectClasspaths(IJavaProject javaProject) {
+        Set<URL> classPaths = new HashSet<URL>();
+        
+        try {
+            IClasspathEntry[] classpathEntries = javaProject.getResolvedClasspath(true);
+            for (IClasspathEntry classpathEntry : classpathEntries) {
+                String path = classpathEntry.getPath().toOSString();
+                // add only paths of JAR files
+                if (path.endsWith(".jar")) {
+                    try {
+                        classPaths.add(new URL("file://" + classpathEntry.getPath().toFile().getPath()));
+                    } catch (MalformedURLException e) {
+                          // ignore
+                    }
+                }
+            }
+        } catch (JavaModelException e1) {
+         // ignore
+        }
+        return classPaths;
     }
 
     private Path getJavaProjectOutputPath(IJavaProject javaProject) {

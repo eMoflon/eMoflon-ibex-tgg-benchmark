@@ -3,7 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts;
 import java.util.function.Function;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.ui.components.CheckBoxTableCell;
 import org.emoflon.ibex.tgg.benchmark.ui.components.Part;
@@ -33,7 +33,7 @@ import javafx.util.Callback;
 
 public class TGGBenchmarkViewPart extends Part {
 
-    private ObservableList<BenchmarkCasePreferences> benchmarkCasePreferences;
+    private ObservableList<BenchmarkCase> benchmarkCase;
     private BenchmarkCaseTableView table;
 
     private final Core pluginCore;
@@ -50,31 +50,31 @@ public class TGGBenchmarkViewPart extends Part {
         AnchorPane.setLeftAnchor(table, 0.0);
         AnchorPane.setRightAnchor(table, 0.0);
 
-        this.benchmarkCasePreferences = pluginCore.getBenchmarkCases();
-        table.initData(benchmarkCasePreferences);
+        this.benchmarkCase = pluginCore.getBenchmarkCases();
+        table.initData(benchmarkCase);
     }
 
-    public class BenchmarkCaseTableView extends TableView<BenchmarkCasePreferences> {
+    public class BenchmarkCaseTableView extends TableView<BenchmarkCase> {
 
-        private TableColumn<BenchmarkCasePreferences, Boolean> executionColumn;
-        private TableColumn<BenchmarkCasePreferences, String> nameColumn;
-        private TableColumn<BenchmarkCasePreferences, String> projectColumn;
-        private TableColumn<BenchmarkCasePreferences, String> patternMatchingEngineColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> modelgenActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> initialFwdActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> initialBwdActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> fwdActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> bwdActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> fwdOptActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> bwdOptActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> ccActiveColumn;
-        private TableColumn<BenchmarkCasePreferences, Boolean> coActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> executionColumn;
+        private TableColumn<BenchmarkCase, String> nameColumn;
+        private TableColumn<BenchmarkCase, String> projectColumn;
+        private TableColumn<BenchmarkCase, String> patternMatchingEngineColumn;
+        private TableColumn<BenchmarkCase, Boolean> modelgenActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> initialFwdActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> initialBwdActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> fwdActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> bwdActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> fwdOptActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> bwdOptActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> ccActiveColumn;
+        private TableColumn<BenchmarkCase, Boolean> coActiveColumn;
 
         public BenchmarkCaseTableView() {
             // the table view itself
             setEditable(true);
             setRowFactory(tv -> {
-                final TableRow<BenchmarkCasePreferences> row = new TableRow<>();
+                final TableRow<BenchmarkCase> row = new TableRow<>();
 
                 // row menu
                 MenuItem runSelectedBenchmarkCases = new MenuItem("Run selected case");
@@ -90,9 +90,9 @@ public class TGGBenchmarkViewPart extends Part {
 
                 MenuItem duplicateSelected = new MenuItem("Duplicate selected case");
                 duplicateSelected.setOnAction(e -> {
-                    BenchmarkCasePreferences selectedBcp = getSelectionModel().getSelectedItem();
+                    BenchmarkCase selectedBcp = getSelectionModel().getSelectedItem();
                     if (selectedBcp != null) {
-                        BenchmarkCasePreferences newBcp = new BenchmarkCasePreferences(selectedBcp);
+                        BenchmarkCase newBcp = new BenchmarkCase(selectedBcp);
                         newBcp.setBenchmarkCaseName(newBcp.getBenchmarkCaseName() + " Copy");
                         newBcp.getEclipseProject().addBenchmarkCase(newBcp);
                     }
@@ -123,63 +123,63 @@ public class TGGBenchmarkViewPart extends Part {
          *
          * @param projects
          */
-        public void initData(ObservableList<BenchmarkCasePreferences> projects) {
+        public void initData(ObservableList<BenchmarkCase> projects) {
             setItems(projects);
 
             executionColumn = createCheckboxColumn("Exc", "Mark benchmark case for execution",
-                    bcp -> (bcp.markedForExecutionProperty()));
+                    bc -> (bc.markedForExecutionProperty()));
             getColumns().add(executionColumn);
 
-            nameColumn = createTextColumn("Benchmark Case Name", BenchmarkCasePreferences::benchmarkCaseNameProperty);
+            nameColumn = createTextColumn("Benchmark Case Name", BenchmarkCase::benchmarkCaseNameProperty);
             getColumns().add(nameColumn);
 
             projectColumn = createTextColumn("Project", "The asscociated TGG project",
-                    bcp -> bcp.getEclipseProject().nameProperty());
+                    bc -> bc.getEclipseProject().nameProperty());
             getColumns().add(projectColumn);
 
             patternMatchingEngineColumn = createTextColumn("Pattern Matching Engine",
-                    "The pattern matching engine to use", bcp -> {
-                        StringProperty property = new SimpleStringProperty(bcp.getPatternMatchingEngine().toString());
-                        bcp.patternMatchingEngineProperty()
-                                .addListener(e -> property.set(bcp.getPatternMatchingEngine().toString()));
+                    "The pattern matching engine to use", bc -> {
+                        StringProperty property = new SimpleStringProperty(bc.getPatternMatchingEngine().toString());
+                        bc.patternMatchingEngineProperty()
+                                .addListener(e -> property.set(bc.getPatternMatchingEngine().toString()));
                         return property;
                     });
             getColumns().add(patternMatchingEngineColumn);
 
             modelgenActiveColumn = createCheckboxColumn("MG", "Enable the operationalization MODELGEN",
-                    bcp -> (bcp.modelgenIncludeReportProperty()));
+                    bc -> (bc.modelgenIncludeReportProperty()));
             getColumns().add(modelgenActiveColumn);
 
             initialFwdActiveColumn = createCheckboxColumn("IF", "Enable the operationalization INITIAL_FWD",
-                    bcp -> (bcp.initialFwdActiveProperty()));
+                    bc -> (bc.initialFwdActiveProperty()));
             getColumns().add(initialFwdActiveColumn);
 
             initialBwdActiveColumn = createCheckboxColumn("IB", "Enable the operationalization INITIAL_BWD",
-                    bcp -> (bcp.initialBwdActiveProperty()));
+                    bc -> (bc.initialBwdActiveProperty()));
             getColumns().add(initialBwdActiveColumn);
 
             fwdActiveColumn = createCheckboxColumn("F", "Enable the operationalization FWD",
-                    bcp -> (bcp.fwdActiveProperty()));
+                    bc -> (bc.fwdActiveProperty()));
             getColumns().add(fwdActiveColumn);
 
             bwdActiveColumn = createCheckboxColumn("B", "Enable the operationalization BWD",
-                    bcp -> (bcp.bwdActiveProperty()));
+                    bc -> (bc.bwdActiveProperty()));
             getColumns().add(bwdActiveColumn);
 
             fwdOptActiveColumn = createCheckboxColumn("FO", "Enable the operationalization FWD_OPT",
-                    bcp -> (bcp.fwdOptActiveProperty()));
+                    bc -> (bc.fwdOptActiveProperty()));
             getColumns().add(fwdOptActiveColumn);
 
             bwdOptActiveColumn = createCheckboxColumn("BO", "Enable the operationalization BWD_OPT",
-                    bcp -> (bcp.bwdOptActiveProperty()));
+                    bc -> (bc.bwdOptActiveProperty()));
             getColumns().add(bwdOptActiveColumn);
 
             ccActiveColumn = createCheckboxColumn("CC", "Enable the operationalization CC",
-                    bcp -> (bcp.ccActiveProperty()));
+                    bc -> (bc.ccActiveProperty()));
             getColumns().add(ccActiveColumn);
 
             coActiveColumn = createCheckboxColumn("CO", "Enable the operationalization CO",
-                    bcp -> (bcp.coActiveProperty()));
+                    bc -> (bc.coActiveProperty()));
             getColumns().add(coActiveColumn);
         }
 
@@ -200,16 +200,16 @@ public class TGGBenchmarkViewPart extends Part {
             return col;
         }
 
-        private TableColumn<BenchmarkCasePreferences, Boolean> createCheckboxColumn(String title, String tooltip,
-                Function<BenchmarkCasePreferences, BooleanProperty> property) {
-            TableColumn<BenchmarkCasePreferences, Boolean> column = new TableColumn<>();
+        private TableColumn<BenchmarkCase, Boolean> createCheckboxColumn(String title, String tooltip,
+                Function<BenchmarkCase, BooleanProperty> property) {
+            TableColumn<BenchmarkCase, Boolean> column = new TableColumn<>();
             column.setCellValueFactory(cellData -> property.apply(cellData.getValue()));
             column.setCellFactory(
-                    new Callback<TableColumn<BenchmarkCasePreferences, Boolean>, TableCell<BenchmarkCasePreferences, Boolean>>() {
+                    new Callback<TableColumn<BenchmarkCase, Boolean>, TableCell<BenchmarkCase, Boolean>>() {
                         @Override
-                        public TableCell<BenchmarkCasePreferences, Boolean> call(
-                                TableColumn<BenchmarkCasePreferences, Boolean> column) {
-                            CheckBoxTableCell<BenchmarkCasePreferences> cell = new CheckBoxTableCell<BenchmarkCasePreferences>();
+                        public TableCell<BenchmarkCase, Boolean> call(
+                                TableColumn<BenchmarkCase, Boolean> column) {
+                            CheckBoxTableCell<BenchmarkCase> cell = new CheckBoxTableCell<BenchmarkCase>();
 
                             cell.getCheckBox().setOnAction(e -> {
                                 if (cell.getIndex() >= 0) {
@@ -224,7 +224,7 @@ public class TGGBenchmarkViewPart extends Part {
             Label columnLabel = new Label(title);
             columnLabel.setMaxWidth(Double.MAX_VALUE);
             columnLabel.getStyleClass().add("column-header-label");
-            SelectAllCheckBox<BenchmarkCasePreferences> columnChkBox = new SelectAllCheckBox<BenchmarkCasePreferences>(
+            SelectAllCheckBox<BenchmarkCase> columnChkBox = new SelectAllCheckBox<BenchmarkCase>(
                     getItems(), property);
             columnChkBox.setOnAction(e -> {
                 // save all

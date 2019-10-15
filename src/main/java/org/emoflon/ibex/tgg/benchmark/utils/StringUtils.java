@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
 
 /**
@@ -34,12 +34,12 @@ public abstract class StringUtils {
         return result;
     }
 
-    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp,
+    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCase bc,
             OperationalizationType operationalization) throws InvalidPathException {
-        return createPathFromString(pathTemplate, workspacePath, bcp, operationalization, LocalDateTime.now());
+        return createPathFromString(pathTemplate, workspacePath, bc, operationalization, LocalDateTime.now());
     }
 
-    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCasePreferences bcp,
+    public static Path createPathFromString(String pathTemplate, Path workspacePath, BenchmarkCase bc,
             OperationalizationType operationalization, LocalDateTime dateTime) throws InvalidPathException {
 
         Map<String, String> vars = new HashMap<>();
@@ -60,9 +60,9 @@ public abstract class StringUtils {
                 dateTime.getDayOfMonth()));
 
         vars.put("workspace_path", workspacePath.toAbsolutePath().toString());
-        vars.put("project_path", bcp.getEclipseProject().getProjectPath().toAbsolutePath().toString());
-        vars.put("project_name", bcp.getEclipseProject().getName());
-        vars.put("benchmark_case_name", bcp.getBenchmarkCaseName());
+        vars.put("project_path", bc.getEclipseProject().getProjectPath().toAbsolutePath().toString());
+        vars.put("project_name", bc.getEclipseProject().getName());
+        vars.put("benchmark_case_name", bc.getBenchmarkCaseName());
         vars.put("operationalization", operationalization.toString());
 
         return Paths.get(substituteString(pathTemplate, vars));

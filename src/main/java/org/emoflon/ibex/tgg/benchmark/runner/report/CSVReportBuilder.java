@@ -44,15 +44,15 @@ public class CSVReportBuilder extends ReportBuilder {
             // ignore
         }
 
-        String[] resultsHeaders = { "Project Name", "Operationalization", "Model Size", "Average Initalization Time",
-                "Median Initalization Time", "Average Execution Time", "Median Execution Time",
-                "Average Created Elements", "Median Created Elements", "Average Deleted Elements",
-                "Median Deleted Elements", "Average Found Matches", "Median Found Matches", "Average Applied Matches",
-                "Median Applied Matches", "Error" };
+        String[] resultsHeaders = { "Benchmark Case Name", "TGG Project", "Operationalization", "Model Size",
+                "Average Initalization Time", "Median Initalization Time", "Average Execution Time",
+                "Median Execution Time", "Average Created Elements", "Median Created Elements",
+                "Average Deleted Elements", "Median Deleted Elements", "Average Found Matches", "Median Found Matches",
+                "Average Applied Matches", "Median Applied Matches", "Error" };
 
-        String[] rawResultsHeaders = { "Project Name", "Pattern Matching Engine", "Operationalization", "Model Size",
-                "Run", "Initalization Time", "Execution Time", "Created Elements", "Deleted Elements", "Found Matches",
-                "Applied Matches", "Error" };
+        String[] rawResultsHeaders = { "Benchmark Case Name", "TGG Project", "Pattern Matching Engine",
+                "Operationalization", "Model Size", "Run", "Initalization Time", "Execution Time", "Created Elements",
+                "Deleted Elements", "Found Matches", "Applied Matches", "Error" };
 
         reportFileWriter = new FileWriter(reportFilePath.toFile(), false);
         resultsSheet = new CSVPrinter(reportFileWriter, CSVFormat.EXCEL.withHeader(resultsHeaders));
@@ -70,8 +70,9 @@ public class CSVReportBuilder extends ReportBuilder {
         }
 
         // add benchmark results
-        resultsSheet.printRecord(benchmarkResult.getProjectName(), benchmarkResult.getOperationalization(),
-                benchmarkResult.getModelSize(), toSeconds(benchmarkResult.getAverageInitalizationTime()),
+        resultsSheet.printRecord(benchmarkResult.getBenchmarkCaseName(), benchmarkResult.getTggProject(),
+                benchmarkResult.getOperationalization(), benchmarkResult.getModelSize(),
+                toSeconds(benchmarkResult.getAverageInitalizationTime()),
                 toSeconds(benchmarkResult.getMedianInitializationTime()),
                 toSeconds(benchmarkResult.getAverageExecutionTime()),
                 toSeconds(benchmarkResult.getMedianExecutionTime()),
@@ -86,11 +87,11 @@ public class CSVReportBuilder extends ReportBuilder {
 
         // add raw results (single run results)
         for (SingleRunResult singleRunResult : benchmarkResult.getRunResults()) {
-            rawResultsSheet.printRecord(benchmarkResult.getProjectName(), benchmarkResult.getOperationalization(),
-                    benchmarkResult.getModelSize(), singleRunResult.getRepetition(),
-                    toSeconds(singleRunResult.getInitializationTime()), toSeconds(singleRunResult.getExecutionTime()),
-                    singleRunResult.getCreatedElements(), singleRunResult.getDeletedElements(),
-                    benchmarkResult.getError());
+            rawResultsSheet.printRecord(benchmarkResult.getBenchmarkCaseName(), benchmarkResult.getTggProject(),
+                    benchmarkResult.getOperationalization(), benchmarkResult.getModelSize(),
+                    singleRunResult.getRepetition(), toSeconds(singleRunResult.getInitializationTime()),
+                    toSeconds(singleRunResult.getExecutionTime()), singleRunResult.getCreatedElements(),
+                    singleRunResult.getDeletedElements(), benchmarkResult.getError());
         }
     }
 

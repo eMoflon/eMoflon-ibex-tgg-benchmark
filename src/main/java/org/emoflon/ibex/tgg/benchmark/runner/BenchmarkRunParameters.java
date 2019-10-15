@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.OperationalizationType;
 import org.emoflon.ibex.tgg.benchmark.utils.ReflectionUtils;
@@ -18,40 +19,55 @@ public class BenchmarkRunParameters implements Serializable {
     private static final long serialVersionUID = 8107641259806223277L;
 
     // general
-    private String projectName;
+    private String benchmarkCaseName;
+    private String tggProject;
     private OperationalizationType operationalization;
     private PatternMatchingEngine patternMatchingEngine;
 
     // in order to be serializable the paths must be of type String
     private String modelInstancesBasePath;
     private String workspacePath;
-    private URL[] classPaths;
 
     private long timeout;
+    // count starts at 1
     private int repetition;
     private int modelSize;
 
     // specific to MODELGEN
     private String metamodelsRegistrationClassName;
     private String metamodelsRegistrationMethodName;
-    private String tggRule;
+    private Map<String, Integer> ruleCount;
 
     // specific to SYNC
     private String incrementalEditClassName;
     private String incrementalEditMethodName;
 
     /**
-     * @return the projectName
+     * @return the benchmarkCaseName
      */
-    public String getProjectName() {
-        return projectName;
+    public String getBenchmarkCaseName() {
+        return benchmarkCaseName;
     }
 
     /**
-     * @param projectName the projectName to set
+     * @param benchmarkCaseName the benchmarkCaseName to set
      */
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setBenchmarkCaseName(String benchmarkCaseName) {
+        this.benchmarkCaseName = benchmarkCaseName;
+    }
+
+    /**
+     * @return the tggProject
+     */
+    public String getTggProject() {
+        return tggProject;
+    }
+
+    /**
+     * @param tggProject the tggProject to set
+     */
+    public void setTggProject(String tggProject) {
+        this.tggProject = tggProject;
     }
 
     /**
@@ -116,20 +132,6 @@ public class BenchmarkRunParameters implements Serializable {
      */
     public void setWorkspacePath(String workspacePath) {
         this.workspacePath = workspacePath;
-    }
-
-    /**
-     * @return the classPaths
-     */
-    public URL[] getClassPaths() {
-        return classPaths;
-    }
-
-    /**
-     * @param classPaths the classPaths to set
-     */
-    public void setClassPaths(URL[] classPaths) {
-        this.classPaths = classPaths;
     }
 
     /**
@@ -198,17 +200,17 @@ public class BenchmarkRunParameters implements Serializable {
     }
 
     /**
-     * @return the tggRule
+     * @return the ruleCount
      */
-    public String getTggRule() {
-        return tggRule;
+    public Map<String, Integer> getRuleCount() {
+        return ruleCount;
     }
 
     /**
-     * @param tggRule the tggRule to set
+     * @param ruleCount the ruleCount to set
      */
-    public void setTggRule(String tggRule) {
-        this.tggRule = tggRule;
+    public void setRuleCount(Map<String, Integer> ruleCount) {
+        this.ruleCount = ruleCount;
     }
 
     /**

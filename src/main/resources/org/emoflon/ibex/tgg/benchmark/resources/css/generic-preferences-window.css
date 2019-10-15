@@ -2,8 +2,7 @@
 
 .preference-container {
 	-fx-padding   : 0 30 40 0;
-	-fx-max-width : 400;
-	-fx-pref-width: 300;
+	-fx-pref-width: 400;
 }
 
 .preference-content-wrapper {

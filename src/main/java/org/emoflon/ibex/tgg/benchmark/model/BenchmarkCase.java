@@ -6,6 +6,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
 import org.emoflon.ibex.tgg.benchmark.runner.PatternMatchingEngine;
@@ -22,8 +23,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
-public class BenchmarkCasePreferences {
+public class BenchmarkCase {
 
     private final PluginPreferences pluginPreferences;
 
@@ -39,7 +41,7 @@ public class BenchmarkCasePreferences {
     private BooleanProperty modelgenIncludeReport;
     private IntegerProperty modelgenTimeout;
     private ListProperty<Integer> modelgenModelSizes;
-    private StringProperty modelgenTggRule;
+    private ListProperty<Pair<String, Integer> > modelgenRuleCount;
 
     private BooleanProperty initialFwdActive;
     private IntegerProperty initialFwdTimeout;
@@ -75,7 +77,7 @@ public class BenchmarkCasePreferences {
     private IntegerProperty coTimeout;
     private IntegerProperty coMaxModelSize;
 
-    public BenchmarkCasePreferences() {
+    public BenchmarkCase() {
         pluginPreferences = Core.getInstance().getPluginPreferences();
 
         // benchmark
@@ -91,7 +93,9 @@ public class BenchmarkCasePreferences {
         modelgenTimeout = new SimpleIntegerProperty(0);
         modelgenModelSizes = new SimpleListProperty<>(
                 FXCollections.observableArrayList(pluginPreferences.getDefaultModelSizes()));
-        modelgenTggRule = new SimpleStringProperty("");
+        modelgenRuleCount = new SimpleListProperty<>(
+                FXCollections.observableArrayList());
+        
 
         initialFwdActive = new SimpleBooleanProperty(pluginPreferences.isDefaultInitialFwdActive());
         initialFwdTimeout = new SimpleIntegerProperty(0);
@@ -128,12 +132,12 @@ public class BenchmarkCasePreferences {
         coMaxModelSize = new SimpleIntegerProperty(-1);
     }
 
-    public BenchmarkCasePreferences(BenchmarkCasePreferences source) {
+    public BenchmarkCase(BenchmarkCase source) {
         this();
         copyValues(source);
     }
 
-    public BenchmarkCasePreferences(JsonObject data) {
+    public BenchmarkCase(JsonObject data) {
         this();
 
         JsonObject benchmark = data.getJsonObject("benchmark");
@@ -171,7 +175,14 @@ public class BenchmarkCasePreferences {
                     }
                     setModelgenModelSizes(modelSizes);
                 }
-                setModelgenTggRule(modelgen.getString("tggRule", getModelgenTggRule()));
+                JsonObject ruleCountObject = modelgen.getJsonObject("ruleCount");
+                if (ruleCountObject != null) {
+                    ObservableList<Pair<String, Integer>> ruleCount = FXCollections.observableArrayList();
+                    for (String key : ruleCountObject.keySet()) {
+                        ruleCount.add(new Pair<String, Integer>(key, ruleCountObject.getInt(key, 0)));
+                    }
+                    setModelgenRuleCount(ruleCount);
+                }
             }
 
             JsonObject initialFwd = operationalizations.getJsonObject("initialFwd");
@@ -253,6 +264,11 @@ public class BenchmarkCasePreferences {
         for (Integer integer : getModelgenModelSizes()) {
             modelSizesBuilder.add(integer);
         }
+        
+        JsonObjectBuilder ruleCountBuilder = Json.createObjectBuilder();
+        for (Pair<String, Integer> rc : getModelgenRuleCount()) {
+            ruleCountBuilder.add(rc.getKey(), rc.getValue());
+        }
 
         JsonObject preferences = Json.createObjectBuilder()
                 .add("benchmark",
@@ -264,7 +280,7 @@ public class BenchmarkCasePreferences {
                 .add("operationalizations", Json.createObjectBuilder()
                         .add("modelgen", Json.createObjectBuilder().add("includeReport", isModelgenIncludeReport())
                                 .add("timeout", getModelgenTimeout()).add("modelSizes", modelSizesBuilder.build())
-                                .add("tggRule", getModelgenTggRule()).build())
+                                .add("ruleCount", ruleCountBuilder.build()).build())
                         .add("initialFwd",
                                 Json.createObjectBuilder().add("active", isInitialFwdActive())
                                         .add("timeout", getInitialFwdTimeout())
@@ -300,7 +316,7 @@ public class BenchmarkCasePreferences {
         return preferences;
     }
 
-    public void copyValues(BenchmarkCasePreferences source) {
+    public void copyValues(BenchmarkCase source) {
         // benchmark
         setMarkedForExecution(source.isMarkedForExecution());
         setEclipseProject(source.getEclipseProject());
@@ -312,8 +328,8 @@ public class BenchmarkCasePreferences {
         // operationalizations
         setModelgenIncludeReport(source.isModelgenIncludeReport());
         setModelgenTimeout(source.getModelgenTimeout());
-        setModelgenModelSizes(source.getModelgenModelSizes());
-        setModelgenTggRule(source.getModelgenTggRule());
+        setModelgenModelSizes(FXCollections.observableArrayList(source.getModelgenModelSizes()));
+        setModelgenRuleCount(FXCollections.observableArrayList(source.getModelgenRuleCount()));
 
         setInitialFwdActive(source.isInitialFwdActive());
         setInitialFwdTimeout(source.getInitialFwdTimeout());
@@ -689,18 +705,6 @@ public class BenchmarkCasePreferences {
         this.modelgenModelSizesProperty().set(modelgenModelSizes);
     }
 
-    public final StringProperty modelgenTggRuleProperty() {
-        return this.modelgenTggRule;
-    }
-
-    public final String getModelgenTggRule() {
-        return this.modelgenTggRuleProperty().get();
-    }
-
-    public final void setModelgenTggRule(final String modelgenTggRule) {
-        this.modelgenTggRuleProperty().set(modelgenTggRule);
-    }
-
     public final StringProperty metamodelsRegistrationMethodProperty() {
         return this.metamodelsRegistrationMethod;
     }
@@ -860,5 +864,20 @@ public class BenchmarkCasePreferences {
     public final void setPatternMatchingEngine(final PatternMatchingEngine patternMatchingEngine) {
         this.patternMatchingEngineProperty().set(patternMatchingEngine);
     }
+
+    public final ListProperty<Pair<String, Integer>> modelgenRuleCountProperty() {
+        return this.modelgenRuleCount;
+    }
+    
+
+    public final ObservableList<Pair<String, Integer>> getModelgenRuleCount() {
+        return this.modelgenRuleCountProperty().get();
+    }
+    
+
+    public final void setModelgenRuleCount(final ObservableList<Pair<String, Integer>> ruleCount) {
+        this.modelgenRuleCountProperty().set(ruleCount);
+    }
+    
 
 }

@@ -109,14 +109,23 @@ public class ExcelReportBuilder extends ReportBuilder {
         this.resultsSheetDefinition = new LinkedList<>();
         this.rawResultsSheetDefinition = new LinkedList<>();
 
-        Map<String, Object> projectName = new HashMap<>();
-        projectName.put("name", "Project Name");
-        projectName.put("columnWidth", 6000);
-        projectName.put("valueType", CellType.STRING);
-        projectName.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getProjectName);
-        projectName.put("valueSelectorClass", BenchmarkResult.class);
-        resultsSheetDefinition.add(projectName);
-        rawResultsSheetDefinition.add(projectName);
+        Map<String, Object> benchmarkCaseName = new HashMap<>();
+        benchmarkCaseName.put("name", "Benchmark Case Name");
+        benchmarkCaseName.put("columnWidth", 6000);
+        benchmarkCaseName.put("valueType", CellType.STRING);
+        benchmarkCaseName.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getBenchmarkCaseName);
+        benchmarkCaseName.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(benchmarkCaseName);
+        rawResultsSheetDefinition.add(benchmarkCaseName);
+
+        Map<String, Object> tggProject = new HashMap<>();
+        tggProject.put("name", "TGG Project");
+        tggProject.put("columnWidth", 6000);
+        tggProject.put("valueType", CellType.STRING);
+        tggProject.put("valueSelector", (Function<BenchmarkResult, String>) BenchmarkResult::getTggProject);
+        tggProject.put("valueSelectorClass", BenchmarkResult.class);
+        resultsSheetDefinition.add(tggProject);
+        rawResultsSheetDefinition.add(tggProject);
 
         Map<String, Object> patternMatchingEngine = new HashMap<>();
         patternMatchingEngine.put("name", "Pattern Matching Engine");

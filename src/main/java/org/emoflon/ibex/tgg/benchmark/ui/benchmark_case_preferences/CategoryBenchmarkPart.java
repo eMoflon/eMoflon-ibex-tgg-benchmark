@@ -3,14 +3,14 @@ package org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.controlsfx.validation.Validator;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
+import org.emoflon.ibex.tgg.benchmark.model.EclipseJavaProject;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseTggProject;
 import org.emoflon.ibex.tgg.benchmark.runner.PatternMatchingEngine;
 import org.emoflon.ibex.tgg.benchmark.ui.UIUtils;
@@ -27,7 +27,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 
-public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences> {
+public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCase> {
 
     // elements from the FXML resource
     @FXML
@@ -51,7 +51,7 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
     }
 
     @Override
-    public void initData(BenchmarkCasePreferences preferencesData) {
+    public void initData(BenchmarkCase preferencesData) {
         super.initData(preferencesData);
 
         // tooltips
@@ -82,7 +82,7 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
 
             if (newValue != null) {
                 ObservableList<Method> items = metamodelsRegistrationMethod.getItems();
-                items.setAll(getRegistrationMethods(newValue.getOutputPath()));
+                items.setAll(getRegistrationMethods(newValue));
                 if (!metamodelsRegistrationMethod.getItems().isEmpty()) {
                     metamodelsRegistrationMethod.getSelectionModel().selectFirst();
                 }
@@ -91,11 +91,12 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
 
         benchmarkCaseName.textProperty().bindBidirectional(preferencesData.benchmarkCaseNameProperty());
         benchmarkCaseName.setTooltip(benchmarkCaseNameTooltip);
-        validation.registerValidator(benchmarkCaseName, true, Validator.createEmptyValidator("A name for benchmark case must be specified"));
+        validation.registerValidator(benchmarkCaseName, true,
+                Validator.createEmptyValidator("A name for benchmark case must be specified"));
 
         Set<Method> registrationMethods = new HashSet<>();
         if (preferencesData.getEclipseProject() != null) {
-            registrationMethods = getRegistrationMethods(preferencesData.getEclipseProject().getOutputPath());
+            registrationMethods = getRegistrationMethods(preferencesData.getEclipseProject());
         }
         UIUtils.bindMethodComboBox(metamodelsRegistrationMethod, FXCollections.observableArrayList(registrationMethods),
                 preferencesData.metamodelsRegistrationMethodProperty());
@@ -104,7 +105,8 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
             metamodelsRegistrationMethod.getSelectionModel().selectFirst();
         }
         metamodelsRegistrationMethod.setTooltip(metamodelsRegistrationMethodTooltip);
-        validation.registerValidator(metamodelsRegistrationMethod, true, Validator.createEmptyValidator("A metamodel registration method must be selected"));
+        validation.registerValidator(metamodelsRegistrationMethod, true,
+                Validator.createEmptyValidator("A metamodel registration method must be selected"));
 
         UIUtils.bindEnumChoiceBox(patternMatchingEngine,
                 FXCollections.observableArrayList(PatternMatchingEngine.values()),
@@ -114,13 +116,13 @@ public class CategoryBenchmarkPart extends CategoryPart<BenchmarkCasePreferences
         defaultTimeout.setTooltip(defaultTimeoutTooltip);
     }
 
-    private Set<Method> getRegistrationMethods(Path classPath) {
-        try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(classPath)) {
-            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, classPath, ResourceSet.class,
+    private Set<Method> getRegistrationMethods(EclipseJavaProject javaProject) {
+        try (URLClassLoader classLoader = ReflectionUtils.createClassLoader(javaProject)) {
+            return ReflectionUtils.getMethodsWithMatchingParameters(classLoader, javaProject.getOutputPath(), ResourceSet.class,
                     OperationalStrategy.class);
         } catch (Exception e) {
             LOG.error("Failed to fetch meta model registration helper methods from '{}'. Reason: {}",
-                    classPath.toString(), e.getMessage());
+                    javaProject.toString(), e.getMessage());
         }
         return new HashSet<Method>();
     }

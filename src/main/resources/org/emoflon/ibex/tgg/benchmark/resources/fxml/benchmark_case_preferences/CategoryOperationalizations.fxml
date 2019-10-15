@@ -38,18 +38,18 @@
 								<TimeTextField fx:id="modelgenTimeout"
 									maxWidth="Infinity" GridPane.columnIndex="1"
 									GridPane.rowIndex="1" />
-								<Label text="TGG Rule" GridPane.rowIndex="2"
+								<!-- <Label text="TGG Rule" GridPane.rowIndex="2"
 									wrapText="true" />
 								<TextField fx:id="modelgenTggRule" maxWidth="Infinity"
-									GridPane.columnIndex="1" GridPane.rowIndex="2" />
-								<Label text="Max Model Size" GridPane.rowIndex="3"
+									GridPane.columnIndex="1" GridPane.rowIndex="2" /> -->
+								<Label text="Model Sizes" GridPane.rowIndex="3"
 									wrapText="true" />
 								<ModelSizesTextArea
 									fx:id="modelgenModelSizes" maxHeight="80.0" maxWidth="Infinity"
 									GridPane.columnIndex="1" GridPane.rowIndex="3" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -77,7 +77,7 @@
 									GridPane.rowIndex="2" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -105,7 +105,7 @@
 									GridPane.rowIndex="2" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -136,7 +136,7 @@
 									GridPane.rowIndex="3" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -167,7 +167,7 @@
 									GridPane.rowIndex="3" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -194,7 +194,7 @@
 									GridPane.rowIndex="2" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -221,7 +221,7 @@
 									GridPane.rowIndex="2" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -247,7 +247,7 @@
 									GridPane.columnIndex="1" GridPane.rowIndex="2" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
@@ -273,7 +273,7 @@
 									GridPane.columnIndex="1" GridPane.rowIndex="2" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>

@@ -49,7 +49,8 @@ public class CategoryReportPart extends CategoryPart<PluginPreferences> {
         // bindings
         reportFilePath.textProperty().bindBidirectional(preferencesData.reportFilePathProperty());
         reportFilePath.setTooltip(reportFilePathTooltip);
-        validation.registerValidator(reportFilePath, Validator.createEmptyValidator("A path for the report file must be specified"));
+        validation.registerValidator(reportFilePath,
+                Validator.createEmptyValidator("A path for the report file must be specified"));
 
         UIUtils.bindEnumChoiceBox(reportFileType, FXCollections.observableArrayList(ReportFileType.values()),
                 preferencesData.reportFileTypeProperty());

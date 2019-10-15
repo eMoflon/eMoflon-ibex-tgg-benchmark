@@ -14,7 +14,8 @@ import org.emoflon.ibex.tgg.benchmark.runner.operationalizations.Operationalizat
  */
 public class BenchmarkResult {
 
-    private final String projectName;
+    private final String benchmarkCaseName;
+    private final String tggProject;
     private final PatternMatchingEngine patternMatchingEngine;
     private final OperationalizationType operationalization;
     private final int modelSize;
@@ -27,7 +28,8 @@ public class BenchmarkResult {
      * @param runParameters The parameters used to run the benchmark
      */
     public BenchmarkResult(BenchmarkRunParameters runParameters) {
-        this.projectName = runParameters.getProjectName();
+        this.benchmarkCaseName = runParameters.getBenchmarkCaseName();
+        this.tggProject = runParameters.getTggProject();
         this.patternMatchingEngine = runParameters.getPatternMatchingEngine();
         this.operationalization = runParameters.getOperationalization();
         this.modelSize = runParameters.getModelSize();
@@ -53,18 +55,62 @@ public class BenchmarkResult {
     }
 
     /**
-     * Get the average of a list of values.
-     * 
-     * @param selector The selector for the runResults list
-     * @return
+     * @return the benchmarkCaseName
      */
-    private double getAverageOf(Function<SingleRunResult, Long> selector) {
-        if (runResults.isEmpty()) {
-            return 0.0;
+    public String getBenchmarkCaseName() {
+        return benchmarkCaseName;
+    }
+
+    /**
+     * @return the tggProject
+     */
+    public String getTggProject() {
+        return tggProject;
+    }
+
+    /**
+     * @return the patternMatchingEngine
+     */
+    public PatternMatchingEngine getPatternMatchingEngine() {
+        return patternMatchingEngine;
+    }
+
+    /**
+     * @return the operationalization
+     */
+    public OperationalizationType getOperationalization() {
+        return operationalization;
+    }
+
+    /**
+     * @return the modelSize
+     */
+    public int getModelSize() {
+        return modelSize;
+    }
+
+    /**
+     * @return the error
+     */
+    public String getError() {
+        if (this.error != null) {
+            return error;
         }
 
-        long sum = runResults.stream().mapToLong(r -> selector.apply(r)).sum();
-        return sum / (double) (runResults.size());
+        for (SingleRunResult runResult : runResults) {
+            if (runResult.getError() != null) {
+                return runResult.getError();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param error the error to set
+     */
+    public void setError(String error) {
+        this.error = error;
     }
 
     /**
@@ -170,54 +216,17 @@ public class BenchmarkResult {
     }
 
     /**
-     * @return the projectName
+     * Get the average of a list of values.
+     * 
+     * @param selector The selector for the runResults list
+     * @return
      */
-    public String getProjectName() {
-        return projectName;
-    }
-
-    /**
-     * @return the patternMatchingEngine
-     */
-    public PatternMatchingEngine getPatternMatchingEngine() {
-        return patternMatchingEngine;
-    }
-
-    /**
-     * @return the operationalization
-     */
-    public OperationalizationType getOperationalization() {
-        return operationalization;
-    }
-
-    /**
-     * @return the modelSize
-     */
-    public int getModelSize() {
-        return modelSize;
-    }
-
-    /**
-     * @return the error
-     */
-    public String getError() {
-        if (this.error != null) {
-            return error;
+    private double getAverageOf(Function<SingleRunResult, Long> selector) {
+        if (runResults.isEmpty()) {
+            return 0.0;
         }
 
-        for (SingleRunResult runResult : runResults) {
-            if (runResult.getError() != null) {
-                return runResult.getError();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param error the error to set
-     */
-    public void setError(String error) {
-        this.error = error;
+        long sum = runResults.stream().mapToLong(r -> selector.apply(r)).sum();
+        return sum / (double) (runResults.size());
     }
 }

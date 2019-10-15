@@ -3,6 +3,7 @@ package org.emoflon.ibex.tgg.benchmark.runner.operationalizations;
 import java.io.IOException;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -17,27 +18,27 @@ import org.emoflon.ibex.tgg.operational.updatepolicy.TimedUpdatePolicy;
 public class MODELGEN_App extends MODELGEN {
 
     private final BenchmarkRunParameters runParameters;
-    private final URLClassLoader classLoader;
 
     public MODELGEN_App(BenchmarkRunParameters runParameters) throws IOException {
-        super(new IbexOptions().projectName(runParameters.getProjectName()).projectPath(runParameters.getProjectName())
+        super(new IbexOptions().projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
                 .workspacePath(runParameters.getWorkspacePath().toString())
                 .setBenchmarkLogger(new FullBenchmarkLogger()));
 
         this.runParameters = runParameters;
-        this.classLoader = new URLClassLoader(runParameters.getClassPaths());
     }
 
-    public MODELGENStopCriterion createStopCriterion(String tggName, int size) {
+    public MODELGENStopCriterion createStopCriterion(int modelSize, Map<String, Integer> ruleCount) {
         MODELGENStopCriterion stop = new MODELGENStopCriterion(this.getTGG());
-        stop.setMaxElementCount(size);
-        stop.setMaxRuleCount(tggName, 1);
+        stop.setMaxElementCount(modelSize);
+        for (Map.Entry<String, Integer> pair : ruleCount.entrySet()) {
+            stop.setMaxRuleCount(pair.getKey(), pair.getValue());
+        }
         return stop;
     }
 
     @Override
     protected void registerUserMetamodels() throws IOException {
-        OperationalizationUtils.registerUserMetamodels(rs, this, classLoader,
+        OperationalizationUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
                 runParameters.getMetamodelsRegistrationClassName(),
                 runParameters.getMetamodelsRegistrationMethodName());
 
@@ -54,16 +55,8 @@ public class MODELGEN_App extends MODELGEN {
 
         EcoreUtil.resolveAll(rs);
 
-        setStopCriterion(createStopCriterion(runParameters.getTggRule(), runParameters.getModelSize()));
+        setStopCriterion(createStopCriterion(runParameters.getModelSize(), runParameters.getRuleCount()));
         setUpdatePolicy(
                 new TimedUpdatePolicy(new RandomMatchUpdatePolicy(10), runParameters.getTimeout(), TimeUnit.SECONDS));
-    }
-
-    @Override
-    public void terminate() throws IOException {
-        super.terminate();
-        if (classLoader != null) {
-            classLoader.close();
-        }
     }
 }

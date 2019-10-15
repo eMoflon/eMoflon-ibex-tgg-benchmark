@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCasePreferencesWindow;
+import org.emoflon.ibex.tgg.benchmark.ui.benchmark_case_preferences.BenchmarkCaseWindow;
 import org.emoflon.ibex.tgg.benchmark.ui.eclipse_view.parts.TGGBenchmarkViewPart.BenchmarkCaseTableView;
 
 //core.runtime.IProgressMonitor;
@@ -23,8 +23,8 @@ public class AddBenchmarkCaseHandler {
     @Execute
     public void execute() {
         try {
-            BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(null);
-            bcpw.show();
+            BenchmarkCaseWindow bcw = new BenchmarkCaseWindow(null);
+            bcw.show();
         } catch (IOException e) {
             LOG.error("Failed to open benchmark case preferences. Reason: " + e.getMessage());
         }

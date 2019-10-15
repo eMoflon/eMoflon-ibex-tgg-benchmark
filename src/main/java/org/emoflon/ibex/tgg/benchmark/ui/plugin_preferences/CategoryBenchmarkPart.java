@@ -37,12 +37,14 @@ public class CategoryBenchmarkPart extends CategoryPart<PluginPreferences> {
         // bindings
         maxMemorySize.bindIntegerProperty(preferencesData.maxMemorySizeProperty());
         maxMemorySize.setTooltip(maxMemorySizeTooltip);
-        validation.registerValidator(maxMemorySize, (Control c, String newValue) -> ValidationResult
-                .fromErrorIf(maxMemorySize, "Max memory must be greater 0MiB", newValue.isEmpty() || newValue.equals("0")));
-            
+        validation.registerValidator(maxMemorySize,
+                (Control c, String newValue) -> ValidationResult.fromErrorIf(maxMemorySize,
+                        "Max memory must be greater 0MiB", newValue.isEmpty() || newValue.equals("0")));
+
         repetitions.bindIntegerProperty(preferencesData.repetitionsProperty());
         repetitions.setTooltip(repetitionsTooltip);
-        validation.registerValidator(repetitions, (Control c, String newValue) -> ValidationResult
-                .fromErrorIf(repetitions, "Number of repetitions must be greater than 0", newValue.isEmpty() || newValue.equals("0")));
+        validation.registerValidator(repetitions,
+                (Control c, String newValue) -> ValidationResult.fromErrorIf(repetitions,
+                        "Number of repetitions must be greater than 0", newValue.isEmpty() || newValue.equals("0")));
     }
 }

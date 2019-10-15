@@ -24,7 +24,7 @@
 					<children>
 						<GridPane hgap="10" vgap="8.0">
 							<children>
-								<Label text="Eclipse Project" GridPane.rowIndex="0" GridPane.columnIndex="0" wrapText="true" />
+								<Label text="TGG Project" GridPane.rowIndex="0" GridPane.columnIndex="0" wrapText="true" />
 								<ChoiceBox fx:id="eclipseProject" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity" />
 								<Label text="Benchmark Case Name" GridPane.rowIndex="1" GridPane.columnIndex="0" wrapText="true" />
 								<TextField fx:id="benchmarkCaseName" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
@@ -36,7 +36,7 @@
 								<TimeTextField fx:id="defaultTimeout" GridPane.rowIndex="4" GridPane.columnIndex="1" maxWidth="Infinity" />
 							</children>
 							<columnConstraints>
-								<ColumnConstraints minWidth="130.0" />
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
 								<ColumnConstraints hgrow="ALWAYS" />
 							</columnConstraints>
 						</GridPane>
