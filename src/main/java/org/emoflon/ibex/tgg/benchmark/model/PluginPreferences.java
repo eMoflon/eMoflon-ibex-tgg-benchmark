@@ -91,10 +91,10 @@ public class PluginPreferences {
         defaultInitialBwdActive = new SimpleBooleanProperty(true);
         defaultFwdActive = new SimpleBooleanProperty(true);
         defaultBwdActive = new SimpleBooleanProperty(true);
-        defaultFwdOptActive = new SimpleBooleanProperty(false);
-        defaultBwdOptActive = new SimpleBooleanProperty(false);
-        defaultCcActive = new SimpleBooleanProperty(false);
-        defaultCoActive = new SimpleBooleanProperty(false);
+        defaultFwdOptActive = new SimpleBooleanProperty(true);
+        defaultBwdOptActive = new SimpleBooleanProperty(true);
+        defaultCcActive = new SimpleBooleanProperty(true);
+        defaultCoActive = new SimpleBooleanProperty(true);
     }
 
     /**
