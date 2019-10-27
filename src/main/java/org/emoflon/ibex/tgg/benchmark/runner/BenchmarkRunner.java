@@ -42,6 +42,7 @@ import org.emoflon.ibex.tgg.benchmark.utils.StringUtils;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.terracotta.ipceventbus.event.EventBusException;
 import org.terracotta.ipceventbus.event.EventBusServer;
+import org.terracotta.ipceventbus.event.RethrowingErrorListener;
 import org.terracotta.ipceventbus.proc.JavaProcess;
 
 import io.github.classgraph.ClassGraph;
@@ -582,12 +583,12 @@ public class BenchmarkRunner implements Runnable {
         // helper to get the result back from an event
         final Stack<SingleRunResult> resultWrapper = new Stack<>();
 
-        try (EventBusServer eventBus = new EventBusServer.Builder().listen(EVENT_BUS_PORT).build()) {
+        try (EventBusServer eventBus = new EventBusServer.Builder().id("BenchmarkServerProcess")
+                .onError(new RethrowingErrorListener()).listen(EVENT_BUS_PORT).build()) {
             eventBus.on("requestRunParameters", e -> {
                 eventBus.trigger("sendRunParameters", runParameters);
             });
             eventBus.on("result", e -> {
-                System.out.println("--------- received result");
                 resultWrapper.add(e.getData(SingleRunResult.class));
             });
 
@@ -596,8 +597,9 @@ public class BenchmarkRunner implements Runnable {
             JavaProcess javaProcess = JavaProcess.newBuilder().mainClass(BenchmarkClientProcess.class.getName())
                     .addJvmArg("-Xmx" + pluginPreferences.getMaxMemorySize() + "m")
                     .addJvmArg("-Xms" + pluginPreferences.getMaxMemorySize() + "m").addJvmArg("-classpath")
-                    .addJvmArg(classpathArgument).arguments(LOG.getLevel().getStandardLevel().toString()).pipeStdout()
-                    .pipeStderr().build();
+                    .addJvmArg(classpathArgument).arguments("--loglevel", LOG.getLevel().getStandardLevel().toString())
+                    .pipeStdout().pipeStderr().build();
+
             try {
                 javaProcess.waitFor();
             } catch (InterruptedException e) {
@@ -617,6 +619,7 @@ public class BenchmarkRunner implements Runnable {
                 result = resultWrapper.pop();
             }
         } catch (EventBusException | IOException e3) {
+            LOG.error("Communication with benchmark child process failed.");
             result.setError(e3.getMessage());
         }
 

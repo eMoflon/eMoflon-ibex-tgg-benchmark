@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.runner;
 
 import java.io.IOException;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +17,8 @@ import org.emoflon.ibex.tgg.benchmark.runner.benchmark.ModelgenBenchmark;
 import org.emoflon.ibex.tgg.benchmark.runner.benchmark.SyncBenchmark;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.terracotta.ipceventbus.event.EventBusClient;
+import org.terracotta.ipceventbus.event.PrintingErrorListener;
+import org.terracotta.ipceventbus.event.RethrowingErrorListener;
 
 /**
  * BenchmarkClientProcess
@@ -77,15 +78,33 @@ public class BenchmarkClientProcess {
     }
 
     public static void main(String[] args) {
-        // configure log4j2
+        boolean debug = false;
         Level logLevel = Level.ALL;
-        if (args.length > 0) {
-            try {
-                logLevel = Level.getLevel(StandardLevel.valueOf(args[0]).toString());
-            } catch (IllegalArgumentException e) {
-                // keep default
+
+        // stupid argument parser (no need for fancy stuff)
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i]) {
+            case "--loglevel":
+                if (++i < args.length) {
+                    try {
+
+                        logLevel = Level.getLevel(StandardLevel.valueOf(args[i]).toString());
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Invalid log level: " + args[i]);
+                    }
+                }
+                break;
+            case "--debug":
+                debug = true;
+                break;
+            default:
+                System.err.println("Unknown argument: " + args[i]);
+                System.exit(1);
+                break;
             }
         }
+
+        // configure log4j2
         Configurator.initialize(new DefaultConfiguration());
         Configurator.setRootLevel(logLevel);
         LOG = LogManager.getLogger(Core.PLUGIN_NAME);
@@ -96,6 +115,7 @@ public class BenchmarkClientProcess {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                LOG.debug("Client process is terminating now");
                 if (benchmarkThread != null) {
                     benchmarkThread.interrupt();
                     try {
@@ -120,7 +140,9 @@ public class BenchmarkClientProcess {
         int i = 0;
         while (true) {
             try {
-                eventBus = new EventBusClient.Builder().connect("localhost", EVENT_BUS_PORT).build();
+                eventBus = new EventBusClient.Builder().id("BenchmarkClientProcess")
+                        .onError(new PrintingErrorListener(System.out)).onError(new RethrowingErrorListener())
+                        .connect("127.0.0.1", EVENT_BUS_PORT).build();
             } catch (Exception e) {
                 i++;
                 try {
@@ -128,7 +150,7 @@ public class BenchmarkClientProcess {
                 } catch (InterruptedException e1) {
                     System.exit(1);
                 }
-                if (i >= 5) {
+                if (!debug && i >= 5) {
                     LOG.error("Benchmark client failed to connect to benchmark parent process");
                     System.exit(1);
                 }

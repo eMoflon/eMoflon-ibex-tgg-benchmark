@@ -145,11 +145,29 @@
     </dependency>
 
     <!-- Spawning new JVMs and IPC -->
-    <dependency>
+    
+    <!-- <dependency>
       <groupId>org.terracotta</groupId>
       <artifactId>ipc-eventbus</artifactId>
       <version>${terracotta-version}</version>
-    </dependency>
+    </dependency> -->
+    
+    <!-- Dependencies for org.terracotta.ipc-eventbus -->
+    <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+	<dependency>
+	    <groupId>net.java.dev.jna</groupId>
+	    <artifactId>jna</artifactId>
+	    <version>5.4.0</version>
+	</dependency>
+	
+	<!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform -->
+	<dependency>
+	    <groupId>net.java.dev.jna</groupId>
+	    <artifactId>jna-platform</artifactId>
+	    <version>5.4.0</version>
+	</dependency>
+		
+	<!-- End: Dependencies for org.terracotta.ipc-eventbus -->
 
     <dependency>
       <groupId>io.github.classgraph</groupId>
