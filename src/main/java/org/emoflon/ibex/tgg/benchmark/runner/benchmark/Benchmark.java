@@ -58,7 +58,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
 
     public SingleRunResult run() {
         LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Run benchmark", runParameters.getBenchmarkCaseName(),
-                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                 runParameters.getRepetition());
 
         runResult = new SingleRunResult();
@@ -70,7 +70,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
         } catch (BenchmarkFailedException e) {
             runResult.setError(e.getMessage());
             LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}", runParameters.getBenchmarkCaseName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                     runParameters.getRepetition(), e.getMessage());
         }
 
@@ -95,7 +95,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
                 return (toc - tic) / 1000000L;
             });
             LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Measure initialization time", runParameters.getBenchmarkCaseName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                     runParameters.getRepetition());
             runResult.setInitializationTime(initializationResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
 
@@ -108,7 +108,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
                 return (toc - tic) / 1000000L;
             });
             LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Measure execution time", runParameters.getBenchmarkCaseName(),
-                    runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                    runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                     runParameters.getRepetition());
             runResult.setExecutionTime(executionResult.get(runParameters.getTimeout(), TimeUnit.SECONDS));
 
@@ -129,7 +129,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
 
     protected void terminate() {
         LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Terminate operationalization", runParameters.getBenchmarkCaseName(),
-                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                 runParameters.getRepetition());
         if (op != null && patternEngineInitialized) {
             try {

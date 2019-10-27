@@ -15,7 +15,7 @@ public class ModelgenBenchmark extends Benchmark<MODELGEN> {
     @Override
     protected void createOperationalizationInstance() throws BenchmarkFailedException {
         LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of MODELGEN_App", runParameters.getBenchmarkCaseName(),
-                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                 runParameters.getRepetition());
         try {
             op = new MODELGEN_App(runParameters);

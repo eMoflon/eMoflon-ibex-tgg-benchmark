@@ -15,7 +15,7 @@ public class CoBenchmark extends Benchmark<CO> {
     @Override
     protected void createOperationalizationInstance() throws BenchmarkFailedException {
         LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of CO_App", runParameters.getBenchmarkCaseName(),
-                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                 runParameters.getRepetition());
         try {
             op = new CO_App(runParameters);

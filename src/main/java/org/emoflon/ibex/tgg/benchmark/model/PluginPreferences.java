@@ -199,9 +199,6 @@ public class PluginPreferences {
             throw e;
         }
 
-        // used in case of different versions of the file format
-        String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
-
         fromJson(prefsJsonObject);
     }
 

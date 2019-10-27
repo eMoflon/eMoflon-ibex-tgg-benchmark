@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.runner;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;

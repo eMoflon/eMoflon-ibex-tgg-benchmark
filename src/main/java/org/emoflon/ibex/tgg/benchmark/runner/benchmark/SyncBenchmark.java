@@ -3,8 +3,6 @@ package org.emoflon.ibex.tgg.benchmark.runner.benchmark;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
-
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.tgg.benchmark.runner.BenchmarkRunParameters;
@@ -22,7 +20,7 @@ public class SyncBenchmark extends Benchmark<SYNC> {
     protected void createOperationalizationInstance() throws BenchmarkFailedException {
         LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of SYNC_App",
                 runParameters.getBenchmarkCaseName(), runParameters.getOperationalization(),
-                new Integer(runParameters.getModelSize()), runParameters.getRepetition());
+                Integer.valueOf(runParameters.getModelSize()), runParameters.getRepetition());
         try {
             op = new SYNC_App(runParameters);
         } catch (IOException e) {
@@ -38,15 +36,20 @@ public class SyncBenchmark extends Benchmark<SYNC> {
         if (sync.isIncremental()) {
             try {
                 Resource model = sync.isForward() ? sync.getSourceResource() : sync.getTargetResource();
+                System.out.println("############ MODEL: " + model);
 
                 Method incrementalEditMethod = ReflectionUtils.getStaticMethodByName(getClass().getClassLoader(),
                         runParameters.getIncrementalEditClassName(), runParameters.getIncrementalEditMethodName(),
                         EObject.class);
+                System.out.println("############### here2" + incrementalEditMethod);
                 for (EObject o : model.getContents()) {
                     System.out.println(o);
                 }
-
+                System.out.println("############### here3" + incrementalEditMethod);
+                System.out.println(model.getContents().get(0));
+                // incrementalEditMethod.getDeclaringClass().
                 incrementalEditMethod.invoke(null, new Object[] { model.getContents().get(0) });
+                System.out.println("########## here4");
             } catch (NullPointerException e) {
                 // TODO: remove this
                 e.printStackTrace();

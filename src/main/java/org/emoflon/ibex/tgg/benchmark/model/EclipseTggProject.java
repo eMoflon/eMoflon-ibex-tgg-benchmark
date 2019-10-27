@@ -57,7 +57,7 @@ public class EclipseTggProject extends EclipseJavaProject {
         LOG.debug("Save benchmark cases of project '{}' to file '{}'", getName(), preferencesFilePath);
 
         JsonArrayBuilder benchmarkCasesArray = Json.createArrayBuilder();
-        for (BenchmarkCase bc : getBenchmarkCasePreferences()) {
+        for (BenchmarkCase bc : getBenchmarkCase()) {
             benchmarkCasesArray.add(bc.toJson());
         }
 
@@ -114,9 +114,6 @@ public class EclipseTggProject extends EclipseJavaProject {
             try {
                 JsonObject prefsJsonObject = JsonUtils.loadJsonFile(preferencesFilePath);
 
-                // used in case of different versions of the file format
-                String fileVersion = prefsJsonObject.getString("version", Core.VERSION);
-
                 JsonArray benchmarkCases = prefsJsonObject.getJsonArray("benchmarkCases");
                 if (benchmarkCases != null) {
                     for (int i = 0; i < benchmarkCases.size(); i++) {
@@ -151,12 +148,12 @@ public class EclipseTggProject extends EclipseJavaProject {
     }
 
     public void addBenchmarkCase(BenchmarkCase bc) {
-        getBenchmarkCasePreferences().add(bc);
+        getBenchmarkCase().add(bc);
         delayedSavePreferences();
     }
 
     public void removeBenchmarkCase(BenchmarkCase bc) {
-        getBenchmarkCasePreferences().remove(bc);
+        getBenchmarkCase().remove(bc);
         delayedSavePreferences();
     }
 
@@ -164,7 +161,7 @@ public class EclipseTggProject extends EclipseJavaProject {
         return this.benchmarkCase;
     }
 
-    public final ObservableList<BenchmarkCase> getBenchmarkCasePreferences() {
+    public final ObservableList<BenchmarkCase> getBenchmarkCase() {
         return this.benchmarkCaseProperty().get();
     }
 

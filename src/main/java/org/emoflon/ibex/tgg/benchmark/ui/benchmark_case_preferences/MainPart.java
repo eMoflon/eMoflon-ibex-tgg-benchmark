@@ -127,12 +127,12 @@ public class MainPart extends GenericPreferencesPart {
      */
     private boolean savePreferences() {
         if (preferencesData != null) {
-            preferencesData.getEclipseProject().getBenchmarkCasePreferences().remove(preferencesData);
+            preferencesData.getEclipseProject().getBenchmarkCase().remove(preferencesData);
             if (preferencesData.getEclipseProject() != preferencesDataWorkingCopy.getEclipseProject()) {
                 preferencesData.getEclipseProject().delayedSavePreferences();
             }
         }
-        preferencesDataWorkingCopy.getEclipseProject().getBenchmarkCasePreferences().add(preferencesDataWorkingCopy);
+        preferencesDataWorkingCopy.getEclipseProject().getBenchmarkCase().add(preferencesDataWorkingCopy);
 
         try {
             preferencesDataWorkingCopy.getEclipseProject().savePreferences();

@@ -1,6 +1,5 @@
 package org.emoflon.ibex.tgg.benchmark.model;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -8,8 +7,6 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -20,8 +17,6 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.emoflon.ibex.tgg.benchmark.Activator;
-import org.emoflon.ibex.tgg.benchmark.Core;
-
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -36,8 +31,6 @@ import javafx.collections.ObservableList;
  * @author Andre Lehmann
  */
 public class EclipseWorkspace implements IEclipseWorkspace {
-
-    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
 
     private final ObjectProperty<Path> location;
     private final IWorkspaceRoot workspaceRoot;

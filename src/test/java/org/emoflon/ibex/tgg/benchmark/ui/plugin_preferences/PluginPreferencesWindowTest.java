@@ -41,6 +41,8 @@ public class PluginPreferencesWindowTest extends Application {
         System.out.println("Initial Plugin Preferences");
         System.out.println(JsonUtils.jsonToString(pluginPreferences.toJson()));
 
+        System.out.println(System.getProperty("java.class.path"));
+        
         launch(args);
 
         System.out.println("\n\nPlugin Preferences after closing");

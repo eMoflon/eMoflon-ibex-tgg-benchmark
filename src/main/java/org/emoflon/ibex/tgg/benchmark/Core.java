@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -32,7 +31,6 @@ public class Core {
     public static final String VERSION = "0.1.0";
     public static final String PLUGIN_NAME = "TGG-Benchmark";
 
-    private static final Logger LOG = LogManager.getLogger(Core.PLUGIN_NAME);
     private static Core instance;
 
     private PluginPreferences pluginPreferences;
@@ -149,7 +147,7 @@ public class Core {
         if (benchmarkCase == null) {
             benchmarkCase = new AggregateObservableList<>();
             for (EclipseTggProject project : workspace.getTggProjects()) {
-                ObservableList<BenchmarkCase> bcl = project.getBenchmarkCasePreferences();
+                ObservableList<BenchmarkCase> bcl = project.getBenchmarkCase();
                 benchmarkCase.addList(bcl);
             }
         }

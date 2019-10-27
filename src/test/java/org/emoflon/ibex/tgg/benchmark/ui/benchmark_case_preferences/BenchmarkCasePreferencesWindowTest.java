@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.json.JsonException;
 
 import org.emoflon.ibex.tgg.benchmark.Core;
-import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCasePreferences;
+import org.emoflon.ibex.tgg.benchmark.model.BenchmarkCase;
 import org.emoflon.ibex.tgg.benchmark.model.EclipseWorkspaceDebug;
 import org.emoflon.ibex.tgg.benchmark.model.PluginPreferences;
 import org.emoflon.ibex.tgg.benchmark.ui.Utils;
@@ -21,11 +21,11 @@ public class BenchmarkCasePreferencesWindowTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        BenchmarkCasePreferences bcp = eclipseWorkspace.getTggProjects().get(0).getBenchmarkCasePreferences().get(0);
-        BenchmarkCasePreferencesWindow bcpw = new BenchmarkCasePreferencesWindow(bcp);
+        BenchmarkCase bc = eclipseWorkspace.getTggProjects().get(0).getBenchmarkCase().get(0);
+        BenchmarkCaseWindow bcw = new BenchmarkCaseWindow(bc);
 
         try {
-            bcpw.show();
+            bcw.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,5 +38,12 @@ public class BenchmarkCasePreferencesWindowTest extends Application {
         eclipseWorkspace = (EclipseWorkspaceDebug) Core.getInstance().getWorkspace();
 
         launch(args);
+        
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

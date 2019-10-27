@@ -15,7 +15,7 @@ public class BwdOptBenchmark extends Benchmark<BWD_OPT> {
     @Override
     protected void createOperationalizationInstance() throws BenchmarkFailedException {
         LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Create an instance of BWD_OPT_App", runParameters.getBenchmarkCaseName(),
-                runParameters.getOperationalization(), new Integer(runParameters.getModelSize()),
+                runParameters.getOperationalization(), Integer.valueOf(runParameters.getModelSize()),
                 runParameters.getRepetition());
         try {
             op = new BWD_OPT_App(runParameters);

@@ -1,7 +1,6 @@
 package org.emoflon.ibex.tgg.benchmark.runner.operationalizations;
 
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
