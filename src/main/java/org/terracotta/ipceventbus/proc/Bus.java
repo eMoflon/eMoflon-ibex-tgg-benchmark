@@ -16,10 +16,10 @@
 
 package org.terracotta.ipceventbus.proc;
 
+import java.lang.management.ManagementFactory;
+
 import org.terracotta.ipceventbus.event.EventBusServer;
 import org.terracotta.ipceventbus.event.EventListenerSniffer;
-
-import java.lang.management.ManagementFactory;
 
 /**
  * @author Mathieu Carbou
@@ -36,12 +36,10 @@ public final class Bus {
     String pid = getCurrentPid();
     if (isDebug()) {
       System.out.println("[" + Boot.class.getSimpleName() + "] Child PID: " + pid);
-      System.out.println("[" + Boot.class.getSimpleName() + "] Starting EventBus Server " + pid + " on 0.0.0.0:" + port + "...");
+      System.out.println(
+          "[" + Boot.class.getSimpleName() + "] Starting EventBus Server " + pid + " on 0.0.0.0:" + port + "...");
     }
-    bus = new EventBusServer.Builder()
-        .listen(port)
-        .id(pid)
-        .build();
+    bus = new EventBusServer.Builder().listen(port).id(pid).build();
     if (isDebug()) {
       bus.on(new EventListenerSniffer(pid));
     }

@@ -124,16 +124,15 @@ public class AnyProcessBuilder<T extends AnyProcess> {
 
   @SuppressWarnings("unchecked")
   protected T wrap(Process process, List<String> command) {
-    return (T) new AnyProcess(process, pipeStdout, pipeStderr, pipeStdin, recordStdout, recordStderr, command, workingDir);
+    return (T) new AnyProcess(process, pipeStdout, pipeStderr, pipeStdin, recordStdout, recordStderr, command,
+        workingDir);
   }
 
   private Process createProcess() {
     if (command.isEmpty()) {
       throw new IllegalArgumentException("Missing command");
     }
-    java.lang.ProcessBuilder builder = new java.lang.ProcessBuilder()
-        .command(command)
-        .directory(workingDir)
+    java.lang.ProcessBuilder builder = new java.lang.ProcessBuilder().command(command).directory(workingDir)
         .redirectErrorStream(redirectStderr);
     Map<String, String> processEnv = builder.environment();
     processEnv.clear();

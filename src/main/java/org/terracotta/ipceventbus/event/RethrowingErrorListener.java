@@ -22,8 +22,10 @@ package org.terracotta.ipceventbus.event;
 public class RethrowingErrorListener implements ErrorListener {
   @Override
   public void onError(Event event, EventListener listener, Throwable e) {
-    if (e instanceof Error) throw (Error) e;
-    if (e instanceof RuntimeException) throw (RuntimeException) e;
+    if (e instanceof Error)
+      throw (Error) e;
+    if (e instanceof RuntimeException)
+      throw (RuntimeException) e;
     throw new EventBusListenerException(e.getMessage(), e);
   }
 }

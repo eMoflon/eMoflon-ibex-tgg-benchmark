@@ -71,11 +71,8 @@ public class EventJavaProcessBuilder<T extends EventJavaProcess> extends JavaPro
   @SuppressWarnings("unchecked")
   @Override
   protected T wrap(Process process, List<String> command) {
-    return (T) new EventJavaProcess(
-        process,
-        pipeStdout, pipeStderr, pipeStdin, recordStdout, recordStderr, command, workingDir,
-        javaHome, javaExecutable, jvmArgs, classpath, mainClass, arguments, jvmProps,
-        port, debug);
+    return (T) new EventJavaProcess(process, pipeStdout, pipeStderr, pipeStdin, recordStdout, recordStderr, command,
+        workingDir, javaHome, javaExecutable, jvmArgs, classpath, mainClass, arguments, jvmProps, port, debug);
   }
 
 }

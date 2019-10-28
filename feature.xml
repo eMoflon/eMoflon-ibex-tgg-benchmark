@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.emoflon.ibex.tgg.benchmark.feature.xxx"
+      id="org.emoflon.tggbenchmark.feature.xxx"
       label="TGG Benchmark"
       version="1.0.0.qualifier">
 
@@ -52,7 +52,7 @@
    </requires>
 
    <plugin
-         id="org.emoflon.ibex.tgg.benchmark"
+         id="org.emoflon.tggbenchmark"
          download-size="0"
          install-size="0"
          version="0.0.0"

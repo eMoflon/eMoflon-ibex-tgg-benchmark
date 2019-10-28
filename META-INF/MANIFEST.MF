@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TGG Benchmark
 Bundle-Vendor: eMoflon
-Bundle-SymbolicName: org.emoflon.ibex.tgg.benchmark;singleton:=true
+Bundle-SymbolicName: org.emoflon.tgg-benchmark;singleton:=true
 Bundle-Version: 0.1.0.ALPHA
-Bundle-Activator: org.emoflon.ibex.tgg.benchmark.Activator
+Bundle-Activator: org.emoflon.tggbenchmark.Activator
 Require-Bundle: TGG-Benchmark-Includes;bundle-version="1.0.0";visibility:=reexport,
  org.eclipse.osgi,
  org.eclipse.core.resources,

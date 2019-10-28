@@ -51,12 +51,10 @@ class DefaultEvent implements Serializable, Event {
     return source;
   }
 
-
   @Override
   public String getName() {
     return name;
   }
-
 
   @Override
   public long getTimestamp() {

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import org.emoflon.tggbenchmark.gui.component.TimeTextField?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+
+<VBox fx:id="categoryBenchmark" stylesheets="@../../css/preference-category.css" 
+	xmlns="http://javafx.com/javafx/8.0.171" 
+	xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<Label styleClass="h1" text="Benchmark" />
+		<Separator styleClass="header-underline" />
+		<FlowPane>
+			<children>
+				<VBox layoutX="10.0" layoutY="10.0" styleClass="preference-container">
+					<children>
+						<GridPane hgap="10" vgap="8.0">
+							<children>
+								<Label text="TGG Project" GridPane.rowIndex="0" GridPane.columnIndex="0" wrapText="true" />
+								<ChoiceBox fx:id="eclipseProject" GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity" />
+								<Label text="Benchmark Case Name" GridPane.rowIndex="1" GridPane.columnIndex="0" wrapText="true" />
+								<TextField fx:id="benchmarkCaseName" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
+								<Label text="Meta Models Registration Method" GridPane.rowIndex="2" GridPane.columnIndex="0" wrapText="true" />
+								<ComboBox fx:id="metamodelsRegistrationMethod" GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="Infinity" />
+								<Label text="Patthern Matching Engine" GridPane.rowIndex="3" GridPane.columnIndex="0" wrapText="true" />
+								<ChoiceBox fx:id="patternMatchingEngine" GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity" />
+								<Label text="Default Timeout" GridPane.rowIndex="4" GridPane.columnIndex="0" wrapText="true" />
+								<TimeTextField fx:id="defaultTimeout" GridPane.rowIndex="4" GridPane.columnIndex="1" maxWidth="Infinity" />
+							</children>
+							<columnConstraints>
+								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />
+								<ColumnConstraints hgrow="ALWAYS" />
+							</columnConstraints>
+						</GridPane>
+					</children>
+				</VBox>
+			</children>
+		</FlowPane>
+	</children>
+</VBox>

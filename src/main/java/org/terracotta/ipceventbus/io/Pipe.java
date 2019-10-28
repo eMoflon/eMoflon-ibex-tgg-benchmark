@@ -68,6 +68,7 @@ public final class Pipe implements Closeable {
   /**
    * Close the pipe, but not the underlying streams!
    */
+  @Override
   public synchronized void close() {
     if (pipe != null) {
       Thread t = pipe;

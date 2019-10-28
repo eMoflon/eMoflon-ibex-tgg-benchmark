@@ -15,10 +15,11 @@
  */
 package org.terracotta.ipceventbus.event;
 
-import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+
+import javax.net.SocketFactory;
 
 /**
  * @author Mathieu Carbou
@@ -47,14 +48,17 @@ public interface EventBusClient extends RemoteEventBus {
     @Override
     public EventBusClient build() throws EventBusException {
       if (endpoint == null) {
-        connect(System.getProperty("ipc.bus.host", "localhost"), Integer.parseInt(System.getProperty("ipc.bus.port", "56789")));
+        connect(System.getProperty("ipc.bus.host", "localhost"),
+            Integer.parseInt(System.getProperty("ipc.bus.port", "56789")));
       }
       try {
         Socket socket = SocketFactory.getDefault().createSocket();
         socket.connect(endpoint);
-        return busId == null ? new DefaultEventBusClient(socket, errorListener) : new DefaultEventBusClient(busId, socket, errorListener);
+        return busId == null ? new DefaultEventBusClient(socket, errorListener)
+            : new DefaultEventBusClient(busId, socket, errorListener);
       } catch (IOException e) {
-        throw new EventBusIOException("Bad endpoint: " + endpoint.getHostName() + ":" + endpoint.getPort() + " : " + e.getMessage(), e);
+        throw new EventBusIOException(
+            "Bad endpoint: " + endpoint.getHostName() + ":" + endpoint.getPort() + " : " + e.getMessage(), e);
       }
     }
 

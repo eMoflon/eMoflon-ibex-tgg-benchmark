@@ -36,9 +36,10 @@ public class JavaProcess extends AnyProcess {
   private final String mainClass;
   private final List<String> arguments;
 
-  public JavaProcess(Process process,
-                     OutputStream pipeStdout, OutputStream pipeStderr, InputStream pipeStdin, boolean collectStdout, boolean collectStderr, List<String> command, File workingDir,
-                     File javaHome, File javaExecutable, List<String> jvmArgs, List<File> classpath, String mainClass, List<String> arguments, Map<String, String> jvmProperties) {
+  public JavaProcess(Process process, OutputStream pipeStdout, OutputStream pipeStderr, InputStream pipeStdin,
+      boolean collectStdout, boolean collectStderr, List<String> command, File workingDir, File javaHome,
+      File javaExecutable, List<String> jvmArgs, List<File> classpath, String mainClass, List<String> arguments,
+      Map<String, String> jvmProperties) {
     super(process, pipeStdout, pipeStderr, pipeStdin, collectStdout, collectStderr, command, workingDir);
     this.javaHome = javaHome;
     this.javaExecutable = javaExecutable;

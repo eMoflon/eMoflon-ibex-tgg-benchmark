@@ -23,7 +23,8 @@ public interface Event {
   boolean isUserEvent();
 
   /**
-   * @return The ID of the {@link EventBus} where the event comes from. Same as {@link EventBus#getId()}
+   * @return The ID of the {@link EventBus} where the event comes from. Same as
+   *         {@link EventBus#getId()}
    */
   String getSource();
 

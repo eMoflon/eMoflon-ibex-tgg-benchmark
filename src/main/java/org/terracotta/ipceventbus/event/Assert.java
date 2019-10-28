@@ -21,15 +21,19 @@ package org.terracotta.ipceventbus.event;
 final class Assert {
 
   static void legalEventName(String name) {
-    if (name == null) throw new NullPointerException("Event name is null");
-    if (name.length() == 0) throw new IllegalArgumentException(name);
+    if (name == null)
+      throw new NullPointerException("Event name is null");
+    if (name.length() == 0)
+      throw new IllegalArgumentException(name);
   }
 
   static void notInternalName(String name) {
-    if (name.startsWith("eventbus.")) throw new IllegalArgumentException(name);
+    if (name.startsWith("eventbus."))
+      throw new IllegalArgumentException(name);
   }
 
   static void opened(RemoteEventBus eventBus) {
-    if (eventBus.isClosed()) throw new IllegalStateException(eventBus + " is closed.");
+    if (eventBus.isClosed())
+      throw new IllegalStateException(eventBus + " is closed.");
   }
 }

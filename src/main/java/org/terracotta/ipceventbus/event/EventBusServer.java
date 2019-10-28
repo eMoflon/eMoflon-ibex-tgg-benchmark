@@ -15,10 +15,11 @@
  */
 package org.terracotta.ipceventbus.event;
 
-import javax.net.ServerSocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+
+import javax.net.ServerSocketFactory;
 
 /**
  * @author Mathieu Carbou
@@ -54,7 +55,10 @@ public interface EventBusServer extends RemoteEventBus {
       try {
         ServerSocket serverSocket = ServerSocketFactory.getDefault().createServerSocket();
         serverSocket.bind(new InetSocketAddress(address, port));
-        return new DefaultEventBusServer(busId != null ? busId : (serverSocket.getInetAddress().getHostAddress() + ":" + serverSocket.getLocalPort()), serverSocket, errorListener);
+        return new DefaultEventBusServer(
+            busId != null ? busId
+                : (serverSocket.getInetAddress().getHostAddress() + ":" + serverSocket.getLocalPort()),
+            serverSocket, errorListener);
       } catch (IOException e) {
         throw new EventBusIOException("Cannot bind on " + address + ":" + port + " : " + e.getMessage(), e);
       }

@@ -69,7 +69,8 @@ final class DefaultEventBusServer extends DefaultEventBus implements EventBusSer
           try {
             Socket socket = DefaultEventBusServer.this.serverSocket.get().accept();
             InetSocketAddress address = (InetSocketAddress) socket.getRemoteSocketAddress();
-            DefaultEventBusClient client = new DefaultEventBusClient(address.getHostName() + ":" + address.getPort(), socket, errorListener);
+            DefaultEventBusClient client = new DefaultEventBusClient(address.getHostName() + ":" + address.getPort(),
+                socket, errorListener);
             client.on(listener);
             clientsLock.writeLock().lock();
             try {

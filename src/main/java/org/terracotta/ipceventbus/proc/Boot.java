@@ -16,11 +16,11 @@
 
 package org.terracotta.ipceventbus.proc;
 
-import org.terracotta.ipceventbus.event.Event;
-import org.terracotta.ipceventbus.event.EventListener;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.terracotta.ipceventbus.event.Event;
+import org.terracotta.ipceventbus.event.EventListener;
 
 /**
  * @author Mathieu Carbou
@@ -60,7 +60,7 @@ public final class Boot {
     });
 
     try {
-      mainClass.getDeclaredMethod("main", String[].class).invoke(null, new Object[]{args});
+      mainClass.getDeclaredMethod("main", String[].class).invoke(null, new Object[] { args });
     } catch (InvocationTargetException e) {
       throw e.getTargetException();
     } finally {

@@ -158,18 +158,18 @@ public class JavaProcessBuilder<T extends JavaProcess> extends AnyProcessBuilder
   @SuppressWarnings("unchecked")
   @Override
   protected T wrap(Process process, List<String> command) {
-    return (T) new JavaProcess(
-        process,
-        pipeStdout, pipeStderr, pipeStdin, recordStdout, recordStderr, command, workingDir,
-        javaHome, javaExecutable, jvmArgs, classpath, mainClass, arguments, jvmProps);
+    return (T) new JavaProcess(process, pipeStdout, pipeStderr, pipeStdin, recordStdout, recordStderr, command,
+        workingDir, javaHome, javaExecutable, jvmArgs, classpath, mainClass, arguments, jvmProps);
   }
 
   private static File findJavaExecutable(File javaHome) {
     File javaBin = new File(javaHome, "bin");
     File javaPlain = new File(javaBin, "java");
     File javaExe = new File(javaBin, "java.exe");
-    if (javaPlain.isFile()) return javaPlain;
-    if (javaExe.isFile()) return javaExe;
+    if (javaPlain.isFile())
+      return javaPlain;
+    if (javaExe.isFile())
+      return javaExe;
     return null;
   }
 

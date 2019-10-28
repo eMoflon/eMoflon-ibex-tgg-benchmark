@@ -16,9 +16,6 @@
 
 package org.terracotta.ipceventbus.proc;
 
-import org.terracotta.ipceventbus.io.MultiplexOutputStream;
-import org.terracotta.ipceventbus.io.Pipe;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -36,6 +33,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.terracotta.ipceventbus.io.MultiplexOutputStream;
+import org.terracotta.ipceventbus.io.Pipe;
 
 /**
  * @author Mathieu Carbou
@@ -57,7 +57,8 @@ public class AnyProcess extends Process {
   private boolean stdoutStreamDisabled;
   private boolean stderrStreamDisabled;
 
-  AnyProcess(Process process, OutputStream pipeStdout, OutputStream pipeStderr, InputStream pipeStdin, boolean collectStdout, boolean collectStderr, List<String> command, File workingDirectory) {
+  AnyProcess(Process process, OutputStream pipeStdout, OutputStream pipeStderr, InputStream pipeStdin,
+      boolean collectStdout, boolean collectStderr, List<String> command, File workingDirectory) {
     this.process = process;
     this.pid = getPid(process);
     this.command = Collections.unmodifiableList(command);
@@ -144,21 +145,26 @@ public class AnyProcess extends Process {
 
   @Override
   public final OutputStream getOutputStream() {
-    if (!isRunning()) throw new IllegalStateException("Not running");
+    if (!isRunning())
+      throw new IllegalStateException("Not running");
     return this.process.getOutputStream();
   }
 
   @Override
   public final InputStream getInputStream() {
-    if (!isRunning()) throw new IllegalStateException("Not running");
-    if (stdoutStreamDisabled) throw new IllegalStateException("no stdout stream available");
+    if (!isRunning())
+      throw new IllegalStateException("Not running");
+    if (stdoutStreamDisabled)
+      throw new IllegalStateException("no stdout stream available");
     return this.process.getInputStream();
   }
 
   @Override
   public final InputStream getErrorStream() {
-    if (!isRunning()) throw new IllegalStateException("Not running");
-    if (stderrStreamDisabled) throw new IllegalStateException("No stderr stream available");
+    if (!isRunning())
+      throw new IllegalStateException("Not running");
+    if (stderrStreamDisabled)
+      throw new IllegalStateException("No stderr stream available");
     return this.process.getErrorStream();
   }
 
@@ -206,7 +212,8 @@ public class AnyProcess extends Process {
   @Override
   public final int exitValue() {
     int c = process.exitValue();
-    // if process is not running, an exception is not thrown, thus it means the process is finished
+    // if process is not running, an exception is not thrown, thus it means the
+    // process is finished
     processFinished();
     return c;
   }

@@ -16,11 +16,11 @@
 
 package org.terracotta.ipceventbus.proc;
 
+import java.lang.reflect.Field;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
-
-import java.lang.reflect.Field;
 
 /**
  * @author Mathieu Carbou
@@ -28,7 +28,8 @@ import java.lang.reflect.Field;
 class Jna {
 
   static long getWindowsPid(Process process) {
-    if (process.getClass().getName().equals("java.lang.Win32Process") || process.getClass().getName().equals("java.lang.ProcessImpl")) {
+    if (process.getClass().getName().equals("java.lang.Win32Process")
+        || process.getClass().getName().equals("java.lang.ProcessImpl")) {
       try {
         Field f = process.getClass().getDeclaredField("handle");
         f.setAccessible(true);

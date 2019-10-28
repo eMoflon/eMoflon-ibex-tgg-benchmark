@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="org.emoflon.ibex.tgg.benchmark" name="TGG Benchmark" schema="schema/org.emoflon.ibex.tgg.benchmark.exsd"/>
+   <extension-point id="org.emoflon.tggbenchmark" name="TGG Benchmark" schema="schema/org.emoflon.tggbenchmark.exsd"/>
 
    <extension
          id="tggbenchmark.fragment"

@@ -24,7 +24,8 @@ public interface EventListener {
    * Listen for an event
    *
    * @param e The {@link Event} object
-   * @throws Throwable a listener can fail, and failure are handled by a {@link ErrorListener}
+   * @throws Throwable a listener can fail, and failure are handled by a
+   *                   {@link ErrorListener}
    */
   void onEvent(Event e) throws Throwable;
 }

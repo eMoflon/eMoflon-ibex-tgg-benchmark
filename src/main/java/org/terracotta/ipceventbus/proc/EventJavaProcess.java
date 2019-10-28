@@ -16,19 +16,19 @@
 
 package org.terracotta.ipceventbus.proc;
 
-import org.terracotta.ipceventbus.ThreadUtil;
-import org.terracotta.ipceventbus.event.EventBus;
-import org.terracotta.ipceventbus.event.EventBusClient;
-import org.terracotta.ipceventbus.event.EventBusIOException;
-import org.terracotta.ipceventbus.event.EventListener;
-import org.terracotta.ipceventbus.event.EventListenerSniffer;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+
+import org.terracotta.ipceventbus.ThreadUtil;
+import org.terracotta.ipceventbus.event.EventBus;
+import org.terracotta.ipceventbus.event.EventBusClient;
+import org.terracotta.ipceventbus.event.EventBusIOException;
+import org.terracotta.ipceventbus.event.EventListener;
+import org.terracotta.ipceventbus.event.EventListenerSniffer;
 
 /**
  * @author Mathieu Carbou
@@ -37,22 +37,18 @@ public final class EventJavaProcess extends JavaProcess {
 
   private volatile EventBus eventBus;
 
-  public EventJavaProcess(Process process,
-                          OutputStream pipeStdout, OutputStream pipeStderr, InputStream pipeStdin, boolean collectStdout, boolean collectStderr, List<String> command, File workingDir,
-                          File javaHome, File javaExecutable, List<String> jvmArgs, List<File> classpath, String mainClass, List<String> arguments, Map<String, String> jvmProperties,
-                          int port, boolean debug) {
-    super(process,
-        pipeStdout, pipeStderr, pipeStdin, collectStdout, collectStderr, command, workingDir,
-        javaHome, javaExecutable, jvmArgs, classpath, mainClass, arguments, jvmProperties);
+  public EventJavaProcess(Process process, OutputStream pipeStdout, OutputStream pipeStderr, InputStream pipeStdin,
+      boolean collectStdout, boolean collectStderr, List<String> command, File workingDir, File javaHome,
+      File javaExecutable, List<String> jvmArgs, List<File> classpath, String mainClass, List<String> arguments,
+      Map<String, String> jvmProperties, int port, boolean debug) {
+    super(process, pipeStdout, pipeStderr, pipeStdin, collectStdout, collectStderr, command, workingDir, javaHome,
+        javaExecutable, jvmArgs, classpath, mainClass, arguments, jvmProperties);
     String pid = getCurrentPid();
     // try to connect
     EventBus eb = null;
     for (int i = 0; i < 4 && isRunning(); i++) {
       try {
-        eb = new EventBusClient.Builder()
-            .connect(port)
-            .id(pid)
-            .build();
+        eb = new EventBusClient.Builder().connect(port).id(pid).build();
         break;
       } catch (EventBusIOException e) {
         if (i == 3) {
@@ -64,13 +60,12 @@ public final class EventJavaProcess extends JavaProcess {
         } catch (InterruptedException e1) {
           process.destroy();
           Thread.currentThread().interrupt();
-          throw new EventBusIOException("Unable to connect to child process " + getPid() + ": connection interrupted.", e1);
+          throw new EventBusIOException("Unable to connect to child process " + getPid() + ": connection interrupted.",
+              e1);
         }
       }
     }
-    this.eventBus = eb != null ? eb : new EventBus.Builder()
-        .id(pid)
-        .build();
+    this.eventBus = eb != null ? eb : new EventBus.Builder().id(pid).build();
     if (debug) {
       eventBus.on(new EventListenerSniffer(pid));
     }

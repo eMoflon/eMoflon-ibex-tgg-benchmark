@@ -40,9 +40,11 @@ public class BaseBuilder<T extends BaseBuilder<T>> {
   }
 
   /**
-   * Registers an {@link ErrorListener} to handle exceptions thrown by {@link EventListener}. By default, exceptions are rethrown.
+   * Registers an {@link ErrorListener} to handle exceptions thrown by
+   * {@link EventListener}. By default, exceptions are rethrown.
    *
-   * @param listener The listener to use. Some default implementations are provided.
+   * @param listener The listener to use. Some default implementations are
+   *                 provided.
    * @return this builder
    */
   public T onError(ErrorListener listener) {

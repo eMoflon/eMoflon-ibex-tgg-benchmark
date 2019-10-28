@@ -45,6 +45,7 @@ public class EventListenerSniffer implements EventListener {
 
   @Override
   public void onEvent(Event e) throws Throwable {
-    out.println(System.currentTimeMillis() + category + " [" + Thread.currentThread().getName() + "] " + e.getName() + "@" + e.getSource() + " at " + e.getTimestamp() + (e.getData() == null ? "" : (" - " + e.getData())));
+    out.println(System.currentTimeMillis() + category + " [" + Thread.currentThread().getName() + "] " + e.getName()
+        + "@" + e.getSource() + " at " + e.getTimestamp() + (e.getData() == null ? "" : (" - " + e.getData())));
   }
 }
