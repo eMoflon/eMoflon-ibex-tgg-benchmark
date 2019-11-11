@@ -1,0 +1,27 @@
+.auto-commit-table-cell .text-field {
+    -fx-padding: 0;
+}
+
+.auto-commit-table-cell:focused {
+    -fx-padding: 0;
+}
+
+/* right-align the cell content in view mode */
+.table-cell {
+    -fx-alignment: CENTER-RIGHT;
+}
+
+/* right-align the cell content in edit mode */
+.text-field {
+    -fx-background-radius: 0, 0, 0, 0;
+    -fx-alignment        : CENTER-RIGHT;
+}
+
+/* colorize background only of rows which have data */
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
+}

@@ -42,7 +42,7 @@ public class BenchmarkCase {
     private BooleanProperty modelgenIncludeReport;
     private IntegerProperty modelgenTimeout;
     private ListProperty<Integer> modelgenModelSizes;
-    private ListProperty<Pair<String, Integer>> modelgenRuleCount;
+    private ListProperty<Pair<StringProperty, IntegerProperty>> modelgenRuleCount;
 
     private BooleanProperty initialFwdActive;
     private IntegerProperty initialFwdTimeout;
@@ -176,9 +176,9 @@ public class BenchmarkCase {
                 }
                 JsonObject ruleCountObject = modelgen.getJsonObject("ruleCount");
                 if (ruleCountObject != null) {
-                    ObservableList<Pair<String, Integer>> ruleCount = FXCollections.observableArrayList();
+                    ObservableList<Pair<StringProperty, IntegerProperty>> ruleCount = FXCollections.observableArrayList();
                     for (String key : ruleCountObject.keySet()) {
-                        ruleCount.add(new Pair<String, Integer>(key, ruleCountObject.getInt(key, 0)));
+                        ruleCount.add(new Pair<>(new SimpleStringProperty(key), new SimpleIntegerProperty(ruleCountObject.getInt(key, 0))));
                     }
                     setModelgenRuleCount(ruleCount);
                 }
@@ -265,8 +265,8 @@ public class BenchmarkCase {
         }
 
         JsonObjectBuilder ruleCountBuilder = Json.createObjectBuilder();
-        for (Pair<String, Integer> rc : getModelgenRuleCount()) {
-            ruleCountBuilder.add(rc.getKey(), rc.getValue());
+        for (Pair<StringProperty, IntegerProperty> rc : getModelgenRuleCount()) {
+            ruleCountBuilder.add(rc.getKey().get(), rc.getValue().get());
         }
 
         JsonObject preferences = Json.createObjectBuilder()
@@ -864,16 +864,19 @@ public class BenchmarkCase {
         this.patternMatchingEngineProperty().set(patternMatchingEngine);
     }
 
-    public final ListProperty<Pair<String, Integer>> modelgenRuleCountProperty() {
+    public final ListProperty<Pair<StringProperty, IntegerProperty>> modelgenRuleCountProperty() {
         return this.modelgenRuleCount;
     }
+    
 
-    public final ObservableList<Pair<String, Integer>> getModelgenRuleCount() {
+    public final ObservableList<Pair<StringProperty, IntegerProperty>> getModelgenRuleCount() {
         return this.modelgenRuleCountProperty().get();
     }
+    
 
-    public final void setModelgenRuleCount(final ObservableList<Pair<String, Integer>> ruleCount) {
-        this.modelgenRuleCountProperty().set(ruleCount);
+    public final void setModelgenRuleCount(final ObservableList<Pair<StringProperty, IntegerProperty>> modelgenRuleCount) {
+        this.modelgenRuleCountProperty().set(modelgenRuleCount);
     }
+    
 
 }

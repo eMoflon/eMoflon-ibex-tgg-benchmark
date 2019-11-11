@@ -9,6 +9,7 @@ import java.util.Set;
 import org.controlsfx.validation.Validator;
 import org.eclipse.emf.ecore.EObject;
 import org.emoflon.tggbenchmark.gui.component.ModelSizesTextArea;
+import org.emoflon.tggbenchmark.gui.component.RuleCountTable;
 import org.emoflon.tggbenchmark.gui.component.TimeTextField;
 import org.emoflon.tggbenchmark.gui.controller.generic_preferences.CategoryController;
 import org.emoflon.tggbenchmark.gui.model.BenchmarkCase;
@@ -39,6 +40,8 @@ public class CategoryOperationalizationsController extends CategoryController<Be
     private TimeTextField modelgenTimeout;
     @FXML
     private ModelSizesTextArea modelgenModelSizes;
+    @FXML
+    private RuleCountTable modelgenModelRuleCount;
 
     @FXML
     private CheckBox initialFwdActive;
@@ -186,11 +189,8 @@ public class CategoryOperationalizationsController extends CategoryController<Be
         bc.modelgenModelSizesProperty().addListener(modelgenModelSizesChangeListener);
         validation.registerValidator(modelgenModelSizes,
                 Validator.createEmptyValidator("At least one model size need to be specified"));
-        // TODO: change to RuleCount
-        // modelgenTggRule.textProperty().bindBidirectional(bc.modelgenTggRuleProperty());
-        // validation.registerValidator(modelgenTggRule,
-        // Validator.createEmptyValidator("A TGG rule for model generation must be
-        // specified"));
+        
+        modelgenModelRuleCount.setItems(bc.getModelgenRuleCount());
 
         // INITIAL FWD
         bindCheckbox(initialFwdActive, bc.initialFwdActiveProperty());

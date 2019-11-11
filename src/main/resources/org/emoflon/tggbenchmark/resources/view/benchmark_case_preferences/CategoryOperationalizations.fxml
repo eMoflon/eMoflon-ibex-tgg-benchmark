@@ -13,6 +13,7 @@
 <?import org.emoflon.tggbenchmark.gui.component.TimeTextField?>
 <?import org.emoflon.tggbenchmark.gui.component.ModelSizesTextArea?>
 <?import javafx.scene.control.ComboBox?>
+<?import org.emoflon.tggbenchmark.gui.component.RuleCountTable?>
 
 <VBox fx:id="categoryOperationalizations" stylesheets="@../../css/preference-category.css" 
 	xmlns="http://javafx.com/javafx/8.0.171" 
@@ -35,6 +36,8 @@
 								<TextField fx:id="modelgenTggRule" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2" /> -->
 								<Label text="Model Sizes" GridPane.rowIndex="3" wrapText="true" />
 								<ModelSizesTextArea fx:id="modelgenModelSizes" maxHeight="80.0" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+								<Label text="Rule Count" GridPane.rowIndex="4" wrapText="true" />
+								<RuleCountTable fx:id="modelgenModelRuleCount" maxHeight="200.0" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 							</children>
 							<columnConstraints>
 								<ColumnConstraints minWidth="150.0" prefWidth="150.0" />

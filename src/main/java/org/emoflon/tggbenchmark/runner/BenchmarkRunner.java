@@ -48,6 +48,8 @@ import org.terracotta.ipceventbus.event.RethrowingErrorListener;
 import org.terracotta.ipceventbus.proc.JavaProcess;
 
 import io.github.classgraph.ClassGraph;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
 import javafx.util.Pair;
 
 /**
@@ -314,8 +316,8 @@ public class BenchmarkRunner implements Runnable {
             runParameters.setOperationalization(OperationalizationType.MODELGEN);
             runParameters.setTimeout(bc.getEffectiveModelgenTimeout());
             Map<String, Integer> ruleCount = new HashMap<>();
-            for (Pair<String, Integer> rc : bc.getModelgenRuleCount()) {
-                ruleCount.put(rc.getKey(), rc.getValue());
+            for (Pair<StringProperty, IntegerProperty> rc : bc.getModelgenRuleCount()) {
+                ruleCount.put(rc.getKey().get(), rc.getValue().get());
             }
             runParameters.setRuleCount(ruleCount);
             return runParameters;
