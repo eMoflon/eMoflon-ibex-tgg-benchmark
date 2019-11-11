@@ -19,6 +19,12 @@ import org.emoflon.tggbenchmark.model.EclipseWorkspaceDebug;
 import org.emoflon.tggbenchmark.workspace.EclipseJavaProject;
 import org.emoflon.tggbenchmark.workspace.EclipseTggProject;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.util.Pair;
 
@@ -40,6 +46,7 @@ public abstract class Utils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void initConfiguration() throws JsonException, IOException {
         // configure logger
         Configurator.initialize(new DefaultConfiguration());
@@ -60,8 +67,10 @@ public abstract class Utils {
         companyToItBcp.setEclipseProject(companyToIt);
         companyToItBcp.setMetamodelsRegistrationMethod(
                 "org.emoflon.ibex.tgg.run.companytoit._RegistrationHelper#registerMetamodels");
-        companyToItBcp.setModelgenRuleCount(
-                FXCollections.observableArrayList(new Pair<String, Integer>("CompanyToITRule", 1)));
+        ListProperty<Pair<StringProperty, IntegerProperty>> companyToItRuleCountList = new SimpleListProperty<Pair<StringProperty, IntegerProperty>>(
+                FXCollections.observableArrayList(new Pair<StringProperty, IntegerProperty>(
+                        new SimpleStringProperty("CompanyToITRule"), new SimpleIntegerProperty(1))));
+        companyToItBcp.setModelgenRuleCount(companyToItRuleCountList);
         companyToItBcp.setFwdIncrementalEditMethod("org.emoflon.ibex.tgg.run.companytoit.IncrementalEdit#fwd");
         companyToItBcp.setBwdIncrementalEditMethod("org.emoflon.ibex.tgg.run.companytoit.IncrementalEdit#bwd");
         companyToIt.setBenchmarkCasePreferences(FXCollections.observableArrayList(companyToItBcp));
@@ -74,8 +83,10 @@ public abstract class Utils {
         familyToPersonasBcp.setBenchmarkCaseName(familyToPersonas.getName());
         familyToPersonasBcp.setMetamodelsRegistrationMethod(
                 "org.emoflon.ibex.tgg.run.familiestopersons_v1._RegistrationHelper#registerMetamodels");
-        familyToPersonasBcp.setModelgenRuleCount(
-                FXCollections.observableArrayList(new Pair<String, Integer>("HandleRegisters", 1)));
+        ListProperty<Pair<StringProperty, IntegerProperty>> familyToPersonasRuleCountList = new SimpleListProperty<Pair<StringProperty, IntegerProperty>>(
+                FXCollections.observableArrayList(new Pair<StringProperty, IntegerProperty>(
+                        new SimpleStringProperty("HandleRegisters"), new SimpleIntegerProperty(1))));
+        familyToPersonasBcp.setModelgenRuleCount(familyToPersonasRuleCountList);
         familyToPersonas.setBenchmarkCasePreferences(FXCollections.observableArrayList(familyToPersonasBcp));
     }
 
