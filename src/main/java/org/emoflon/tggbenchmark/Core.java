@@ -35,7 +35,7 @@ public class Core {
 
     private PluginPreferences pluginPreferences;
     private IEclipseWorkspace workspace;
-    private AggregateObservableList<BenchmarkCase> benchmarkCase;
+    private AggregateObservableList<BenchmarkCase> benchmarkCases;
     private Job benchmarkJob;
 
     private Core() {
@@ -144,15 +144,15 @@ public class Core {
      * @return the benchmarkCase
      */
     public ObservableList<BenchmarkCase> getBenchmarkCases() {
-        if (benchmarkCase == null) {
-            benchmarkCase = new AggregateObservableList<>();
+        if (benchmarkCases == null) {
+            benchmarkCases = new AggregateObservableList<>();
             for (EclipseTggProject project : workspace.getTggProjects()) {
                 ObservableList<BenchmarkCase> bcl = project.getBenchmarkCase();
-                benchmarkCase.addList(bcl);
+                benchmarkCases.addList(bcl);
             }
         }
 
-        return benchmarkCase;
+        return benchmarkCases;
     }
 
     /**
