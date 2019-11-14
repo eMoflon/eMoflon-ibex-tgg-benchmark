@@ -31,7 +31,7 @@ import javafx.util.Pair;
 /**
  * Utils
  */
-public abstract class Utils {
+public abstract class GUIUtils {
 
     static Set<URL> CLASS_PATHS;
 

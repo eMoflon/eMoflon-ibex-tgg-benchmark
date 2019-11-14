@@ -6,7 +6,7 @@ import javax.json.JsonException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.emoflon.tggbenchmark.Core;
-import org.emoflon.tggbenchmark.gui.Utils;
+import org.emoflon.tggbenchmark.gui.GUIUtils;
 import org.emoflon.tggbenchmark.gui.model.BenchmarkCase;
 import org.emoflon.tggbenchmark.gui.model.PluginPreferences;
 import org.emoflon.tggbenchmark.runner.BenchmarkRunner;
@@ -19,7 +19,7 @@ import javafx.collections.FXCollections;
 public class BenchmarkRunnerTest {
 
     public static void main(String[] args) throws JsonException, IOException {
-        Utils.initConfiguration();
+        GUIUtils.initConfiguration();
 
         IEclipseWorkspace eclipseWorkspace = Core.getInstance().getWorkspace();
         PluginPreferences pluginPreferences = Core.getInstance().getPluginPreferences();
