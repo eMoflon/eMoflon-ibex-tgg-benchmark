@@ -1,4 +1,4 @@
-package org.emoflon.tggbenchmark.runner;
+package org.emoflon.tggbenchmark.runner.benchmark.strategies;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.tggbenchmark.utils.ReflectionUtils;
 
-public abstract class OperationalizationUtils {
+abstract class StrategiesUtils {
 
     public static void registerUserMetamodels(ResourceSet rs, OperationalStrategy op, ClassLoader classLoader,
             String className, String methodName) throws IOException {

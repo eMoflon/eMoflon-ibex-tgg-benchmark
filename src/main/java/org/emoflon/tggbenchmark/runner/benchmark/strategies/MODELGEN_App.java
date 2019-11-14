@@ -13,7 +13,6 @@ import org.emoflon.ibex.tgg.operational.strategies.gen.MODELGENStopCriterion;
 import org.emoflon.ibex.tgg.operational.updatepolicy.RandomMatchUpdatePolicy;
 import org.emoflon.ibex.tgg.operational.updatepolicy.TimedUpdatePolicy;
 import org.emoflon.tggbenchmark.runner.BenchmarkRunParameters;
-import org.emoflon.tggbenchmark.runner.OperationalizationUtils;
 
 public class MODELGEN_App extends MODELGEN {
 
@@ -38,7 +37,7 @@ public class MODELGEN_App extends MODELGEN {
 
     @Override
     protected void registerUserMetamodels() throws IOException {
-        OperationalizationUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
+        StrategiesUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
                 runParameters.getMetamodelsRegistrationClassName(),
                 runParameters.getMetamodelsRegistrationMethodName());
 

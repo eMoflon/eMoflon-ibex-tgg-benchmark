@@ -8,7 +8,6 @@ import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.opt.cc.CC;
 import org.emoflon.tggbenchmark.runner.BenchmarkRunParameters;
-import org.emoflon.tggbenchmark.runner.OperationalizationUtils;
 
 public class CC_App extends CC {
 
@@ -24,7 +23,7 @@ public class CC_App extends CC {
 
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		OperationalizationUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
+		StrategiesUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
 				runParameters.getMetamodelsRegistrationClassName(),
 				runParameters.getMetamodelsRegistrationMethodName());
 

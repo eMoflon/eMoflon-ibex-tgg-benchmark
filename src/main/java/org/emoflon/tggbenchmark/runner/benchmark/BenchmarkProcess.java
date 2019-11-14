@@ -83,7 +83,6 @@ public class BenchmarkProcess {
             case "--loglevel":
                 if (++i < args.length) {
                     try {
-
                         logLevel = Level.getLevel(StandardLevel.valueOf(args[i]).toString());
                     } catch (IllegalArgumentException e) {
                         System.err.println("Invalid log level: " + args[i]);

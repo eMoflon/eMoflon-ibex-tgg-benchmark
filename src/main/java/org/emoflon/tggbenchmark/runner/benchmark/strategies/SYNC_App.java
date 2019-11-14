@@ -11,7 +11,6 @@ import org.emoflon.ibex.tgg.operational.strategies.sync.FWD_Strategy;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.tggbenchmark.runner.BenchmarkRunParameters;
 import org.emoflon.tggbenchmark.runner.OperationalizationType;
-import org.emoflon.tggbenchmark.runner.OperationalizationUtils;
 
 public class SYNC_App extends SYNC {
 
@@ -36,7 +35,7 @@ public class SYNC_App extends SYNC {
 
 	@Override
 	protected void registerUserMetamodels() throws IOException {
-		OperationalizationUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
+		StrategiesUtils.registerUserMetamodels(rs, this, getClass().getClassLoader(),
 				runParameters.getMetamodelsRegistrationClassName(),
 				runParameters.getMetamodelsRegistrationMethodName());
 
