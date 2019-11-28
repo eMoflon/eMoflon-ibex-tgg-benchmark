@@ -1,9 +1,0 @@
-{
-    "files.exclude": {
-        "**/.settings": true,
-        "**/.factorypath": true
-    },
-    "cSpell.enabled": false,
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "maven.view": "flat"
-}
