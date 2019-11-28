@@ -67,7 +67,7 @@ public abstract class Benchmark<O extends OperationalStrategy> {
         try {
             createOperationalizationInstance();
             measureTimes();
-        } catch (BenchmarkFailedException e) {
+        } catch (Exception e) {
             runResult.setError(e.getMessage());
             LOG.debug("CASE={}, OP={}, SIZE={}, RUN={}: Execution failed. Reason: {}",
                     runParameters.getBenchmarkCaseName(), runParameters.getOperationalization(),
