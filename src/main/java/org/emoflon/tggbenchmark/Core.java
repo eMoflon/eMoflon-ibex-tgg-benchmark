@@ -35,6 +35,12 @@ public class Core {
 
     private PluginPreferences pluginPreferences;
     private IEclipseWorkspace workspace;
+
+    /**
+     * Contains the benchmark cases that are displayed in the plugin view. The list
+     * contains a list of benchmark cases for every project in the workspace. It
+     * aggregates the lists and offers direct access to their entries.
+     */
     private AggregateObservableList<BenchmarkCase> benchmarkCases;
     private Job benchmarkJob;
 
