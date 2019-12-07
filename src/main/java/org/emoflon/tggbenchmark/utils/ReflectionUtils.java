@@ -12,7 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.tggbenchmark.workspace.EclipseJavaProject;
+import org.emoflon.tggbenchmark.runner.benchmark.strategies.StrategiesUtils;
 
 /**
  * Java reflections helper methods
@@ -35,7 +37,7 @@ public abstract class ReflectionUtils {
      * Splits a method identifier into a class and method name.
      * 
      * @param methodIdentifier the method identifier in the format: CLASS#METHOD
-     * @return the class and method name
+     * @return the class and method name 
      */
     public static String[] splitMethodIdentifier(String methodIdentifier) {
         if (methodIdentifier.length() == 0) {
@@ -59,10 +61,10 @@ public abstract class ReflectionUtils {
      *         exists, otherwise null
      * @throws NoSuchMethodException if anything goes wrong loading the method
      */
-    public static Method getStaticMethodByName(ClassLoader classLoader, String methodIdentifier,
+    public static Method getMethodByName(ClassLoader classLoader, String methodIdentifier, boolean isStatic,
             Class<?>... methodParameters) throws NoSuchMethodException {
         String[] names = splitMethodIdentifier(methodIdentifier);
-        return getStaticMethodByName(classLoader, names[0].trim(), names[1].trim(), methodParameters);
+        return getMethodByName(classLoader, names[0].trim(), names[1].trim(), isStatic, methodParameters);
     }
 
     /**
@@ -75,7 +77,7 @@ public abstract class ReflectionUtils {
      * @return the found method
      * @throws NoSuchMethodException if anything goes wrong loading the method
      */
-    public static Method getStaticMethodByName(ClassLoader classLoader, String className, String methodName,
+    public static Method getMethodByName(ClassLoader classLoader, String className, String methodName, boolean isStatic,
             Class<?>... parameters) throws NoSuchMethodException {
         try {
             Class<?> clazz = classLoader.loadClass(className);
@@ -83,7 +85,7 @@ public abstract class ReflectionUtils {
             // when Eclipse is involved so this is a workaround
             nextMethod: for (Method method : clazz.getDeclaredMethods()) {
                 Parameter[] methodParameters = method.getParameters();
-                if (Modifier.isStatic(method.getModifiers()) && method.getName().equals(methodName)
+                if (!(isStatic ^ Modifier.isStatic(method.getModifiers())) && method.getName().equals(methodName)
                         && parameters.length == methodParameters.length) {
                     for (int i = 0; i < parameters.length; i++) {
                         // need to compare the String representations instead of the actual Classes
@@ -95,7 +97,7 @@ public abstract class ReflectionUtils {
                 }
             }
             throw new NoSuchMethodException(String.format(
-                    "Class '%s' doesn't contain a static method '%s' or the signature does not match. Check your benchmark preferences.",
+                    "Class '%s' doesn't contain a method '%s' or the signature does not match. Check your benchmark preferences.",
                     className, methodName));
         } catch (ClassNotFoundException e) {
             throw new NoSuchMethodException(

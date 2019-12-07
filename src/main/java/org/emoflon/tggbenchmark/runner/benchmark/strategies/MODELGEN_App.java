@@ -19,7 +19,8 @@ public class MODELGEN_App extends MODELGEN {
     private final BenchmarkRunParameters runParameters;
 
     public MODELGEN_App(BenchmarkRunParameters runParameters) throws IOException {
-        super(new IbexOptions().projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
+        super(StrategiesUtils.createIbexOptions(runParameters.getClass().getClassLoader(), runParameters.getMetamodelsRegistrationClassName())
+        		.projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
                 .workspacePath(runParameters.getWorkspacePath().toString())
                 .setBenchmarkLogger(new FullBenchmarkLogger()));
 

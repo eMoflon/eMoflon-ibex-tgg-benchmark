@@ -44,7 +44,9 @@ Require-Bundle: TGG-Benchmark-Includes;bundle-version="1.0.0";visibility:=reexpo
  org.gervarro.democles.specification.emf,
  org.gervarro.notification,
  org.gervarro.plan.dynprog,
- org.gervarro.util
+ org.gervarro.util,
+ org.emoflon.ibex.tgg.runtime.hipe;bundle-version="1.0.0",
+ org.emoflon.ibex.tgg.ide.hipe;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: TGGBenchmark
 Import-Package: javax.annotation,

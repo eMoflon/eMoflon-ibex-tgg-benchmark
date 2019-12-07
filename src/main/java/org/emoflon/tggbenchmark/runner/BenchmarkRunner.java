@@ -26,11 +26,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
+import org.emoflon.ibex.tgg.runtime.hipe.HiPETGGEngine;
 import org.emoflon.tggbenchmark.Core;
 import org.emoflon.tggbenchmark.gui.model.BenchmarkCase;
 import org.emoflon.tggbenchmark.gui.model.PluginPreferences;
 import org.emoflon.tggbenchmark.runner.benchmark.BenchmarkProcess;
+import org.emoflon.tggbenchmark.runner.benchmark.strategies.StrategiesUtils;
 import org.emoflon.tggbenchmark.runner.report.CSVReportBuilder;
 import org.emoflon.tggbenchmark.runner.report.ExcelReportBuilder;
 import org.emoflon.tggbenchmark.runner.report.ReportBuilder;
@@ -171,9 +174,11 @@ public class BenchmarkRunner implements Runnable {
                                             benchmarkCase.getBenchmarkCaseName()));
                         } else {
                             try {
-                                ReflectionUtils.getStaticMethodByName(classLoader,
-                                        benchmarkCase.getMetamodelsRegistrationMethod(), ResourceSet.class,
+                                ReflectionUtils.getMethodByName(classLoader,
+                                        benchmarkCase.getMetamodelsRegistrationMethod(), false, ResourceSet.class,
                                         OperationalStrategy.class);
+                                IbexOptions options = new IbexOptions();
+                                options.setBlackInterpreter(new HiPETGGEngine());
                             } catch (NoSuchMethodException e) {
                                 foundErrors.add(String.format(
                                         "Benchmark case '%s': Meta model registration method '%s' doesn't exist",
@@ -184,8 +189,8 @@ public class BenchmarkRunner implements Runnable {
                         if (benchmarkCase.isFwdActive()) {
                             if (!benchmarkCase.getFwdIncrementalEditMethod().isEmpty()) {
                                 try {
-                                    ReflectionUtils.getStaticMethodByName(classLoader,
-                                            benchmarkCase.getFwdIncrementalEditMethod(), EObject.class);
+                                    ReflectionUtils.getMethodByName(classLoader,
+                                            benchmarkCase.getFwdIncrementalEditMethod(), false, EObject.class);
                                 } catch (NoSuchMethodException e) {
                                     foundErrors.add(String.format(
                                             "Benchmark case '%s': Incremental edit method for FWD operationalization doesn't exist",
@@ -197,8 +202,8 @@ public class BenchmarkRunner implements Runnable {
                         if (benchmarkCase.isBwdActive()) {
                             if (!benchmarkCase.getFwdIncrementalEditMethod().isEmpty()) {
                                 try {
-                                    ReflectionUtils.getStaticMethodByName(classLoader,
-                                            benchmarkCase.getBwdIncrementalEditMethod(), EObject.class);
+                                    ReflectionUtils.getMethodByName(classLoader,
+                                            benchmarkCase.getBwdIncrementalEditMethod(), false, EObject.class);
                                 } catch (NoSuchMethodException e) {
                                     foundErrors.add(String.format(
                                             "Benchmark case '%s': Incremental edit method for BWD operationalization doesn't exist",

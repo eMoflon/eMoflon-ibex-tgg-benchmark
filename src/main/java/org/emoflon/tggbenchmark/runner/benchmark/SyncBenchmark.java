@@ -37,8 +37,8 @@ public class SyncBenchmark extends Benchmark<SYNC> {
         if (sync.isIncremental()) {
             try {
                 Resource model = sync.isForward() ? sync.getSourceResource() : sync.getTargetResource();
-                Method incrementalEditMethod = ReflectionUtils.getStaticMethodByName(getClass().getClassLoader(),
-                        runParameters.getIncrementalEditClassName(), runParameters.getIncrementalEditMethodName(),
+                Method incrementalEditMethod = ReflectionUtils.getMethodByName(getClass().getClassLoader(),
+                        runParameters.getIncrementalEditClassName(), runParameters.getIncrementalEditMethodName(), true,
                         EObject.class);
                 incrementalEditMethod.invoke(null, new Object[] { model.getContents().get(0) });
             } catch (NullPointerException e) {

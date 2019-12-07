@@ -11,7 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
-import org.emoflon.ibex.tgg.runtime.engine.DemoclesTGGEngine;
+import org.emoflon.ibex.tgg.runtime.democles.DemoclesTGGEngine;
+import org.emoflon.ibex.tgg.runtime.hipe.HiPETGGEngine;
 import org.emoflon.tggbenchmark.Core;
 import org.emoflon.tggbenchmark.runner.BenchmarkRunParameters;
 import org.emoflon.tggbenchmark.runner.PatternMatchingEngine;
@@ -89,6 +90,10 @@ public abstract class Benchmark<O extends OperationalStrategy> {
                 long tic = System.nanoTime();
                 if (runParameters.getPatternMatchingEngine() == PatternMatchingEngine.Democles) {
                     op.registerBlackInterpreter(new DemoclesTGGEngine());
+                    patternEngineInitialized = true;
+                }
+                if(runParameters.getPatternMatchingEngine() == PatternMatchingEngine.HiPE) {
+                	op.registerBlackInterpreter(new HiPETGGEngine());
                     patternEngineInitialized = true;
                 }
                 long toc = System.nanoTime();

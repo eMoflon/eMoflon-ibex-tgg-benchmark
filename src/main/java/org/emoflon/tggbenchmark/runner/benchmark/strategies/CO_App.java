@@ -14,7 +14,8 @@ public class CO_App extends CO {
 	private final BenchmarkRunParameters runParameters;
 
 	public CO_App(BenchmarkRunParameters runParameters) throws IOException {
-		super(new IbexOptions().projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
+		super(StrategiesUtils.createIbexOptions(runParameters.getClass().getClassLoader(), runParameters.getMetamodelsRegistrationClassName())
+				.projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
 				.workspacePath(runParameters.getWorkspacePath().toString())
 				.setBenchmarkLogger(new FullBenchmarkLogger()));
 

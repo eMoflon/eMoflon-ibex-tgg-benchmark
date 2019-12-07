@@ -14,7 +14,8 @@ public class BWD_OPT_App extends BWD_OPT {
 	private final BenchmarkRunParameters runParameters;
 
 	public BWD_OPT_App(BenchmarkRunParameters runParameters) throws IOException {
-		super(new IbexOptions().projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
+		super(StrategiesUtils.createIbexOptions(runParameters.getClass().getClassLoader(), runParameters.getMetamodelsRegistrationClassName())
+				.projectName(runParameters.getTggProject()).projectPath(runParameters.getTggProject())
 				.workspacePath(runParameters.getWorkspacePath().toString())
 				.setBenchmarkLogger(new FullBenchmarkLogger()));
 
